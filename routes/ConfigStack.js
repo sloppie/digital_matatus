@@ -14,9 +14,11 @@ import {
   Divider,
   Searchbar
 } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { GTFSSearch } from '../utilities/GTFS_search'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import { APP_STORE } from '../';
 
 export default class ConfigStack extends React.PureComponent {
 
@@ -53,7 +55,6 @@ export default class ConfigStack extends React.PureComponent {
 
         for(let index=0; index<target; index++) {
           let result = section.results[index];
-          console.log(result)
 
           results.push(
             <Card 

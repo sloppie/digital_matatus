@@ -1,6 +1,7 @@
 import { DeviceEventEmitter } from 'react-native';
 
 const SEARCH_KEY_CHANGE = "SEARCH_KEY_CHANGE";
+const CONFIG_COMPLETE = "CONFIG_COMPLETE";
 
 
 /**
@@ -111,5 +112,6 @@ export class Event {
 }
 
 export {
-  SEARCH_KEY_CHANGE,
+  SEARCH_KEY_CHANGE, // may be used when signifying change in the values of the SearchBar
+  CONFIG_COMPLETE, // used in the initial configuration to handle the user finishing initial app config
 };

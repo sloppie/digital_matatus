@@ -1,11 +1,15 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import SplashScreen from '../screens/splash_screen';
+import { SplashScreen } from '../screens';
 import HomeStack from './HomeStack';
 import ConfigStack from './ConfigStack';
+
+// store and events from store
 import { APP_STORE } from '..';
 import { CONFIG_COMPLETE } from '../store';
+
+// storage
 import AsyncStorage from '@react-native-community/async-storage';
 
 const Stack = createStackNavigator();

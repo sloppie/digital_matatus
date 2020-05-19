@@ -1,3 +1,3 @@
-import InitialSetUp from '../screens/initial_setup';
+import { InitialSetup } from '../screens';
 
-export default InitialSetUp;
+export default InitialSetup;

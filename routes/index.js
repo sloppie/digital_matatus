@@ -20,7 +20,7 @@ class App extends React.PureComponent {
 
     this.state = {
       isLoading: true, // init splash screen
-      isLoggedIn: false, // irrelevant
+      isLoggedIn: true, // irrelevant
       configComplete: false, // checks whether the user has stored configs
       authProccessRan: false, // this is a primitive way of ensuring the auth proc doesnt run twice
     };
@@ -28,7 +28,7 @@ class App extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.componentID = APP_STORE.subscribe(CONFIG_COMPLETE, this.setConfig.bind(this));
+    this.auth();
   }
 
   setConfig = () => {
@@ -43,7 +43,7 @@ class App extends React.PureComponent {
       return;
 
     try {
-      let configComplete = await AsyncStorage.getItem("isConfig");
+      let configComplete = JSON.parse(await AsyncStorage.getItem("isConfig"));
 
       if(configComplete == true) {
         this.setState({
@@ -51,6 +51,7 @@ class App extends React.PureComponent {
           configComplete: true
         });
       } else {
+        this.componentID = APP_STORE.subscribe(CONFIG_COMPLETE, this.setConfig.bind(this));
         this.setState({
           isLoading: false,
           configComplete: false
@@ -68,12 +69,12 @@ class App extends React.PureComponent {
   }
 
   render() {
-    this.auth();
 
     if(this.state.isLoading)
       return <SplashScreen />
 
     if(!this.state.configComplete)
+
       return (
         <Stack.Navigator>
           <Stack.Screen 
@@ -83,16 +84,15 @@ class App extends React.PureComponent {
           />
         </Stack.Navigator>
       );
-    else if(this.state.isLoggedIn && this.state.configComplete)
+    else if(this.state.isLoggedIn && this.state.configComplete) {
+
+      if(typeof this.componentID == "string")
+        APP_STORE.unsubscribe(CONFIG_COMPLETE, this.componentID); // this is no longer needed
+
       return (
-          <Stack.Navigator initialRouteName="SplashScreen">
-            <Stack.Screen 
-              name="Home"
-              component={HomeStack}
-              options={{headerShown: false, title: ""}}
-            />
-          </Stack.Navigator>
+        <HomeStack />
       );
+    }
 
   }
 

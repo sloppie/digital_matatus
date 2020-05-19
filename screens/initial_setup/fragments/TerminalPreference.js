@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Dimensions,
   SafeAreaView,
+  ToastAndroid,
 } from 'react-native';
 
 import {
@@ -14,7 +15,8 @@ import {
   Divider,
   Searchbar,
   TouchableRipple,
-  Snackbar
+  Snackbar,
+  Colors
 } from 'react-native-paper';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -45,20 +47,12 @@ export default class ConfigStack extends React.PureComponent {
 
   }
 
-  componentDidMount() {
-    // subscribe to the CONFIG_COMPLETE to help store the stored values before rerouting
-    // also store the componentID to help make sure there is unsubscription after successful
-    // posting of the favourites
-    this.componentID = APP_STORE.subscribe(CONFIG_COMPLETE, this.postFavourites.bind(this));
-  }
-
   handleTextChange = async (route) => {
     this.setState({
       searchEntry: route
     });
 
     this.updateState(route);
-    
   }
   
   updateState(searchEntry) {
@@ -93,27 +87,40 @@ export default class ConfigStack extends React.PureComponent {
 
   toggleRoute(routeId, liked) {
     
-    let likedRoutes:Array = [];
+    let LLR:Array = []; // LLR -  last liked routes
+    let likedRoutes = [...this.state.likedRoutes];
 
     if(this.state.likedRoutes.length > 0) {
       // if you don not use the spread operator it is passed by reference and not by value
-      likedRoutes = [...this.state.likedRoutes[this.state.likedRoutes.length - 1]];
+      LLR = [...this.state.likedRoutes[this.state.likedRoutes.length - 1]];
     }
 
     if(liked) {
-      console.log(likedRoutes)
-      likedRoutes.splice(likedRoutes.indexOf(routeId), 1);
-      console.log(likedRoutes)
+      LLR.splice(LLR.indexOf(routeId), 1);
       this.setState({
-        likedRoutes: [...this.state.likedRoutes, likedRoutes],
+        likedRoutes: [...this.state.likedRoutes, LLR],
         unhearted: true
       });
     } else {
-      likedRoutes.push(routeId);
-      this.setState({
-        likedRoutes: [...this.state.likedRoutes, likedRoutes]
-      });
+      LLR.push(routeId);
+
+      if(this.state.likedRoutes.length > 0)
+        this.setState({
+          likedRoutes: [...this.state.likedRoutes, LLR]
+        });
+      else
+        this.setState({
+          likedRoutes: [LLR]
+        });
+        
     }
+
+    let { length } = this.state.likedRoutes
+    
+    if(!LLR.length)
+      this.props.deactivateNext();
+    else
+      this.props.activateNext();
 
   }
 
@@ -161,7 +168,14 @@ export default class ConfigStack extends React.PureComponent {
                   <TouchableRipple
                     onPress={this.toggleRoute.bind(this, result.data.route_id, liked)}
                   >
-                    <Icon {...props} name={(liked)? "heart":"heart-outline"}  style={{marginLeft: 8, marginRight: 16}}/>
+                    <Icon 
+                      {...props} 
+                      name={(liked)? "heart":"heart-outline"}  
+                      style={[
+                        styles.heart,
+                        (liked)? styles.likedHeart: styles.outlineHeart
+                      ]}
+                    />
                   </TouchableRipple>
                 }
               />
@@ -170,11 +184,10 @@ export default class ConfigStack extends React.PureComponent {
   
           id++;
           
-
-          
         }
         
         if(this.state.expanded != sectionIndex) {
+
           if(section.results.length > 2)
             results.push(
               <TouchableRipple
@@ -185,6 +198,7 @@ export default class ConfigStack extends React.PureComponent {
                 <Text style={styles.expandList}>View more results<Icon name="chevron-down" /></Text>
               </TouchableRipple>
             );
+
         } else {
           results.push(
             <TouchableRipple
@@ -221,32 +235,51 @@ export default class ConfigStack extends React.PureComponent {
       likedRoutes: [...likedRoutes]
     });
 
+    try {
+
+      if(this.state.likedRoutes[this.state.likedRoutes.length - 1].length) {
+        this.props.activateNext();
+      } else {
+        this.props.deactivateNext();
+      }
+
+    } catch(err) {
+      // means the likedOnes array is empty thus return false
+    }
+
   }
 
-  postFavourites = async () => {
+  postFavourites = () => {
+    
+    // this is used to prevent app breaking when ot us unable to access the -1th element in an empty array
+    try {
+
+      if(!this.state.likedRoutes[this.state.likedRoutes.length - 1].length) {
+        ToastAndroid.show("You must like atleast one route to proceed", ToastAndroid.SHORT);
+        return false;
+      }
+
+    } catch(err) {
+      // means the likedOnes array is empty thus return false
+      ToastAndroid.show("You must like atleast one route to proceed", ToastAndroid.SHORT);
+      return false;
+    }
+
+    return true;
+  }
+
+  packFavourites = () => {
     let routes = [];
 
-    this.state.likedRoutes.forEach(route_id => {
+    this.state.likedRoutes.pop().forEach(route_id => {
       routes.push(ROUTES[route_id]);
     });
 
-    // AsyncStorage.setItem("favourite_routes", JSON.stringify(routes), (err) => {
-    //   if(err)
-    //     console.log("an error ocurred while trying to store data");
-    //   else {
-    //     console.log("stored:\n" + JSON.stringify(routes, null, 2))
-    //     // unsubscribe from the CONFIG_COMPLETE event using the componentID assigned during subscription.
-    //     APP_STORE.unsubscribe(CONFIG_COMPLETE, this.componentID);
-    //   }
-    // });
-
-    APP_STORE.unsubscribe(CONFIG_COMPLETE, this.componentID);
-
+    console.log(routes);
+    return routes;
   }
 
   render() {
-
-    let {length} = this.state.likedRoutes
 
     return (
       <SafeAreaView style={styles.screen}>
@@ -308,4 +341,12 @@ const styles = StyleSheet.create({
     textAlign: "right", 
     marginRight: 16
   },
+  heart: {
+    marginLeft: 8, 
+    marginRight: 16
+  },
+  likedHeart: {
+    color: Colors.red500
+  },
+  outlineHeart: {}  
 });

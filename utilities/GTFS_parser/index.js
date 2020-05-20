@@ -7,16 +7,9 @@ const fs = require('fs');
 
 const GFTS_FEED = {};
 
-fs.readdir("../../GTFS_FEED", (err, data) => {
+class GTFSParse {
 
-  if(err)
-    console.log(err);
-  else {
-    console.log("Files:");
-    console.log(data);
-
-    data.forEach( feed => {
-
+  static parseRoutes(feed) {
       if(feed == "routes.txt") {
         let fileJSON = {};
         // The main reason for the pre-computing of all this routes is so as to enable the easy parsing of
@@ -111,6 +104,160 @@ fs.readdir("../../GTFS_FEED", (err, data) => {
 
         });
 
+      }
+  }
+
+  static parseTrips() {
+    let parsedData = {};
+    let reverseTrips = {}; // this stores the trip IDs as the ket to help look up easier
+    let tripsData = fs.readFileSync("../../GTFS_FEED/trips.txt", "utf8");
+
+    let rows = tripsData.split("\n");
+    console.log(tripsData.length);
+    let labels = rows.shift().split(",");
+    console.log(labels);
+    rows.pop(); // the last element is black due to the extra '\n' at the end of the file
+
+    for(let i=0; i<rows.length; i+=2) {
+      let fromRow = rows[i].split(",");
+      let toRow = rows[i + 1].split(",");
+      let from = {};
+      let to = {};
+
+      for(let j=1; j<labels.length; j++) {
+        from[labels[j]] = fromRow[j]; // represented by the 0 in direction_id
+        to[labels[j]] = toRow[j]; // represented by the 1 in direction_id
+      }
+
+      parsedData[fromRow[0]] = {from, to};
+      reverseTrips[from.trip_id] = fromRow[0]; // {"trip_id": "route_id"}
+      reverseTrips[to.trip_id] = toRow[0]; // {"trip_id": "route_id"}
+    }
+
+    if(!fs.existsSync("../../GTFS_FEED/trips"))
+      fs.mkdirSync("../../GTFS_FEED/trips");
+
+    fs.writeFile("../../GTFS_FEED/trips/trips.json", JSON.stringify(parsedData), (err) => {
+      if(err)
+        console.log("error writing to file 'trips.json'");
+      else {
+        console.log(Object.keys(parsedData).length + " routes written to trips.json");
+      }
+    });
+
+    fs.writeFile("../../GTFS_FEED/trips/reverse_trips.json", JSON.stringify(reverseTrips), (err) => {
+      if(err)
+        console.log("error writing to file 'reverse_trips.json'");
+      else {
+        console.log(Object.keys(reverseTrips).length + " routes written to reverse_trips.json");
+      }
+    });
+
+  }
+  // "805...11"{
+  // from: {
+  //   service_id: 'DAILY',
+  //   trip_id: '80105110',
+  //   trip_headsign: 'Kikuyu',
+  //   direction_id: '0',
+  //   shape_id: '80105110'
+  // },
+  // to: {
+  //   service_id: 'DAILY',
+  //   trip_id: '80105111',
+  //   trip_headsign: 'Odeon',
+  //   direction_id: '1',
+  //   shape_id: '80105111'
+  // }
+
+  /**
+   * @description this function creates an array of longitued and lattitued for each 
+   * all the shapes with a unique shape_id
+   */
+  static parseShapes() {
+    let stops = {};
+    let shapesData = fs.readFileSync("../../GTFS_FEED/shapes.txt", "utf8");
+    let rows = shapesData.split("\n");
+    let labels = rows.shift().split(",");
+    rows.pop() // this is because the last value in the file is an empty line
+    
+    rows.forEach(row => {
+      let columns = row.split(",");
+      
+      if(stops[columns[0]] == undefined)
+        stops[columns[0]] = []; // create a new point for shape
+
+      let coordinates = {};
+      coordinates[labels[1]] = columns[1]; // lat
+      coordinates[labels[2]] = columns[2]; // long
+
+      stops[columns[0]].push(coordinates);
+    });
+
+    if(!fs.existsSync("../../GTFS_FEED/shapes"))
+      fs.mkdirSync("../../GTFS_FEED/shapes");
+    
+    fs.writeFile("../../GTFS_FEED/shapes/shape.json", JSON.stringify(stops), (err) => {
+
+      if(err)
+        console.log("Error writing shapes to file");
+      else
+        console.log(Object.keys(stops).length + " Route shapes written");
+
+    });
+
+  }
+
+  static parseStops() {
+    let stops = {};
+    let shapesData = fs.readFileSync("../../GTFS_FEED/stops.txt", "utf8");
+    let rows = shapesData.split("\n");
+    let labels = rows.shift().split(",");
+    rows.pop() // this is because the last value in the file is an empty line
+    
+    rows.forEach(row => {
+      let columns = row.split(",");
+      
+      let coordinates = {};
+      coordinates[labels[2]] = columns[2]; // lat
+      coordinates[labels[3]] = columns[3]; // long
+
+      stops[columns[0]] = {name: columns[1], coordinates};
+    });
+
+    if(!fs.existsSync("../../GTFS_FEED/stops"))
+      fs.mkdirSync("../../GTFS_FEED/stops");
+    
+    fs.writeFile("../../GTFS_FEED/stops/stops.json", JSON.stringify(stops), (err) => {
+
+      if(err)
+        console.log("Error writing shapes to file");
+      else
+        console.log(stops["0010OTC"]);
+
+    });
+  }
+
+}
+
+
+fs.readdir("../../GTFS_FEED", (err, data) => {
+
+  if(err)
+    console.log(err);
+  else {
+    console.log("Files:");
+    console.log(data);
+
+    data.forEach( feed => {
+      if(feed == "routes.txt") {
+        // GTFSParse.parseRoutes(feed);
+      } else if(feed == "trips.txt") {
+        // GTFSParse.parseTrips();
+      } else if(feed == "shapes.txt") {
+        // GTFSParse.parseShapes();
+      } else if(feed == "stops.txt") {
+        GTFSParse.parseStops();
       }
 
     });

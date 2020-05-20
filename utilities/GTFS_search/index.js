@@ -1,5 +1,5 @@
 //
-const conditionalParse = () => {
+const routeParse = () => {
   // routes json
   const routeShortName = require("../../GTFS_FEED/routes/routeShortName.json")
   const routeLongName = require("../../GTFS_FEED/routes/routeLongName.json")
@@ -14,6 +14,10 @@ const conditionalParse = () => {
   return iterable;
 }
 
+const tripsParse = () => {
+
+}
+
 
 class GTFSSearch {
 
@@ -22,7 +26,7 @@ class GTFSSearch {
 
     switch(key) {
       case "routes":
-        this.data = conditionalParse();
+        this.data = routeParse();
         break;
     }
 

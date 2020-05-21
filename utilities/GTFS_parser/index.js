@@ -238,6 +238,59 @@ class GTFSParse {
     });
   }
 
+  static parseStopTimes() {
+    const reverseTrips = require("../../GTFS_FEED/trips/reverse_trips.json");
+    let comprehensiveRoute = {};
+    let stopTimes = fs.readFileSync("../../GTFS_FEED/stop_times.txt", "utf8");
+    let rows = stopTimes.split("\n");
+    let labels = rows.shift().split(",");
+    rows.pop(); // the last element is just a new line
+
+    rows.forEach(row => {
+      let columns = row.split(",");
+      let route_id = reverseTrips[columns[0]];
+      
+      if(comprehensiveRoute[route_id] == undefined)
+        comprehensiveRoute[route_id] = {
+          "stops": [],
+          "from": [],
+          "to": []
+        };
+      
+      if(comprehensiveRoute[route_id].stops.indexOf(columns[3]) == -1) {
+        comprehensiveRoute[route_id].stops.push(columns[3]);        
+      }
+
+      let dir = Number(columns[0].split("").pop()); // returns either a '1' or a '0';
+
+      if(dir) { // is direction is 1
+        comprehensiveRoute[route_id].to.push(columns[3]);
+      } else { // if direction is 0
+        comprehensiveRoute[route_id].from.push(columns[3])
+      }
+
+    });
+
+    if(!fs.existsSync("../../GTFS_FEED/comprehensive_routes"))
+      fs.mkdirSync("../../GTFS_FEED/comprehensive_routes");
+    
+    fs.writeFile(
+      "../../GTFS_FEED/comprehensive_routes/comprehensive_routes.json", // path
+      JSON.stringify(comprehensiveRoute), // data
+      (err) => { // error callback
+
+        if(err)
+          console.log("Error writing the comprehensive routes");
+        else {
+          console.log(comprehensiveRoute["10000107D11"]);
+          console.log(Object.keys(comprehensiveRoute).length + " routes written");          
+        }
+
+      }
+    )
+
+  }
+
 }
 
 
@@ -257,7 +310,9 @@ fs.readdir("../../GTFS_FEED", (err, data) => {
       } else if(feed == "shapes.txt") {
         // GTFSParse.parseShapes();
       } else if(feed == "stops.txt") {
-        GTFSParse.parseStops();
+        // GTFSParse.parseStops();
+      } else if(feed == "stop_times.txt") {
+        GTFSParse.parseStopTimes();
       }
 
     });

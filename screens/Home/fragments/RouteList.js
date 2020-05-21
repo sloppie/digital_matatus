@@ -6,6 +6,7 @@ import RouteCard from './RouteCard';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const ROUTES = require('../../../GTFS_FEED/routes/routes.json');
+const TRIPS = require('../../../GTFS_FEED/trips/trips.json');
 
 /**
  * @todo add an event listener for FAVOURITES_ALTERED to help update once this happens
@@ -24,7 +25,7 @@ export default class RouteList extends React.Component {
     this.fetchFavourites();
   }
 
-  fetchFavourites = async () => {
+  fetchFavourites = async () => { 
     /**
      * @todo export all stored database variables
      */
@@ -38,7 +39,18 @@ export default class RouteList extends React.Component {
   generateRouteCards = () => {
     let routes = [];
 
-    this.state.routes.forEach(route => routes.push(<RouteCard key={route} route={route} />));
+    this.state.routes.forEach((route) => {
+
+      
+      routes.push(
+        <RouteCard 
+          key={route.route_id} 
+          route={route} 
+          trip={TRIPS[route.route_id]}
+          setBusTerminalMarker={this.props.setBusTerminalMarker}
+          navigation={this.props.navigation}
+        />
+    )});
 
     return routes;
   }
@@ -66,6 +78,5 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     start: 0,
-    // zIndex: 1,
   }
 });

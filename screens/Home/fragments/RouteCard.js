@@ -16,16 +16,33 @@ export default class RouteCard extends React.PureComponent {
   //   route_short_name: String,
   //   route_type: String
   // }
-  constructor(props) {
+  constructor(props) { 
     super(props);
+  }
+
+  _pinTerminal = () => {
+    this.props.setBusTerminalMarker(this.props.trip);
+  }
+
+  _expandCard = () => {
+    this.props.navigation.navigate(
+      "RouteDetails", // screen name
+      { // parameters
+        route: this.props.route,
+        trip: this.props.trip
+      },
+    );
   }
 
   render() {
 
     return (
-      <Card style={styles.card}>
+      <Card 
+        style={styles.card} 
+        onPress={this._expandCard} 
+      >
         <Card.Title 
-          left={props => <Icon {...props} name="bus" color={Colors.blue300} />}
+          left={props => <Icon {...props} name="bus" color={Theme.PrimaryColor} />}
           title={`Route: ${this.props.route.route_short_name}`} 
           titleStyle={styles.cardTitle}
           subtitle={this.props.route.route_long_name} subtitleNumberOfLines={2}
@@ -34,10 +51,13 @@ export default class RouteCard extends React.PureComponent {
         </Card.Content>
         <Card.Actions>
           <Button
-            icon="more"
-          >More Info</Button>
+            icon="crosshairs-gps"
+            onPress={this._pinTerminal}
+            color={Colors.red900}
+          >Pin on Map</Button>
           <Button
             icon="settings"
+            color={Theme.PrimaryColor}
           >Preference</Button>
         </Card.Actions>
       </Card>
@@ -50,7 +70,8 @@ const styles = StyleSheet.create({
   card: {
     width: (Dimensions.get("window").width - 40),
     alignSelf: "center",
-    marginHorizontal: 24,
+    marginStart: 20,
+    marginEnd: 20,
     backgroundColor: "white",
     marginBottom: 16,
   },

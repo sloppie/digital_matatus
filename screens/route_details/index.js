@@ -16,6 +16,7 @@ import {
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import Theme from '../../theme';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as Fragments from './fragments';
 
 // import STOPS from '../../GTFS_FEED/stops/stops.json';
 import SHAPES from '../../GTFS_FEED/shapes/shape.json';
@@ -36,11 +37,26 @@ export default class RouteDetails extends React.PureComponent {
         latitudeDelta: 0.015,
         longitudeDelta: 0.0121,
       },
-      comprehensive_routes: {stops:[], to: [], from: [] }
+      comprehensive_routes: {stops:[], to: [], from: [] },
+      activeTab: 0,
+      routesLoaded: false
     };
 
     this.from = "";
     this.to = "";
+    this._tabs = ["Stops", "Saccos", "Forum"];
+    this._icons = ["bus-articulated-front", "office-building", "message-processing"];
+    this.tabActions = [
+      this.setActiveTab.bind(this, 0),
+      this.setActiveTab.bind(this, 1),
+      this.setActiveTab.bind(this, 2),
+    ]
+
+    this.listItemActions = [
+      this._setStopIDMarker,
+      this._setStopIDMarker,
+      this._setStopIDMarker,
+    ];
 
     this.comprehensiveRoutes = null; // this will be used to store the data filed from comprehensive_routes
 
@@ -50,6 +66,8 @@ export default class RouteDetails extends React.PureComponent {
     this.setBusTerminalMarker(this.props.route.params.trip);
     this.setComprehensiveRoutes();
   }
+
+  setActiveTab = (activeTab) => this.setState({activeTab});
 
   getComprehensiveRoute() {
     return new Promise((resolve, reject) => {
@@ -73,7 +91,7 @@ export default class RouteDetails extends React.PureComponent {
 
   setComprehensiveRoutes = () => {
     this.getComprehensiveRoute()
-        .then(comprehensive_routes => this.setState({comprehensive_routes}))
+        .then(comprehensive_routes => this.setState({comprehensive_routes, routesLoaded: true}))
         .catch((err) => console.log(err));
   }
 
@@ -117,6 +135,11 @@ export default class RouteDetails extends React.PureComponent {
       longitude: Number(data.coordinates.stop_lon),
     };
 
+    // region will need to be changed  to account for the new marker
+    let region = {...this.state.region}; 
+    region.latitude = coordinate.latitude;
+    region.longitude = coordinate.longitude;
+
     let markers = [
       {
         name: data.name,
@@ -124,7 +147,7 @@ export default class RouteDetails extends React.PureComponent {
       },
     ];
 
-    this.setState({markers});
+    this.setState({markers, region});
   }
 
   _generateBusTerminalMarkers = () => {
@@ -174,23 +197,38 @@ export default class RouteDetails extends React.PureComponent {
     return stops;
   }
 
-  _renderStopRoutes = ({item}) => {
-    let data = STOPS[item];
+  _renderListView() {
+    
+    switch(this.state.activeTab) {
+      case 0:
+        return(
+           <Fragments.ListView 
+              name={this._tabs[0]} 
+              listItemAction={this.listItemActions[0]} data={{...this.state.comprehensive_routes}} 
+              route={this.props.route.params.route}
+            />
+        );
+      case 1:
+        return(
+           <Fragments.ListView 
+              name={this._tabs[1]} 
+              listItemAction={this.listItemActions[1]} data={{...this.state.comprehensive_routes}} 
+              route={this.props.route.params.route}
+            />
+        );
+      case 2:
+        return(
+           <Fragments.ListView 
+              name={this._tabs[2]} 
+              listItemAction={this.listItemActions[2]} data={{...this.state.comprehensive_routes}} 
+              route={this.props.route.params.route}
+            />
+        );
+    }
 
-    return (
-      <List.Item 
-      key={item}
-      title={`Terminal Name:${data.name}`}
-      onPress={this._setStopIDMarker.bind(this, data.coordinates)}
-      />
-    );
   }
 
-  _keyExtractor = (item) => item;
-
   render() {
-    let FROM_STOP_LIST = this._generateStopsList("from");
-    let TO_STOP_LIST = this._generateStopsList("to");
 
     return (
       <>
@@ -220,48 +258,12 @@ export default class RouteDetails extends React.PureComponent {
               subtitle={this.props.route.params.route.route_long_name}
             />
           </Card>
-          {/* <ScrollView
-            style={styles.scrollView}
-          > */}
-            <List.AccordionGroup style={styles.scrollView}>
-              <List.Accordion
-                id={1}
-                left={props => <Icon {...props} name="bus-articulated-front" size={24} />}
-                title="Stops"
-              >
-                <ScrollView
-                  style={styles.scrollView}
-                  stickyHeaderIndices={[0, 6]}
-                >
-                  <List.Item title={`From ${this.from} - ${this.to}`} style={{backgroundColor: "white"}}/>
-                  {FROM_STOP_LIST}
-                  <List.Item title={`From ${this.to} - ${this.from}`} style={{backgroundColor: "white"}}/>
-                  {TO_STOP_LIST}
-                </ScrollView>
-                {/* <FlatList 
-                  style={styles.flatList}
-                  data={this.state.comprehensive_routes.stops}
-                  renderItem={this._renderStopRoutes}
-                  keyExtractor={this._keyExtractor}
-                /> */}
-              </List.Accordion>
-              <List.Accordion
-                id={2}
-                left={props => <Icon {...props} name="office-building" size={24} />}
-                title="Saccos"
-              >
-                <List.Item title="Test sacco item"/>
-              </List.Accordion>
-              <List.Accordion
-                id={3}
-                left={props => <Icon {...props} name="star" size={24} />}
-                title="Ratings"
-              >
-                <List.Item title="Test rating item"/>
-              </List.Accordion>
-            </List.AccordionGroup>
-
-          {/* </ScrollView> */}
+          <Fragments.TabBar 
+            tabs={this._tabs}
+            icons={this._icons}
+            actions={this.tabActions}
+          />
+          {(this.state.routesLoaded)?this._renderListView(): <View />}
         </SafeAreaView>
       </>
     );

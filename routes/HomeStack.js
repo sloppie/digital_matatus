@@ -5,12 +5,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import {
   Home,
   RouteDetails,
+  Report,
 } from '../screens';
 
 const Stack = createStackNavigator();
 
 export default () => <Stack.Navigator>
-  <Stack.Screen 
+  {/* <Stack.Screen 
     name="Home" 
     component={Home} 
     options={{
@@ -24,5 +25,9 @@ export default () => <Stack.Navigator>
       headerTransparent: true,
       title: ""
     }} 
+  /> */}
+  <Stack.Screen 
+    name="Report Case"
+    component={Report}
   />
 </Stack.Navigator>

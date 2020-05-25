@@ -2,7 +2,8 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { SplashScreen } from '../screens';
-import HomeStack from './HomeStack';
+// import HomeStack from './HomeStack';
+import AppDrawer from './AppDrawer';
 import ConfigStack from './ConfigStack';
 
 // store and events from store
@@ -94,7 +95,7 @@ class App extends React.PureComponent {
         APP_STORE.unsubscribe(CONFIG_COMPLETE, this.componentID); // this is no longer needed
 
       return (
-        <HomeStack />
+        <AppDrawer />
       );
     }
 

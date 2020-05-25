@@ -84,6 +84,7 @@ export default class PrivateInformation extends React.PureComponent {
       <View style={styles.container}>
         <Card.Title 
           title="Private Information"
+          titleStyle={(this.state.collapse)? styles.disabledTitle: styles.activeTitle}
           subtitle="This is turned off by default to mantain anonimity"
           right={props => <Switch {...props} value={!this.state.collapse} onValueChange={this._togglePrivateInformation}/>}
         />
@@ -98,5 +99,12 @@ const styles = StyleSheet.create({
   textInput: {
     width: (Dimensions.get("window").width - 32),
     alignSelf: "center",
+    marginBottom: 8,
+  },
+  disabledTitle: {
+    color: "#999",
+  },
+  activeTitle: {
+    color: "#444",
   },
 });

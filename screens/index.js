@@ -3,11 +3,13 @@ import SplashScreen from './splash_screen';
 import Home from './home';
 import RouteDetails from './route_details';
 import Report from './report';
+import CategoryDefinition from './harrasment_def';
 
 export {
   InitialSetup,
   SplashScreen,
   Home,
   RouteDetails,
-  Report
+  Report,
+  CategoryDefinition
 };

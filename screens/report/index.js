@@ -16,10 +16,9 @@ export default class Report extends React.PureComponent {
       open: false,
       flags: [
         {
-          "Sexual Harassment": false,
-          "Physical Harassment": false,
-          "Emotional Harassment": false,
-          "Verbal Harassment": false
+          "Verbal": false,
+          "Non-verbal": false,
+          "Physical": false,
         }
       ],
       fabGroupVisible: true, // this is used to toggle visiblity when the TextInputs are active
@@ -32,7 +31,8 @@ export default class Report extends React.PureComponent {
       {icon: "incognito", label: "Send Private", onPress: this._anonymousSend},
     ];
 
-    this.FULL_SCREEN_HEIGHT = Dimensions.get("window").height
+    this.FULL_SCREEN_HEIGHT = Dimensions.get("window").height;
+    this.incidentDescriptionRef = React.createRef(); // incident description ref
   }
 
   // CATEGORIES
@@ -40,12 +40,12 @@ export default class Report extends React.PureComponent {
     let flags = [...this.state.flags];
     let fl = flags.length; // fl flagLength
     let newFlag = {...flags[fl-1]} // last flags object
-    newFlag[flagName] = !newFlag[flagName];
+    newFlag[flagName] = !(newFlag[flagName]);
     flags.push(newFlag);
 
-    flags[flagName] = !flags[flagName];
-
     this.setState({flags}); // the most recent flag is located as the last member of the array
+    // the section below toggle the flag values of the Child Component Fragments.IncidentDescription
+    this.incidentDescriptionRef.current._turnFlag(flagName, newFlag[flagName]);
   }
 
   // INCEDENT DESCRIPTION DETAILS
@@ -86,7 +86,9 @@ export default class Report extends React.PureComponent {
       : this.setState({fabGroupVisible: true});
 
   render() {
-    let lastFlags = this.state.flags[this.state.flags.length - 1];
+    // ALWAYS USE THE SPREAD OPERATOR, OBJECTS ARE ALWAYS PASSED BY REFERNCE AND THIS MAY LEAD
+    // TO DIFFERENCE OF VALUES ACROSS THE APPLICATION!!!!!!
+    let lastFlags = {...this.state.flags[this.state.flags.length - 1]};
 
     return (
       <ScrollView 
@@ -96,9 +98,11 @@ export default class Report extends React.PureComponent {
         <Fragments.Chips
           flags={lastFlags}
           toggleFlag={this._toggleFlag}
+          navigation={this.props.navigation}
         />
         <Divider />
         <Fragments.IncedentDescription 
+          ref={this.incidentDescriptionRef}
           setDescription={this._setDescription}
         />
         <Divider />
@@ -109,15 +113,6 @@ export default class Report extends React.PureComponent {
         <Fragments.PrivateInformation 
           setPrivateInormation={this._setPrivateInformation}
         />
-        {/* <FAB.Group
-          style={styles.fabGroup}
-          icon="file-send"
-          open={this.state.open}
-          onStateChange={this._stateChange}
-          actions={this.actions}
-          onPress={this._initiateSend}
-          visible={this.state.fabGroupVisible}
-        /> */}
         <FAB
           icon="file-send"
           label="Send Information"

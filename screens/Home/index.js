@@ -1,17 +1,19 @@
 import React from 'react';
 import {
+  View,
   SafeAreaView,
+  TextInput,
   ToastAndroid,
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import { Searchbar } from 'react-native-paper';
+import { Searchbar, Surface, TouchableRipple } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker, Overlay } from 'react-native-maps';
 
 import * as Fragments from './fragments';
 import Theme from '../../theme';
+import { HOME_NAVIGATION_REF } from '../../routes/AppDrawer';
 
 const SHAPES = require("../../GTFS_FEED/shapes/shape.json");
 
@@ -32,6 +34,8 @@ export default class Home extends React.Component {
       }
     };
   }
+
+  _openDrawer = () => {console.log("Bar pressed"); HOME_NAVIGATION_REF.openDrawer()}
 
   _handleTextChange = (text) => {
 
@@ -94,13 +98,24 @@ export default class Home extends React.Component {
 
     return (
       <SafeAreaView style={styles.screen}>
-        <Searchbar
-          style={styles.searchBar}
-          placeholder="Search for route"
-          icon={props => <Icon {...props} name="menu" color={Theme.PrimaryColor} />}
-          onChangeText={this._handleTextChange}
-          clearIcon={props => <Icon {...props} name="close" />}
-        />
+        {/* <View style={styles.appBar}>
+          <TouchableRipple 
+            onPress={this._openDrawer}
+            style={styles.iconContainer}
+          >
+            <Icon 
+              name="menu" 
+              color={Theme.PrimaryColor} 
+              size={30} 
+              style={styles.icon}
+            />
+          </TouchableRipple>
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Search for route"
+            onChangeText={this._handleTextChange}
+          />
+        </View> */}
         <MapView 
           provider={PROVIDER_GOOGLE}
           initialRegion={{
@@ -132,10 +147,24 @@ const styles = StyleSheet.create({
   screen: {
     height: Dimensions.get("window").height
   },
-  searchBar: {
-    marginTop: 8,
-    position: "absolute",
-    alignSelf: "center",
+  appBar: {
+    flexDirection: "row",
     width: (Dimensions.get("window").width - 32),
+    alignSelf: "center",
+    maxHeight: 55,
+    position: "absolute",
+    top: 8,
+    start: 8,
+    elevation: 1,
+    backgroundColor: "white",
+  },
+  searchBar: {
+    width: (Dimensions.get("window").width - 86),
+  },
+  iconContainer: {
+    padding: 8, 
+  },
+  icon: {
+    textAlignVertical: "center",
   },
 });

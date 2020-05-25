@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-community/async-storage": "^1.10.1",
     "@react-native-community/masked-view": "^0.1.10",
+    "@react-navigation/drawer": "^5.8.0",
     "@react-navigation/native": "^5.3.2",
     "@react-navigation/stack": "^5.3.6",
     "paper": "^0.12.4",

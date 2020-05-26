@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, ToastAndroid, Dimensions } from 'react-native';
+import { ScrollView, StyleSheet, ToastAndroid, Dimensions, View } from 'react-native';
 import { FAB, Divider } from 'react-native-paper';
 
 import * as Fragments from './fragments';
@@ -85,6 +85,10 @@ export default class Report extends React.PureComponent {
       ? this.setState({fabGroupVisible: false}) // dont display FABGroup if display size is less than 80%
       : this.setState({fabGroupVisible: true});
 
+  _getData = () => {
+
+  }
+
   render() {
     // ALWAYS USE THE SPREAD OPERATOR, OBJECTS ARE ALWAYS PASSED BY REFERNCE AND THIS MAY LEAD
     // TO DIFFERENCE OF VALUES ACROSS THE APPLICATION!!!!!!
@@ -94,30 +98,36 @@ export default class Report extends React.PureComponent {
       <ScrollView 
         style={styles.screen}
         onLayout={this._handleLayoutChange}
+        horizontal={true}
+        pagingEnabled={true}
+        nestedScrollEnabled={true}
       >
-        <Fragments.Chips
-          flags={lastFlags}
-          toggleFlag={this._toggleFlag}
-          navigation={this.props.navigation}
-        />
-        <Divider />
-        <Fragments.IncedentDescription 
-          ref={this.incidentDescriptionRef}
-          setDescription={this._setDescription}
-        />
-        <Divider />
+        <View style={styles.page}>
+          <Fragments.Chips
+            flags={lastFlags}
+            toggleFlag={this._toggleFlag}
+            navigation={this.props.navigation}
+          />
+          <Divider />
+          <Fragments.IncedentDescription 
+            ref={this.incidentDescriptionRef}
+            setDescription={this._setDescription}
+          />
+        </View>
         <Fragments.CulpritDescription 
           setCulpritDescription={this._setCulpritDescription}
         />
-        <Divider />
-        <Fragments.PrivateInformation 
-          setPrivateInormation={this._setPrivateInformation}
-        />
-        <FAB
-          icon="file-send"
-          label="Send Information"
-          style={styles.fabGroup}
-        />
+        <View style={styles.page}>
+          <Fragments.PrivateInformation 
+            setPrivateInormation={this._setPrivateInformation}
+          />
+          <FAB
+            visible={this.state.fabGroupVisible}
+            icon="file-send"
+            label="Send Information"
+            style={styles.fabGroup}
+          />
+        </View>
       </ScrollView>
     );
   }
@@ -127,6 +137,9 @@ export default class Report extends React.PureComponent {
 const styles = StyleSheet.create({
   screen: {
     height: "100%",
+  },
+  page: {
+    width: Dimensions.get("window").width
   },
   fabGroup: {
     marginTop: 16,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { List, TouchableRipple, Colors } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -67,7 +67,6 @@ class Flag extends React.PureComponent {
         onPress={this._updateFlags}
       >
         <View style={styles.flagContainer}>
-          {/* <Text>{this.props.example}</Text> */}
           <List.Item 
             title={this.props.example}
             titleNumberOfLines={3}
@@ -121,7 +120,14 @@ export default class HarassmentDecription extends React.PureComponent {
 
   // maps all the examples to the section
   _renderFlags = (category) => categoryExamples[category]
-      .map((example, index) => <Flag example={example} index={index} updateFlags={this._updateFlags}/>);
+      .map((example, index) => (
+        <Flag 
+          example={example} 
+          index={index} 
+          updateFlags={this._updateFlags} 
+          key={index.toString()}
+        />
+      ));
 
   _returnSetFlags = () => {
     let lastSet = this.state.flags.pop();
@@ -133,16 +139,14 @@ export default class HarassmentDecription extends React.PureComponent {
   render() {
 
     return(
-      <List.Section
-        title={`${this.props.category} Harassment Flags`}
-      >
-        <ScrollView>
-          {(this.state.loading)
-            ? <ActivityIndicator size="large"/>
-            : this._renderFlags(this.props.category)
-          }
-        </ScrollView>
-      </List.Section>
+        <List.Section
+          title={`${this.props.category} Harassment Flags`}
+        >
+            {(this.state.loading)
+              ? <ActivityIndicator size="large"/>
+              : this._renderFlags(this.props.category)
+            }
+        </List.Section>
     );
   }
 

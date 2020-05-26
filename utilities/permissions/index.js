@@ -22,6 +22,12 @@ export default class Permissions {
 
   }
 
+  static async checkGeolocationPermission() {
+    let response = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+
+    return response;
+  }
+
   static async requestCameraAccessPermission() {
     let response = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -42,6 +48,12 @@ export default class Permissions {
 
   }
 
+  static async checkCameraAccessPermission() {
+    let response = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
+
+    return response;
+  }
+
   static async requestAudioRecordingPermission() {
     let response = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
@@ -53,13 +65,69 @@ export default class Permissions {
         buttonPositive: "Grant"
       }
     );
-    
+
     if(response == PermissionsAndroid.RESULTS.GRANTED) {
       return true;
     } else {
       return false;
     }
 
+  }
+  
+  static async checkAudioRecordingPermission() {
+    let response = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO);
+
+    return response;
+  }
+
+  static async requestWriteToExternalStoragePermission() {
+    let response = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      {
+        title: "Write to storage",
+        message: "This may help when reporting incidences were picture or video evidence is not available and stored on your phone",
+        buttonNeutral: "Ask me later",
+        buttonNegative: "No",
+        buttonPositive: "Grant"
+      }
+    );
+
+    if(response == PermissionsAndroid.RESULTS.GRANTED) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static async checkWriteToExternalStoragePermission() {
+    let response = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+
+    return response;
+  }
+
+  static async requestReadExternalStoragePermission() {
+    let response = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      {
+        title: "Read storage",
+        message: "This may help when reporting incidences were picture or video evidence is not available and stored on your phone",
+        buttonNeutral: "Ask me later",
+        buttonNegative: "No",
+        buttonPositive: "Grant"
+      }
+    );
+
+    if(response == PermissionsAndroid.RESULTS.GRANTED) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static async checkReadExternalStoragePermission() {
+    let response = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+
+    return response;
   }
 
   static async requestAllPermissions() {
@@ -68,6 +136,8 @@ export default class Permissions {
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         PermissionsAndroid.PERMISSIONS.CAMERA,
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
       ]
     );
 

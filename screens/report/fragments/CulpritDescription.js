@@ -84,7 +84,7 @@ export default class CulpritDescription extends React.PureComponent {
 
 const styles = StyleSheet.create({
   descriprionContainer: {
-    width: "100%",
+    width: Dimensions.get("window").width,
   },
   title: {},
   textInput: {

@@ -1,15 +1,13 @@
 import React from 'react';
 import {
-  View,
   SafeAreaView,
-  TextInput,
   ToastAndroid,
   StyleSheet,
   Dimensions,
 } from 'react-native';
 import { Searchbar, Surface, TouchableRipple } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import MapView, { PROVIDER_GOOGLE, Marker, Overlay } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker, OverlayComponent } from 'react-native-maps';
 
 import * as Fragments from './fragments';
 import Theme from '../../theme';
@@ -35,7 +33,7 @@ export default class Home extends React.Component {
     };
   }
 
-  _openDrawer = () => {console.log("Bar pressed"); HOME_NAVIGATION_REF.openDrawer()}
+  _openDrawer = () => HOME_NAVIGATION_REF.openDrawer();
 
   _handleTextChange = (text) => {
 
@@ -98,24 +96,6 @@ export default class Home extends React.Component {
 
     return (
       <SafeAreaView style={styles.screen}>
-        {/* <View style={styles.appBar}>
-          <TouchableRipple 
-            onPress={this._openDrawer}
-            style={styles.iconContainer}
-          >
-            <Icon 
-              name="menu" 
-              color={Theme.PrimaryColor} 
-              size={30} 
-              style={styles.icon}
-            />
-          </TouchableRipple>
-          <TextInput
-            style={styles.searchBar}
-            placeholder="Search for route"
-            onChangeText={this._handleTextChange}
-          />
-        </View> */}
         <MapView 
           provider={PROVIDER_GOOGLE}
           initialRegion={{
@@ -129,6 +109,13 @@ export default class Home extends React.Component {
         >
           {this.generateBusTerminalMarker()}
         </MapView>  
+          <Searchbar
+            style={styles.searchBar}
+            placeholder="Search for route"
+            onChangeText={this._handleTextChange}
+            icon="menu"
+            onIconPress={this._openDrawer}
+          />
         <Fragments.RouteList 
           setBusTerminalMarker={this.setBusTerminalMarker}
           navigation={this.props.navigation}
@@ -159,7 +146,10 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   searchBar: {
-    width: (Dimensions.get("window").width - 86),
+    width: (Dimensions.get("window").width - 32),
+    alignSelf: "center",
+    position: "absolute",
+    top: 8
   },
   iconContainer: {
     padding: 8, 

@@ -2,6 +2,8 @@ import { DeviceEventEmitter } from 'react-native';
 
 const SEARCH_KEY_CHANGE = "SEARCH_KEY_CHANGE";
 const CONFIG_COMPLETE = "CONFIG_COMPLETE";
+const MEDIA_UPLOADED = "MEDIA_UPLOADED";
+const MEDIA_DELETED = "MEDIA_REMOVED";
 
 
 /**
@@ -114,4 +116,6 @@ export class Event {
 export {
   SEARCH_KEY_CHANGE, // may be used when signifying change in the values of the SearchBar
   CONFIG_COMPLETE, // used in the initial configuration to handle the user finishing initial app config
+  MEDIA_UPLOADED, // used to monitor updates to the media the user has posted when posting a complaint
+  MEDIA_DELETED, // used to notify that media has been deleted once a user does so
 };

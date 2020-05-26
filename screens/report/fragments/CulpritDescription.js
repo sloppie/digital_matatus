@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Dimensions, StyleSheet } from 'react-native';
-import { Card, TextInput } from 'react-native-paper';
+import { Card, TextInput, RadioButton, List } from 'react-native-paper';
 
 let GTFSSearch = null;
 
-export default class CulpritDescription extends React.PureComponent {
+export default class CulpritDescription extends React.Component {
 
   constructor(props) {
     super(props);
@@ -14,29 +14,77 @@ export default class CulpritDescription extends React.PureComponent {
       saccoName: "",
       routeName: "",
       culpritDescription: "",
+      location: "",
+      routeSearchInFocus: false,
+      results: []
     };
   }
+
+  // this function is used by the Incident Description to set the location type
+  _setLocation = (location) => this.setState({location});
 
   // handle sacco name
   _handleSaccoName = (saccoName) => this.setState({saccoName});
 
   // handle route name
-  _handleRouteName = (routeName) => this.setState({routeName});
+  _handleRouteName = (routeName) => {
+    this.setState({routeName});
+
+    // update suggestion results
+    this.updateSearch(routeName);
+  }
 
   // culprit description
   _handleCulpritDescription = (culpritDescription) => this.setState({culpritDescription});
+
+  async updateSearch(searchEntry) {
+
+    if(GTFSSearch == null) {
+      let module = require('../../../utilities').GTFSSearch;
+      GTFSSearch = new module("routes");
+    }
+
+    let results = await GTFSSearch.searchSpecific("Route Long Name", searchEntry);
+
+
+    if(searchEntry == this.state.routeName) {
+      this.setState({results});
+    }
+
+  }
 
   // this method helps the user type out the route in point to help those who are not aware of route names
   _renderRouteSuggestions = () => {
     let routes = [];
 
-    if(!GTFSSearch) // load the GTFSSearch module if it is not present (lazy loading)
-      GTFSSearch = require("../../../utilities").GTFSSearch;
+    let results = this.state.results;
 
-    let search = new GTFSSearch("routes");
-    
-    return routes;
+    if(results == [] || this.state.routeName == "")
+      return [];
+
+    let target = (results.length > 5)? 5: results.length;
+    routes.push(
+      <List.Section 
+        title="Route suggestions"
+      />
+    );
+
+    for(let i=0; i< target; i++) {
+    console.log(results[i].data);
+      routes.push(
+        <List.Item 
+          left={props => <List.Icon {...props} icon="bus" />}
+          title={results[i].data.route_short_name}
+          description={results[i].data.route_long_name}
+          key={i.toString()}
+        />
+      );
+    }
+
+    return <View style={styles.suggestionContainer}>{routes}</View>;
   }
+
+  _toggleSuggestion = routeSearchFocused => this.setState({routeSearchFocused});
 
   _turnOffRouteSuggestions = () => this.setState({routeSearchFocused: false});
 
@@ -44,6 +92,9 @@ export default class CulpritDescription extends React.PureComponent {
 
     return (
       <View style={styles.descriprionContainer}>
+        {/**
+         * This part will be used to check for the location type
+         */}
         <Card.Title 
           title="Culprit Description"
           titleStyle={styles.title}
@@ -51,27 +102,28 @@ export default class CulpritDescription extends React.PureComponent {
           subtitleNumberOfLines={3}
         />
         <TextInput
-          value={this.state.description}
+          value={this.state.saccoName}
           style={styles.textInput}
           placeholder="Enter the sacco name"
-          onChange={this._handleSaccoName}
+          onChangeText={this._handleSaccoName}
           mode="outlined"
           label="Sacco Name"
         />
         <TextInput
-          value={this.state.description}
+          value={this.state.routeName}
           style={styles.textInput}
           placeholder="Enter the route no, or a destination you are familiar with on the route"
-          onChange={this._handleRouteName}
+          onChangeText={this._handleRouteName}
+          onFocus={this._toggleSuggestion.bind(this, true)}
           mode="outlined"
-          label="Sacco Name"
+          label="Route Name"
         />
-        {(this.state.routeSearchFocused)? this.renderRouteSuggestions(): <View/>}
+        {(this.state.routeSearchFocused)? this._renderRouteSuggestions(): null}
         <TextInput
-          value={this.state.description}
+          value={this.state.culpritDescription}
           style={styles.textInput}
           placeholder="Enter a short description, i.e NickName,"
-          onChange={this._handleCulpritDescription}
+          onChangeText={this._handleCulpritDescription}
           mode="outlined"
           label="Description"
           multiline={true}
@@ -90,5 +142,9 @@ const styles = StyleSheet.create({
   textInput: {
     width: (Dimensions.get("window").width - 32),
     alignSelf: "center",
+  },
+  suggestionContainer: {
+    alignSelf: "center",
+    width: (Dimensions.get("window").width - 32),
   },
 });

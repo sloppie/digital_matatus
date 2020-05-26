@@ -33,6 +33,7 @@ export default class Report extends React.PureComponent {
 
     this.FULL_SCREEN_HEIGHT = Dimensions.get("window").height;
     this.incidentDescriptionRef = React.createRef(); // incident description ref
+    this.culpritDescriptionRef = React.createRef(); // access to CulpritDescription methods
   }
 
   // CATEGORIES
@@ -112,9 +113,11 @@ export default class Report extends React.PureComponent {
           <Fragments.IncedentDescription 
             ref={this.incidentDescriptionRef}
             setDescription={this._setDescription}
+            culpritDescriptionRef={this.culpritDescriptionRef}
           />
         </View>
         <Fragments.CulpritDescription 
+          ref={this.culpritDescriptionRef}
           setCulpritDescription={this._setCulpritDescription}
         />
         <View style={styles.page}>

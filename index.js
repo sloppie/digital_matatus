@@ -10,6 +10,8 @@ import Store, {
   Event,
   SEARCH_KEY_CHANGE, // for searchBar related Events
   CONFIG_COMPLETE, // complete configuration event
+  MEDIA_UPLOADED, // uploading media on a claim
+  MEDIA_DELETED, // deleting media when uploading a claim
 } from './store';
 
 const eventArr = [];
@@ -17,6 +19,8 @@ const eventArr = [];
 // initialise events
 eventArr.push(new Event(SEARCH_KEY_CHANGE));
 eventArr.push(new Event(CONFIG_COMPLETE));
+eventArr.push(new Event(MEDIA_UPLOADED));
+eventArr.push(new Event(MEDIA_DELETED));
 
 // create the store
 const APP_STORE = new Store(eventArr);

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { List, TouchableRipple, Colors } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const categories = {
   "Verbal": "This is unwelcome behaviour of a sexual nature conducted through verbal cues.",
@@ -139,14 +140,16 @@ export default class HarassmentDecription extends React.PureComponent {
   render() {
 
     return(
+      <>
         <List.Section
           title={`${this.props.category} Harassment Flags`}
         >
-            {(this.state.loading)
+        </List.Section>
+          {(this.state.loading)
               ? <ActivityIndicator size="large"/>
               : this._renderFlags(this.props.category)
             }
-        </List.Section>
+      </>
     );
   }
 

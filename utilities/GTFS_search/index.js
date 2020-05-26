@@ -32,19 +32,30 @@ class GTFSSearch {
 
   }
 
-  search(data, regExSequence): Promise<Array<Object>> {
+  search(data, regExSequence) {
+    // console.log(regExSequence)
     let result = [];
     let RES = new RegExp(regExSequence, "gi");
 
     for(let child in data) {
       
-      if(RES.test(child)) {
+      if(RES.test(child)) { 
         result.push({matched: child, data: data[child]});
       }
 
     }
 
     return result;
+  }
+
+  async searchSpecific(key, regExSequence) {
+    let results = [];
+    let {data} = this.data.filter(val => val.name == key)[0];
+    
+    results = await this.search(data, regExSequence);
+    console.log(results.length)
+
+    return results;
   }
 
   indexSearch(charSequence) {

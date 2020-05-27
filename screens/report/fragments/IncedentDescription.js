@@ -526,6 +526,34 @@ export default class IncedentDescription extends React.Component {
 
   }
 
+  _getInformation = () => {
+    let {date, location, attachedAudios, attachedPhotos, attachedVideos, Verbal, Physical} = this.state;
+    let nonVerbal = this.state["Non-verbal"];
+    
+    let response = {
+      date,
+      location,
+      attachedAudios,
+      attachedPhotos,
+      attachedVideos,
+      flags: {}
+    };
+
+    if(Verbal) {
+      response.flags["Verbal"] = this.VHFlag.current._returnSetFlags();
+    }
+
+    if(nonVerbal)
+      response.flags["Non-verbal"] = this.NVHFlag.current._returnSetFlags();
+    
+    if(Physical)
+      response.flags["Physical"] = this.PHFlag.current._returnSetFlags();
+    
+    console.log(JSON.stringify(response.flags, null, 2));
+    
+    return response;
+  }
+
   _renderLocationRadio = () => (
     <RadioButton.Group
       onValueChange={this._setLocationType}

@@ -19,6 +19,7 @@ export default class CulpritDescription extends React.Component {
       routeSearchFocused: false, // this helps to know when to render the search results for route
       saccoName: "",
       routeName: "",
+      routeID: "",
       culpritDescription: "",
       location: "",
       routeSearchInFocus: false,
@@ -93,7 +94,7 @@ export default class CulpritDescription extends React.Component {
   }
 
   _setRoute = (routeDetails) => {
-    this.setState({routeSearchFocused: false, routeDetails});
+    this.setState({routeSearchFocused: false, routeDetails, routeID: routeDetails});
   }
 
   _setCulpritType = culpritType => this.setState({culpritType});
@@ -101,6 +102,24 @@ export default class CulpritDescription extends React.Component {
   _toggleSuggestion = routeSearchFocused => this.setState({routeSearchFocused});
 
   _turnOffRouteSuggestions = () => this.setState({routeSearchFocused: false});
+
+  // information to be got:
+  // saccoName
+  // routeName : this is the route Id
+  // routeDetails
+  // culpritType
+  _getInformation = () => {
+    let {saccoName, location, routeName, routeID, culpritType} = this.state;
+
+    let response = {
+      saccoName: (location != LOCATIONS.INSIDE_BUS) ? "ALL": saccoName,
+      routeName,
+      routeID,
+      culpritType
+    };
+
+    return response;
+  }
 
   render() {
 
@@ -197,7 +216,7 @@ export default class CulpritDescription extends React.Component {
             />
           </List.Section>
         </RadioButton.Group>
-        <TextInput
+        {/* <TextInput
           value={this.state.culpritDescription}
           style={styles.textInput}
           placeholder="Enter a short description, i.e NickName,"
@@ -205,7 +224,7 @@ export default class CulpritDescription extends React.Component {
           mode="outlined"
           label="Description"
           multiline={true}
-        />
+        /> */}
       </ScrollView>
     );
   }

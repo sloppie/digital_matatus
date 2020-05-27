@@ -131,8 +131,10 @@ export default class HarassmentDecription extends React.PureComponent {
       ));
 
   _returnSetFlags = () => {
-    let lastSet = this.state.flags.pop();
-    let set = lastSet.filter(flag => flag);
+    let lastSet = this.state.flags[this.state.flags.length - 1];
+    let set = lastSet.map((flag, index) => (
+      (flag) ? categoryExamples[this.props.category][index]: null
+    )).filter(flag => flag !== null);
 
     return set;
   }

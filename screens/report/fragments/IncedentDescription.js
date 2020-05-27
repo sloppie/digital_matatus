@@ -536,16 +536,19 @@ export default class IncedentDescription extends React.Component {
         title="Bus Terminal"
         description="This happened on the matatu stage as you were about to pick up a bus"
         right={props => <RadioButton {...props} value="BUS_TERMINAL" />}
+        onPress={this._setLocationType.bind(this, "BUS_TERMINAL")}
       />
       <List.Item 
         title="As you entered the bus"
         description="The matatu operator may have bloked your entrance as you were trying to enter the bus"
-        right={props => <RadioButton {...props} value="ON_BUS_TERMINAL" />}
+        right={props => <RadioButton {...props} value="ON_BUS_ENTRANCE" />}
+        onPress={this._setLocationType.bind(this, "ON_BUS_ENTRANCE")}
       />
       <List.Item 
         title="Inside The Vehicle"
         description="This incident happened inside the bus"
         right={props => <RadioButton {...props} value="INSIDE_BUS" />}
+        onPress={this._setLocationType.bind(this, "INSIDE_BUS")}
       />
       <Divider />
     </RadioButton.Group>

@@ -33,7 +33,6 @@ class GTFSSearch {
   }
 
   search(data, regExSequence) {
-    // console.log(regExSequence)
     let result = [];
     let RES = new RegExp(regExSequence, "gi");
 
@@ -53,7 +52,6 @@ class GTFSSearch {
     let {data} = this.data.filter(val => val.name == key)[0];
     
     results = await this.search(data, regExSequence);
-    console.log(results.length)
 
     return results;
   }

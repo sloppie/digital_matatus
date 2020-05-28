@@ -20,6 +20,20 @@ const media_types = {
   audio: "audio"
 }
 
+const AUDIO_ATTACHED_DATA = [""];
+
+// this might be liable to the RACE CONDITION 
+AudioRecord.on("data", (data) => {
+  new Promise((resolve, reject) => {
+    try {
+      AUDIO_ATTACHED_DATA[AUDIO_ATTACHED_DATA.length - 1] = AUDIO_ATTACHED_DATA[AUDIO_ATTACHED_DATA.length - 1].concat(data);
+      resolve(true);
+    } catch(err) {
+      false;
+    }
+  });
+});
+
 export default class IncedentDescription extends React.Component {
 
   constructor(props) {
@@ -36,16 +50,20 @@ export default class IncedentDescription extends React.Component {
       location: null,
       locationSet: false,
       attachedPhotos: [], // stores the URIs for the attached media
+      attachedPhotosData: [],
       attachedPhotosThumbnails: [],
       attachedVideos: [],
+      attachedVideosData: [],
       attachedVideosThumbnails: [],
       attachedAudios: [],
+      attachedAudiosData: [],
       uploadCount: 0,
       recordingVisible: false,
       isRecording: false,
       audioRecorded: false,
       isPlaying: false,
-      audio: null
+      audio: null,
+      audioData: "",
     };
 
     this.audio_count = 0;
@@ -234,6 +252,7 @@ export default class IncedentDescription extends React.Component {
       sampleRate: 16000,
     });
 
+
     this.audio_count++;
 
     let granted = await Permissions.checkAudioRecordingPermission();
@@ -281,9 +300,10 @@ export default class IncedentDescription extends React.Component {
       return;
     
     let attachedAudios = [...this.state.attachedAudios];
+    AUDIO_ATTACHED_DATA.push(""); // creates new string to store a new set of data
     attachedAudios.push(this.state.audio);
 
-    console.log(this.state.audio);
+    console.log(this.state.audioData);
 
     this.setState({
       attachedAudios,
@@ -292,6 +312,7 @@ export default class IncedentDescription extends React.Component {
       audioRecorded: false,
       isPlaying: false,
       audio: null,
+      audioData: "",
       recordingVisible: false, // hide the recordingTab
     });
   }
@@ -336,11 +357,13 @@ export default class IncedentDescription extends React.Component {
             
             if(this.state.attachedPhotos.indexOf(response.uri) == -1) { // only adds the uri of it predetermines that it wasnt added
 
-              let {attachedPhotos, attachedPhotosThumbnails} = this.state;
+              let {attachedPhotos, attachedPhotosData, attachedPhotosThumbnails} = this.state;
               attachedPhotos.push(response.uri);
+              attachedPhotosData.push(response.data); // stores the responses data
               attachedPhotosThumbnails.push(response.uri);
 
               this.setState({
+                attachedPhotosData: [...attachedPhotosData],
                 attachedPhotos: [...attachedPhotos],
                 attachedPhotosThumbnails: [...attachedPhotosThumbnails],
               });
@@ -385,9 +408,11 @@ export default class IncedentDescription extends React.Component {
 
             let updateState = (path=response.path) => {
               let attachedVideos = [...this.state.attachedVideos];
+              let attachedVideosData = [...this.state.attachedVideosData];
               let attachedVideosThumbnails = [...this.state.attachedVideosThumbnails];
   
               attachedVideos.push(response.uri);
+              attachedVideosData.push(response.data);
               attachedVideosThumbnails.push(path);
   
               this.setState({attachedVideos, attachedVideosThumbnails});
@@ -420,27 +445,33 @@ export default class IncedentDescription extends React.Component {
 
   _removePhotos = (item, removableIndex) => {
     let attachedPhotos = [...this.state.attachedPhotos];
+    let attachedPhotosData = [...this.state,attachedPhotosData];
     let attachedPhotosThumbnails = [...this.state.attachedPhotosThumbnails];
 
     // splice the data
     attachedPhotos.splice(removableIndex, 1);
+    attachedPhotosData.splice(removableIndex, 1);
     attachedPhotosThumbnails.splice(removableIndex, 1);
 
     this.setState({
       attachedPhotos,
+      attachedPhotosData,
       attachedPhotosThumbnails
     });
   }
 
   _removeVideos = (item, removableIndex) => {
     let attachedVideos = [...this.state.attachedVideos];
+    let attachedVideosData = [...this.state.attachedVideosData];
     let attachedVideosThumbnails = [...this.state.attachedVideosThumbnails];
 
     attachedVideos.splice(removableIndex, 1);
+    attachedVideosData.splice(removableIndex, 1);
     attachedVideosThumbnails.splice(removableIndex, 1);
 
     this.setState({
       attachedVideos,
+      attachedVideosData,
       attachedVideosThumbnails
     });
   }
@@ -527,15 +558,15 @@ export default class IncedentDescription extends React.Component {
   }
 
   _getInformation = () => {
-    let {date, location, attachedAudios, attachedPhotos, attachedVideos, Verbal, Physical} = this.state;
+    let {date, location, attachedAudios, attachedPhotosData, attachedVideosData, Verbal, Physical} = this.state;
     let nonVerbal = this.state["Non-verbal"];
     
     let response = {
       date,
       location,
-      attachedAudios,
-      attachedPhotos,
-      attachedVideos,
+      attachedAudiosData: AUDIO_ATTACHED_DATA, // attach the data itself instead of the file
+      attachedPhotosData,
+      attachedVideosData,
       flags: {}
     };
 
@@ -548,8 +579,6 @@ export default class IncedentDescription extends React.Component {
     
     if(Physical)
       response.flags["Physical"] = this.PHFlag.current._returnSetFlags();
-    
-    console.log(JSON.stringify(response.flags, null, 2));
     
     return response;
   }

@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
-import { IconButton, List, Divider } from 'react-native-paper';
+import { ScrollView, View, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
+import { IconButton, List, Divider, Caption, Card, Colors } from 'react-native-paper';
 
 const QUERY = Object.freeze({
   incidentDescriptionQueries: "Incident description queries",
@@ -17,53 +17,75 @@ export default class DataVerification extends React.PureComponent {
     this.state = {
       loading: true, // prevent premature loading of the button
       disable: false, // this disables the submit button and unverifies the data
+      noQueries: (Object.keys(this.props.queries).length == 0)
     };
   }
 
+  componentDidMount() {
+    this.setState({loading: false, queries: this.props.queries});
+  }
+
   _scrollTo = (tabName, priority) => {
+    console.log(`Scrolling to: ${tabName}`)
     this.props._scrollTo(tabName); // Scroll back to the index given
 
     // unverify data so as to make sure the user is not able to complete without fixing the issues
-    if(priority)
-      this.props._unverifyData(); 
+    setTimeout(() => this.props._unverifyData(), 100)
+      // this.props._unverifyData(); 
   }
 
   _generateQueries = () => {
     let queries = [];
     let HIGH_PRIORITY = false;
+    let id = 0;
 
-    for(let i in this.props.queries) {
+    if(this.state.noQueries)
+      return queries;
+    
+    queries.push(
+      <Caption style={styles.instructions}>Tap on a query to navigate to it</Caption>
+    );
+
+    for(let i in this.state.queries) {
       let tabName = ( // create tab name to enable easy scrolling back
-        (i == QUERY.incidentDescriptionQueries) ? "IncidentDescription"
-        : (i == QUERY.culpritDescriptionQueries) ? "CulpritDescription"
+        (i == "incidentDescriptionQueries") ? "IncidentDescription"
+        : (i == "culpritDescriptionQueries") ? "CulpritDescription"
         : "PrivateInformation"
       );
 
       queries.push(
         <List.Section 
           title={QUERY[i]}
+          key={id.toString()}
         />
       );
 
-      let sectionQueries = this.props.queries[i].map((query, index) => {
+      id++;
+
+      let sectionQueries = this.state.queries[i].map((query, index) => {
 
         if(!HIGH_PRIORITY)
           HIGH_PRIORITY = query.priority;
 
+        id++;
         return (
           <List.Item 
             title={query.title}
             description={query.description}
+            descriptionNumberOfLines={2}
             onPress={this._scrollTo.bind(this, tabName, query.priority)}
-            key={index.toString()}
+            left={props => <List.Icon {...props} icon="information" color={query.priority ? Colors.red600: Colors.blue500} />}
+            key={id.toString()}
           />
         );
       });
     
-      queries = [...queries, ...sectionQueries, <Divider />];
+      id++;
+      queries = [...queries, ...sectionQueries, <Divider key={id.toString()} />];
+      id++;
     }
 
-    this.setState({loading: false, disable: true});
+    this.setState({disable: HIGH_PRIORITY});
 
     return queries;
   }
@@ -72,19 +94,31 @@ export default class DataVerification extends React.PureComponent {
     <IconButton 
       icon="check"
       onPress={this.props._sendVerifiedData}
-      disabled={this.state.disabled}
+      disabled={this.state.disable}
       size={50}
       style={styles.verifyButton}
+      color={this.state.disable? Colors.grey400: Colors.red600}
     />
   );
 
   render() {
 
+    if(this.state.loading)
+      return <ActivityIndicator size="large"/>
+
     return (
-      <View style={styles.page}>
+      <ScrollView style={[styles.page, this.state.noQueries? styles.completePage: {}]}>
         {this._generateQueries()}
+        {
+          (this.state.noQueries)
+          ? <Card.Title 
+              title={"Done!"}
+              subtitle={"press the button to submit the report"}
+            />
+          : null
+        }
         {this._generateButton()}
-      </View>
+      </ScrollView>
     );
   }
 
@@ -92,10 +126,17 @@ export default class DataVerification extends React.PureComponent {
 
 const styles = StyleSheet.create({
   page: {
+    width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
+  },
+  completePage: {
+    alignItems: "center",
+    justifyContent: "center",
   },
   verifyButton: {
     textAlign: "center",
-    textAlignVertical: "center"
+    textAlignVertical: "center",
+    alignSelf: "center",
+    backgroundColor: Colors.blue100
   },
 });

@@ -54,17 +54,21 @@ export default class Report extends React.PureComponent {
       case "CulpritDescription":
         index = 1;
         break;
-      case "privateInformation":
+      case "PrivateInformation":
         index = 2;
+        break;
+      case "DataVerification":
+        index = 3;
         break;
       default:
         index = 0;
         break;
     }
 
-    for(let i=0; i<x; i++) {
+    for(let i=0; i<index; i++) {
       x += Dimensions.get("window").width; 
     }
+    console.log(`scrolling to: ${x}`);
 
     this.parentScrollViewRef.current.scrollTo({x, y, animated: true});
 
@@ -146,14 +150,16 @@ export default class Report extends React.PureComponent {
       this.setState({queries, verified: true, response});
     }
 
+    setTimeout(() => this._scrollTo("DataVerification"), 100);
+
   }
 
   _verifyID = (incidentDescription) => {
     let queries = [];
 
-    let videos = incidentDescription.attachedVideos.length != 0; // check for attached videos
-    let photos = incidentDescription.attachedPhotos.length != 0; // check for attached videos
-    let audio = incidentDescription.attachedAudios.length != 0; // check for attached audio
+    let videos = incidentDescription.attachedVideosData.length != 0; // check for attached videos
+    let photos = incidentDescription.attachedPhotosData.length != 0; // check for attached videos
+    let audio = incidentDescription.attachedAudiosData.length != 0; // check for attached audio
 
     let location = incidentDescription.location !== null;
     let locationType;
@@ -176,7 +182,7 @@ export default class Report extends React.PureComponent {
     }
 
     if(location)
-      locationType = (typeof location.type == "string")? location.type !== "": false; 
+      locationType = (typeof incidentDescription.location.type == "string")? incidentDescription.location.type !== "": false; 
 
     if(!videos)
       queries.push({
@@ -203,14 +209,14 @@ export default class Report extends React.PureComponent {
       queries.push({
         title: "no location attached",
         description: "we advise on pinning of current location if available",
-        priority: false // LOW
+        priority: true // HIGH
       });
 
     if(!locationType)
       queries.push({
         title: "no location type selected",
         description: "we advise on selecting location type to help find who is culpable a lot easier",
-        priority: false // LOW
+        priority: true // LOW
       });
 
     if(!harassmentFlags)
@@ -236,7 +242,7 @@ export default class Report extends React.PureComponent {
         priority: false // LOW
       });
 
-    if(culpritTypeIssue)
+    if(!culpritTypeIssue)
       queries.push({
         title: "Perpetrator type empty",
         description: "We advice you to select a perpetrator type to help in trying to help find the better decision",
@@ -271,7 +277,16 @@ export default class Report extends React.PureComponent {
 
   // send verified data
   _sendVerifiedData = () => {
-    console.log(`data to be sent: ${JSON.stringify(this.state.response, null, 2)}`)
+    console.log(this.state.response.culpritDescription)
+    // console.log(`data to be sent: ${JSON.stringify(this.state.response, null, 2)}`)
+    fetch("http://192.168.43.99:3000/report/id_1", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(this.state.response, null, 2)
+    });
   }
 
   render() {
@@ -313,7 +328,7 @@ export default class Report extends React.PureComponent {
           <FAB
             visible={this.state.fabGroupVisible}
             icon="file-send"
-            label="Send Information"
+            label="Verify Information"
             style={styles.fabGroup}
             onPress={this._getInformation}
           />
@@ -321,8 +336,8 @@ export default class Report extends React.PureComponent {
         {
           (this.state.verified)
           ? <Fragments.DataVerification 
-            verifyData={this._sendVerifiedData}
-            unverifyData={this._unverifyData}
+            _sendVerifiedData={this._sendVerifiedData}
+            _unverifyData={this._unverifyData}
             _scrollTo={this._scrollTo}
             queries={this.state.queries} 
           />
@@ -340,7 +355,6 @@ const styles = StyleSheet.create({
   },
   page: {
     width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
   },
   fabGroup: {
     marginTop: 16,

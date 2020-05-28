@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "663440011775",
+    "firebase_url": "https://digitalmatatus.firebaseio.com",
+    "project_id": "digitalmatatus",
+    "storage_bucket": "digitalmatatus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:663440011775:android:addfb3c1d231d4d6c2f7ca",
+        "android_client_info": {
+          "package_name": "com.digital_matatus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "663440011775-me2qa8vrv0uvcq2rm6hugs5vr49helo8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAs96_9kPinE_iLw6BT4DHdos5tXmZRL1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "663440011775-me2qa8vrv0uvcq2rm6hugs5vr49helo8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

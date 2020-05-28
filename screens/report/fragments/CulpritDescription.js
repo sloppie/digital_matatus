@@ -97,24 +97,24 @@ export default class CulpritDescription extends React.Component {
     this.setState({routeSearchFocused: false, routeDetails, routeID: routeDetails});
   }
 
-  _setCulpritType = culpritType => this.setState({culpritType});
+  _setCulpritType = (culpritType) => this.setState({culpritType});
 
-  _toggleSuggestion = routeSearchFocused => this.setState({routeSearchFocused});
+  _toggleSuggestion = (routeSearchFocused) => this.setState({routeSearchFocused});
 
   _turnOffRouteSuggestions = () => this.setState({routeSearchFocused: false});
 
   // information to be got:
   // saccoName
-  // routeName : this is the route Id
-  // routeDetails
+  // routeID
   // culpritType
   _getInformation = () => {
     let {saccoName, location, routeName, routeID, culpritType} = this.state;
+    console.log(`CulpritType: ${culpritType}`)
 
     let response = {
       saccoName: (location != LOCATIONS.INSIDE_BUS) ? "ALL": saccoName,
-      routeName,
-      routeID,
+      // routeName,
+      routeID: routeID.route_id,
       culpritType
     };
 
@@ -191,25 +191,25 @@ export default class CulpritDescription extends React.Component {
             title="Perpetrator description"
           >
             <List.Item 
-              left={props => <RadioButton value="Driver" />}
+              left={props => <RadioButton value="Driver" onPress={this._setCulpritType}/>}
               title="Driver"
               description="Action was carried out by a matatu driver"
               onPress={this._setCulpritType.bind(this, "Driver")}
             />
             <List.Item 
-              left={props => <RadioButton value="Conductor" />}
+              left={props => <RadioButton value="Conductor" onPress={this._setCulpritType}/>}
               title="Conductor"
               description="Action was carried out by a matatu conductor"
               onPress={this._setCulpritType.bind(this, "Conductor")}
             />
             <List.Item 
-              left={props => <RadioButton value="Route handler" />}
+              left={props => <RadioButton value="Route handler" onPress={this._setCulpritType}/>}
               title="Route Handler"
               description="Action was carried out by a matatu driver"
               onPress={this._setCulpritType.bind(this, "Route handler")}
             />
             <List.Item 
-              left={props => <RadioButton value="other" />}
+              left={props => <RadioButton value="other" onPress={this._setCulpritType}/>}
               title="other"
               description="Action was carried out by another party not explicitly described above"
               onPress={this._setCulpritType.bind(this, "other")}

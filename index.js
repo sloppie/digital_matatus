@@ -13,6 +13,7 @@ import Store, {
   MEDIA_UPLOADED, // uploading media on a claim
   MEDIA_DELETED, // deleting media when uploading a claim
 } from './store';
+import NotificationSetup from './utilities/push-notifications';
 
 const eventArr = [];
 
@@ -24,6 +25,9 @@ eventArr.push(new Event(MEDIA_DELETED));
 
 // create the store
 const APP_STORE = new Store(eventArr);
+
+// create NotificationToken to ease its fetching process
+NotificationSetup.configure();
 
 AppRegistry.registerComponent(appName, () => App);
 

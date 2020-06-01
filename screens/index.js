@@ -4,6 +4,7 @@ import Home from './home';
 import RouteDetails from './route_details';
 import Report from './report';
 import CategoryDefinition from './harrasment_def';
+import LoginScreen from './login';
 
 export {
   InitialSetup,
@@ -11,5 +12,6 @@ export {
   Home,
   RouteDetails,
   Report,
-  CategoryDefinition
+  CategoryDefinition,
+  LoginScreen
 };

@@ -32,7 +32,7 @@ export default class InitialSetup extends React.Component {
 
     this.state = {
       activeTabIndex: 0,
-      maxTabs: 4,
+      maxTabs: 5,
       nextActive: true,
       backActive: false,
       firstToggle: false,
@@ -50,14 +50,15 @@ export default class InitialSetup extends React.Component {
     // 0 - TerminalPreferences Explanation
     // 1 - TerminalPreferences screen
     // 2 - Permissions explanation & screen
-    // 3 - loadingScreen
+    // 3 - SignUpScreen
+    // 4 - loadingScreen
 
     switch(index) {
       case 1:
         res = this.preferencesRef.current.postFavourites(); // call the postReferences func in TerminalPreferences
       case 2:
         this.checkPermissions();
-        this.finalise()
+        // this.finalise()
         break;
       case 3:
         break;
@@ -81,8 +82,7 @@ export default class InitialSetup extends React.Component {
         nextActive: false,
         backActive: true
       });
-    }
-    else
+    } else
       this.setState({
         activeTabIndex: index + 1,
         nextActive: ((index + 1) == 1 && !this.state.firstToggle)? false: true,
@@ -140,46 +140,64 @@ export default class InitialSetup extends React.Component {
 
   }
 
-  finalise = () => {
+  /**
+   * @param {String} email this will be passed in by the Fragments.SignUpScreen
+   */
+  finalise = async (email) => {
+    this.scrollTo(4);
 
-    if(this.state.permissions != null) {
-      let favourites = [...this.preferencesRef.current.packFavourites()];
-      console.log(JSON.stringify(favourites, null, 2))
-      AsyncStorage.setItem("favouriteRoutes", JSON.stringify(favourites), (err) => {
-        
-        if(err) {
-          ToastAndroid.show("Error storing data...");
-        } else {
-          AsyncStorage.setItem(
-            "appPermisionsResult", // storage key
+    let favourites = [...this.preferencesRef.current.packFavourites()];
+    let deviceToken = await AsyncStorage.getItem("deviceNotificationToken")
+
+    if(!deviceToken) {
+      let NotificationSetup = require('../../utilities/push-notifications').default;
+      deviceToken = await AsyncStorage.getItem("deviceNotificationToken")
+    }
+
+    fetch("http://192.168.43.89:3000/api/user/new", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        favouriteRoutes: favourites.map(route => route.route_id), // map route_ids
+        deviceToken
+      })
+    }).then(data => data.json()).then(response => {
+      console.log(response)
+      let state = JSON.parse(response);
+
+      AsyncStorage.multiSet(
+        [
+          ["favouriteRoutes", JSON.stringify(favourites)],
+          [
+            "appPermissionsResult", 
             JSON.stringify({ // values
               "LOCATION": this.state.permissions[0],
               "CAMERA": this.state.permissions[1],
               "AUDIO": this.state.permissions[2]
             }),
-            (err) => {
-
-              if(err)
-                ToastAndroid.show("Error storing favourites data", ToastAndroid.SHORT);
-              else {                
-                AsyncStorage.setItem("isConfig", JSON.stringify(true), (err) => {
-                  
-                  if(err)
-                    ToastAndroid.show("Error completing config", ToastAndroid.SHORT);
-                  else {
-                    console.log("initial config set")
-                    DeviceEventEmitter.emit(CONFIG_COMPLETE);
-                  }
-
-                });
-              }
-
-            }
-          );
-        }
-
+          ],
+          ["isConfig", JSON.stringify(true)]
+        ], 
+        (err) => {
+        
+          if(err) {
+            ToastAndroid.show("Error storing data...", ToastAndroid.SHORT);
+          }
       });
-    }
+
+      if(state) { // if set online, set locally also
+        DeviceEventEmitter.emit(CONFIG_COMPLETE);
+      } else {
+        ToastAndroid.show("Error adding user you may already have an account", ToastAndroid.SHORT);
+      }
+
+    }).catch(err => {
+      console.log(err)
+    });
 
   }
   
@@ -222,7 +240,10 @@ export default class InitialSetup extends React.Component {
                 "fully :)"
               ]}
             />
-            <Fragments.LoadingScreen /> 
+            <Fragments.SignUpScreen _finalise={this.finalise} />
+            <Fragments.LoadingScreen 
+              finalise={this.finalise}
+            /> 
           </ScrollView>
           <ProgressBar
             progress={(this.state.activeTabIndex + 1) / this.state.maxTabs}

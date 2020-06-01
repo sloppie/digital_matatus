@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { SplashScreen } from '../screens';
+import { SplashScreen, LoginScreen } from '../screens';
 // import HomeStack from './HomeStack';
 import AppDrawer from './AppDrawer';
 import ConfigStack from './ConfigStack';
@@ -14,6 +14,8 @@ import { CONFIG_COMPLETE } from '../store';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const Stack = createStackNavigator();
+
+// let LoginScreen = null;
 
 isLoggedIn = false;
 
@@ -28,6 +30,8 @@ class App extends React.PureComponent {
       isLoggedIn: true, // irrelevant
       configComplete: false, // checks whether the user has stored configs
       authProccessRan: false, // this is a primitive way of ensuring the auth proc doesnt run twice
+      isNewUser: false, // if so pushes to Welcom Screen
+      isLegacyUser: false // if so pushes to the Login screen
     };
 
   }
@@ -35,6 +39,8 @@ class App extends React.PureComponent {
   componentDidMount() {
     this.auth();
   }
+
+  _setUserType = (type) => (type == "NEW")? this.setState({isNewUser: true}): this.setState({isLegacyUser: true});
 
   setConfig = () => {
     this.setState({
@@ -73,13 +79,35 @@ class App extends React.PureComponent {
     this.setState({authProccessRan: true})
   }
 
+  _renderLogin = () => {
+
+    if(LoginScreen == null)
+      LoginScreen = require('../screens').LoginScreen;
+    
+    return (
+      <LoginScreen 
+        _setUserType={this._setUserType}
+      />
+    );
+  }
+
   render() {
 
     if(this.state.isLoading)
       return <SplashScreen />
+    
+    if(!this.state.isNewUser) {
+      console.log("Evaluated to true")
+      return (
+        <LoginScreen 
+          _setUserType={this._setUserType}
+        />
+      )
+    }
 
-    if(!this.state.configComplete)
+    if(!this.state.configComplete) {
 
+      console.log("Evaluated to Welcome")
       return (
         <Stack.Navigator>
           <Stack.Screen 
@@ -89,7 +117,7 @@ class App extends React.PureComponent {
           />
         </Stack.Navigator>
       );
-    else if(this.state.isLoggedIn && this.state.configComplete) {
+    } else if(this.state.isLoggedIn && this.state.configComplete) {
 
       if(typeof this.componentID == "string")
         APP_STORE.unsubscribe(CONFIG_COMPLETE, this.componentID); // this is no longer needed

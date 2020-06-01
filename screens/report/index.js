@@ -279,14 +279,21 @@ export default class Report extends React.PureComponent {
   _sendVerifiedData = () => {
     console.log(this.state.response.culpritDescription)
     // console.log(`data to be sent: ${JSON.stringify(this.state.response, null, 2)}`)
-    fetch("http://192.168.43.99:3000/report/id_1", {
+    fetch("http://192.168.43.99:3000/api/report/new/id_1", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json"
       },
       body: JSON.stringify(this.state.response, null, 2)
-    });
+    }).then(response => {
+
+      if(JSON.parse(response)) {
+        console.log(response)
+        ToastAndroid.show("Report sent", ToastAndroid.SHORT);
+      }
+
+    }).catch(err => console.log(err));
   }
 
   render() {

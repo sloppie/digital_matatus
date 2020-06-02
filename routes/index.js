@@ -96,7 +96,7 @@ class App extends React.PureComponent {
     if(this.state.isLoading)
       return <SplashScreen />
     
-    if(!this.state.isNewUser) {
+    if(!this.state.configComplete && !this.state.isNewUser) {
       console.log("Evaluated to true")
       return (
         <LoginScreen 

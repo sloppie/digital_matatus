@@ -1,9 +1,11 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Dimensions, DeviceEventEmitter } from 'react-native';
-import { Card, List, Colors, FAB } from 'react-native-paper';
+import { ScrollView, StyleSheet, Dimensions, DeviceEventEmitter, SafeAreaView } from 'react-native';
+import { Title, Card, List, Colors, FAB } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Permissions from '../../../utilities/permissions';
 import AsyncStorage from '@react-native-community/async-storage';
 import { CONFIG_COMPLETE } from '../../../store';
+import Theme from '../../../theme';
 
 
 export default class Confirm extends React.PureComponent {
@@ -28,7 +30,7 @@ export default class Confirm extends React.PureComponent {
           <Card.Title 
             left={props => <List.Icon {...props} icon="bus" />}
             title={`Route ${routeDetails.route_short_name}`}
-            description={routeDetails.route_long_name}
+            subtitle={routeDetails.route_long_name}
             right={props => <List.Icon {...props} icon="heart" color={Colors.red600} />}
           />
         </Card>
@@ -46,12 +48,13 @@ export default class Confirm extends React.PureComponent {
 
     const unpackRoutes = (routes) => {
       let STORED_ROUTES = require('../../../GTFS_FEED/routes/routes.json');
+      let favouriteRoutes = routes.map(id => STORED_ROUTES[id]);
 
-      return routes.map(_id => STORED_ROUTES[_id])
+      return JSON.stringify(favouriteRoutes);
     }
 
     if(deviceToken) {
-      fetch("http://192.168.43.99:3000/api/user/login", 
+      fetch("http://192.168.43.89:3000/api/user/login", 
       {
         method: "PUT",
         headers: {
@@ -59,23 +62,17 @@ export default class Confirm extends React.PureComponent {
           Accept: "application/json"
         },
         body: JSON.stringify({
-          email: this.props.email,
-          deviceToken
+          email: this.props.user.email,
+          deviceToken: JSON.parse(deviceToken) // the string is stringified a second time when neing stored
         })
       }
     ).then(response => response.json()).then(data => {
-      let payload = null;
-
-      try {
-        payload = JSON.parse(data);
-      } catch(err) {
-        console.log("unable to parse payload");
-      }
+      let payload = data;
 
       if(payload) {
         AsyncStorage.multiSet(
           [
-            ['favouriteRoutes', unpackRoutes(payload.favouriteRoutes)],
+            ['favouriteRoutes', unpackRoutes(JSON.parse(payload.favouriteRoutes))],
             ["reported", payload.reported],
             ["reportsFollowed", payload.reportsFollowed],
             ["userID", payload._id]
@@ -84,12 +81,15 @@ export default class Confirm extends React.PureComponent {
 
             if(!err) {
               // configuration complete
+              console.log(CONFIG_COMPLETE);
               DeviceEventEmitter.emit(CONFIG_COMPLETE);
+            } else {
+              console.log(err);
             }
 
           }
         );
-      } else {}
+      }
 
     }).catch(err => console.log(err));
     }
@@ -99,9 +99,18 @@ export default class Confirm extends React.PureComponent {
   render() {
 
     return (
-      <>
-        <ScrollView stickyHeaderIndices={[0]}>
-          <List.Section title="Your favuorite routes" />
+      <SafeAreaView style={styles.screen}>
+        <Icon 
+          name="chevron-left" 
+          size={30} 
+          style={styles.appBarIcon} 
+          onPress={this.props._goBack}
+        />
+        <Title style={styles.screenLabel}>This you?</Title>
+        <ScrollView 
+          style={styles.scrollView}
+          stickyHeaderIndices={[0]}>
+          <List.Section title="Your favourite routes" />
           {this._renderRoutes()}
         </ScrollView>
         <FAB 
@@ -111,19 +120,39 @@ export default class Confirm extends React.PureComponent {
           icon="check"
           onPress={this._confirm}
         />
-      </>
+      </SafeAreaView>
     );
   }
 
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    width: Dimensions.get("window").width,
+    height: "100%"
+  },
+  screenLabel: {
+    marginTop: 16,
+    fontSize: 30,
+    marginLeft: 16,
+    fontFamily: Theme.OpenSansBold,
+  },
+  appBarIcon: {
+    marginTop: 8,
+    paddingLeft: 8
+  },
+  scrollView: {
+    width: Dimensions.get("window").width,
+    height: "50%",
+  },
   routeCard: {
     width: (Dimensions.get("window").width - 32),
     alignSelf: "center",
+    marginBottom: 8,
   },
   fab: {
     position: "absolute",
+    alignSelf: "center",
     bottom: 16,
   },
 });

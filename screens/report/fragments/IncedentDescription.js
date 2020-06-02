@@ -1,12 +1,13 @@
 import React from 'react';
-import { ScrollView, View, Dimensions, StyleSheet, ToastAndroid, DeviceEventEmitter } from 'react-native';
+import { ScrollView, View, Dimensions, StyleSheet, ToastAndroid, DeviceEventEmitter, InteractionManager, SafeAreaView } from 'react-native';
 import { Surface, Card, Divider, IconButton, Colors, Menu, RadioButton, List, Caption } from 'react-native-paper';
 import Geolocation from '@react-native-community/geolocation';
 import AudioRecord from 'react-native-audio-record';
 import ImagePicker from 'react-native-image-picker';
 import Permissions from '../../../utilities/permissions';
 import { APP_STORE } from '../../..';
-import { MEDIA_DELETED, MEDIA_UPLOADED } from '../../../store';
+import { MEDIA_DELETED, MEDIA_UPLOADED, DESCRIPTION_LOADED } from '../../../store';
+import Theme from '../../../theme';
 
 let HarassmentDescription = null;
 let RNThumbnail = null; // resuce the amount of modules loaded at start
@@ -15,7 +16,7 @@ let RecordingTab = null;
 
 
 const media_types = {
-  photo: "Photos",
+  photo: "photo",
   video: "Video",
   audio: "audio"
 }
@@ -47,6 +48,7 @@ export default class IncedentDescription extends React.Component {
       "Non-verbal": false,
       "Physical": false,
       on: [],
+      descriptionLoaded: false,
       location: null,
       locationSet: false,
       attachedPhotos: [], // stores the URIs for the attached media
@@ -67,6 +69,7 @@ export default class IncedentDescription extends React.Component {
     };
 
     this.audio_count = 0;
+    this.descriptions = [];
 
     // These refs are used to set the verbal harassment flags set by the user
     this.VHFlag = React.createRef();
@@ -74,8 +77,9 @@ export default class IncedentDescription extends React.Component {
     this.PHFlag = React.createRef();
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this.watchMediaUpload = APP_STORE.subscribe(MEDIA_UPLOADED, this.onMediaUpload.bind(this));
+    this.descriptionLoaded = APP_STORE.subscribe(DESCRIPTION_LOADED, this.setDescriptionLoad.bind(this, true));
 
     let options = {
     };
@@ -85,6 +89,7 @@ export default class IncedentDescription extends React.Component {
   componentWillUnmount() {
     // unsubscribe from all impending Events
     APP_STORE.unsubscribe(MEDIA_UPLOADED, this.watchMediaUpload);
+    APP_STORE.unsubscribe(DESCRIPTION_LOADED);
   }
 
   // EVENT SUBSCRIPTIONS
@@ -110,6 +115,8 @@ export default class IncedentDescription extends React.Component {
 
     this.setState({[flag]: value, on});
   }
+
+  setDescriptionLoad = (descriptionLoaded) => this.setState({descriptionLoaded});
 
   _generateFlags = () => {
 
@@ -445,7 +452,7 @@ export default class IncedentDescription extends React.Component {
 
   _removePhotos = (item, removableIndex) => {
     let attachedPhotos = [...this.state.attachedPhotos];
-    let attachedPhotosData = [...this.state,attachedPhotosData];
+    let attachedPhotosData = [...this.state.attachedPhotosData];
     let attachedPhotosThumbnails = [...this.state.attachedPhotosThumbnails];
 
     // splice the data
@@ -613,38 +620,49 @@ export default class IncedentDescription extends React.Component {
 
   render() {
 
+    let renderedDescriptions = this._generateFlags();
+
     return (
       <>
         <ScrollView 
           style={styles.container}
         >
+          <Card
+            theme={Theme.AppTheme}
+          >
           <Card.Title 
+            left={props => <List.Icon {...props} icon="calendar-clock" />}
             title={this.state.date} 
             subtitle="Timestamp added to the report"
           />
+          </Card>
           <Divider />
-          {this._generateFlags()}
+          {renderedDescriptions}
           <View style={styles.iconContainer}>
             <IconButton
               icon="crosshairs-gps"
               onPress={this._handleLocation}
               color={(this.state.location !== null) ? Colors.green600: Colors.brown500}
               style={styles.mediaIcon}
+              size={30}
             />
             <IconButton
               icon="microphone-outline"
               onPress={this._handleRecording}
               style={styles.mediaIcon}
+              size={30}
             />
             <IconButton
               icon="image"
               onPress={this._handleMedia.bind(this, media_types.photo)}
               style={styles.mediaIcon}
+              size={30}
             />
             <IconButton
               icon="video"
               onPress={this._handleMedia.bind(this, media_types.video)}
               style={styles.mediaIcon}
+              size={30}
             />
           </View>
           <Divider />
@@ -664,18 +682,22 @@ export default class IncedentDescription extends React.Component {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    flex: 1
+    flex: 1,
   },
   textInput: {
     width: (Dimensions.get("window").width - 32),
     alignSelf: "center",
   },
   iconContainer: {
+    width: (Dimensions.get("window").width),
     flexDirection: "row",
-    alignItems: "flex-end",
+    justifyContent: "space-between",
+    padding: 8,
+    backgroundColor: Theme.PrimaryColor
   },
   mediaIcon: {
-    marginEnd: 16,
+    // marginEnd: 16,
+    backgroundColor: "white",
   },
   recordingTab: {
     position: "absolute",
@@ -686,7 +708,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 0,
-    elevation: 3
+    zIndex: 4
   },
   recordingButtons: {
     margin: 0,

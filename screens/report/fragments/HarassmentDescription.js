@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
-import { List, TouchableRipple, Colors } from 'react-native-paper';
+import { List, TouchableRipple, Colors, Divider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -64,25 +64,32 @@ class Flag extends React.PureComponent {
   render() {
 
     return (
-      <TouchableRipple
-        onPress={this._updateFlags}
-      >
-        <View style={styles.flagContainer}>
-          <List.Item 
-            title={this.props.example}
-            titleNumberOfLines={3}
-            right={props => (
-              <Icon 
-                {...props} 
-                name="flag-triangle" 
-                color={this.state.selected? Colors.red600: Colors.grey300}
-                size={24}
-                style={styles.flagIcon}/>
-            )}
+      <>
+      <List.Item
+        left={props => 
+          <List.Icon 
+            {...props} 
+            icon="format-list-bulleted" 
+            color={this.state.selected ? Colors.red600 : Colors.grey500}
+            size={24} 
           />
-          
-        </View>
-      </TouchableRipple>
+        }
+        title={this.props.example}
+        titleStyle={styles.flagTitle}
+        titleNumberOfLines={3}
+        onPress={this._updateFlags}
+        right={props => (
+          <List.Icon
+            {...props}
+            icon="flag-triangle"
+            color={this.state.selected ? Colors.red600 : Colors.grey500}
+            size={24}
+          />
+        )}
+      />
+      <Divider />
+      </>
+
     );
   }
 
@@ -147,6 +154,7 @@ export default class HarassmentDecription extends React.PureComponent {
           title={`${this.props.category} Harassment Flags`}
         >
         </List.Section>
+        {/* <Divider /> */}
           {(this.state.loading)
               ? <ActivityIndicator size="large"/>
               : this._renderFlags(this.props.category)
@@ -163,5 +171,8 @@ const styles = StyleSheet.create({
   },
   flagIcon: {
     padding: 8
+  },
+  flagTitle: {
+    fontSize: 13
   },
 });

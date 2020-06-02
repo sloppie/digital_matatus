@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, InteractionManager } from 'react-native';
 import {Card, Chip, IconButton, Colors } from 'react-native-paper';
 
 
@@ -20,12 +20,11 @@ export default class Chips extends React.PureComponent {
   }
 
   _toggleChip = (chipName) => {
+    this.props.toggleFlag(chipName);
     let {chips} = this.state;
     chips[chipName] = !chips[chipName];
     
     this.setState({chips});
-    
-    this.props.toggleFlag(chipName);
   }
 
   _findDefinition = (chipName) => this.props.navigation.navigate("CategoryDefinition", {category: chipName});

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, View, Dimensions, StyleSheet } from 'react-native';
-import { Card, TextInput, RadioButton, List, Divider } from 'react-native-paper';
+import { Card, TextInput, RadioButton, List, Divider, Colors } from 'react-native-paper';
+import Theme from '../../../theme';
 
 let GTFSSearch = null;
 
@@ -170,6 +171,7 @@ export default class CulpritDescription extends React.Component {
               onFocus={this._toggleSuggestion.bind(this, true)}
               mode="outlined"
               label="Route Name"
+            theme={{colors: {primary:Theme.PrimaryColor, accent: Colors.red200, text: Colors.red200}}}
             />
           : <List.Section
               title="Route of incident"

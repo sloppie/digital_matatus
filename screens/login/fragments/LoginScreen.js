@@ -1,7 +1,8 @@
 import React from 'react';
 import { SafeAreaView, View, Dimensions, StyleSheet, ToastAndroid } from 'react-native';
-import { TextInput, FAB, TouchableRipple, Caption, List, Card, Colors } from 'react-native-paper';
+import { Title, TextInput, FAB, TouchableRipple, Caption, List, Card, Colors } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Theme from '../../../theme';
 
 
 export default class Login extends React.PureComponent {
@@ -14,7 +15,8 @@ export default class Login extends React.PureComponent {
     this.state = {
       email: "",
       isValidEmail: false,
-      loading: false
+      loading: false,
+      fetching: false
     };
 
   }
@@ -24,7 +26,7 @@ export default class Login extends React.PureComponent {
   _handleChange = (email) => this.setState({email});
 
   _fetchDetails = () => {
-    console.log("button pressed")
+    this.setState({fetching: true});
 
     if(!this.emailRegEx.test(this.state.email)) {
       this.setState({isValidEmail: false});
@@ -50,6 +52,7 @@ export default class Login extends React.PureComponent {
               let data = response;
               data.email = this.state.email;
               this.props._setUserDetails(data);
+              this.setState({fetching: false});
             }
 
           }).catch(err => {
@@ -73,8 +76,10 @@ export default class Login extends React.PureComponent {
 
     return (
       <SafeAreaView style={styles.screen}>
+        <Title style={styles.screenLabel}>Sign in</Title>
+        <View style={styles.loginContainer}>
           <TextInput 
-            mode="outlined"
+            mode="flat"
             label="email"
             placeholder="this@example.com"
             style={styles.textInput}
@@ -88,25 +93,20 @@ export default class Login extends React.PureComponent {
               style={styles.fab}
               label="login"
               onPress={this._fetchDetails}
+              loading={this.state.fetching}
             />
+        </View>
           <View style={styles.buttonContainer}>
-            <TouchableRipple
-              onPress={this._setUserType}
-            >
-              {/* <View 
-                style={styles.haveAccount}
-              >
-                <Icon name="information" />
-                <Caption>Have used DigitalMatatus before</Caption>
-                left={props => <Icon name="information" size={24}/>}
-              </View> */}
-              <Card.Title
-                style={styles.haveAccount}
-                title="Have used DigitalMatatus before?"
-                titleStyle={styles.haveAccountText}
-                subtitle="Press here if you already have used DigitalMatatus"
-              />
-            </TouchableRipple>
+              <Caption style={styles.haveAccountText}>
+                Have an acount already?
+                <Caption 
+                  suppressHighlighting={true} 
+                  style={styles.signInText} 
+                  onPress={this._setUserType}
+                >
+                  {" Sign In"}
+                </Caption>
+              </Caption>
           </View>
       </SafeAreaView>
     );
@@ -118,10 +118,24 @@ const styles = StyleSheet.create({
   screen: {
     height: "100%",
     width: Dimensions.get("window").width,
+    backgroundColor: "white"
+  },
+  screenLabel: {
+    marginTop: 16,
+    fontSize: 30,
+    marginLeft: 16,
+    fontFamily: Theme.OpenSansBold,
+  },
+  loginContainer: {
+    height: "70%",
+    justifyContent: "center",
+    alignItems: "center"
   },
   textInput: {
     width: (Dimensions.get("window").width - 32),
-    alignSelf: "center"
+    alignSelf: "center",
+    marginBottom: 16,
+    backgroundColor: "white",
   },
   buttonContainer: {
     width: Dimensions.get("window").width,
@@ -131,10 +145,10 @@ const styles = StyleSheet.create({
     backgroundColor: "white"
   },
   fab: {
-    position: "absolute",
-    bottom: 70,
-    width: (Dimensions.get("window").width - 32),
-    alignSelf: "center",
+    position: "relative",
+    marginTop: 24,
+    width: (Dimensions.get("window").width - 96),
+    bottom: 0,
   },
   haveAccount: {
     flexDirection: "row",
@@ -144,8 +158,18 @@ const styles = StyleSheet.create({
   haveAccountText: {
     textAlignVertical: "center",
     fontSize: 14,
-    color: Colors.blue700,
-    // textAlign: "center"
+    // color: Colors.blue700,
+    textAlign: "center",
+    bottom: 32,
+    fontWeight: "700"
   },
+  signInText: {
+    textAlignVertical: "center",
+    fontSize: 14,
+    color: Colors.blue700,
+    textAlign: "center",
+    bottom: 32,
+    fontWeight: "700"
+  }
 });
 

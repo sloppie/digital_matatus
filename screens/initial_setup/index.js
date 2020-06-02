@@ -163,7 +163,7 @@ export default class InitialSetup extends React.Component {
       body: JSON.stringify({
         email,
         favouriteRoutes: favourites.map(route => route.route_id), // map route_ids
-        deviceToken
+        deviceToken: JSON.parse(deviceToken)
       })
     }).then(data => data.json()).then(response => {
       console.log(response)
@@ -180,7 +180,8 @@ export default class InitialSetup extends React.Component {
               "AUDIO": this.state.permissions[2]
             }),
           ],
-          ["isConfig", JSON.stringify(true)]
+          ["isConfig", JSON.stringify(true)],
+          ["userID", state._id] // stores user's Hash
         ], 
         (err) => {
         

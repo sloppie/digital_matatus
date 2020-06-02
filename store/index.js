@@ -5,6 +5,9 @@ const CONFIG_COMPLETE = "CONFIG_COMPLETE";
 const MEDIA_UPLOADED = "MEDIA_UPLOADED";
 const MEDIA_DELETED = "MEDIA_REMOVED";
 
+// REPORT SCREEN
+const DESCRIPTION_LOADED = "DESCRIPTION_LOADED";
+
 
 /**
  * @description This is the class is used as a metaphorical store that takes in registered events, 
@@ -118,4 +121,5 @@ export {
   CONFIG_COMPLETE, // used in the initial configuration to handle the user finishing initial app config
   MEDIA_UPLOADED, // used to monitor updates to the media the user has posted when posting a complaint
   MEDIA_DELETED, // used to notify that media has been deleted once a user does so
+  DESCRIPTION_LOADED, // used to notify once the app fully renders the descriptions
 };

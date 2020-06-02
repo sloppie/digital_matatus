@@ -19,15 +19,16 @@ class Item extends React.PureComponent {
         }
         title={`${this.props.type}_${this.props.index + 1}`}
         right={props => (
-          <TouchableRipple
-            onPress={this.removeMedia}
-          >
+          // <TouchableRipple
+          //   onPress={this.removeMedia}
+          // >
             <Icon 
-              {...props} 
+              {...props}
               name="trash-can"
+              onPress={this.removeMedia}
               style={styles.trashCanIcon}
             />
-          </TouchableRipple>
+          /* </TouchableRipple> */
         )}
       />
     );

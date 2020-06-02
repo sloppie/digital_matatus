@@ -3,6 +3,10 @@ import { ScrollView, StyleSheet, ToastAndroid, Dimensions, View } from 'react-na
 import { FAB, Divider } from 'react-native-paper';
 
 import * as Fragments from './fragments';
+import Theme from '../../theme';
+import AsyncStorage from '@react-native-community/async-storage';
+
+let REPORT_NAVIGATION_REF = null;
 
 /**
  * @todo use refs to fetch information from children
@@ -27,6 +31,9 @@ export default class Report extends React.PureComponent {
       queries: null,
       verified: false, // help prevent rendering verify screen before its verified
       response: null, // this is the data to be send to the server
+      userID: "",
+      posting: false,
+      verifying: false
     };
 
     this.actions = [
@@ -41,6 +48,12 @@ export default class Report extends React.PureComponent {
     this.incidentDescriptionRef = React.createRef(); // incident description ref
     this.culpritDescriptionRef = React.createRef(); // access to CulpritDescription methods
     this.privateIformationRef = React.createRef();
+  }
+
+  async componentDidMount() {
+    let userID = await AsyncStorage.getItem("userID", (err) => console.log(err));
+
+    this.setState({userID});
   }
 
   _scrollTo = (tabName) => {
@@ -68,7 +81,6 @@ export default class Report extends React.PureComponent {
     for(let i=0; i<index; i++) {
       x += Dimensions.get("window").width; 
     }
-    console.log(`scrolling to: ${x}`);
 
     this.parentScrollViewRef.current.scrollTo({x, y, animated: true});
 
@@ -125,10 +137,13 @@ export default class Report extends React.PureComponent {
       : this.setState({fabGroupVisible: true});
 
   _getInformation = () => {
+
+    this.setState({verifying: true});
     let response = {
       incidentDescription: this.incidentDescriptionRef.current._getInformation(),
       culpritDescription: this.culpritDescriptionRef.current._getInformation(),
       privateIformation: this.privateIformationRef.current._getInformation(),
+      userID: this.state.userID
     };
 
     // verify data
@@ -147,7 +162,7 @@ export default class Report extends React.PureComponent {
       queries.incidentDescriptionQueries = incidentDescriptionQueries;
       queries.culpritDescriptionQueries = culpritDescriptionQueries;
       queries.privateInformationQueries = privateIformationQueries;
-      this.setState({queries, verified: true, response});
+      this.setState({queries, verified: true, response, verifying: false});
     }
 
     setTimeout(() => this._scrollTo("DataVerification"), 100);
@@ -277,6 +292,10 @@ export default class Report extends React.PureComponent {
 
   // send verified data
   _sendVerifiedData = () => {
+
+    if(!REPORT_NAVIGATION_REF)
+      REPORT_NAVIGATION_REF = require('../../routes/AppDrawer').REPORT_NAVIGATION_REF;
+
     console.log(this.state.response.culpritDescription)
     // console.log(`data to be sent: ${JSON.stringify(this.state.response, null, 2)}`)
     fetch("http://192.168.43.99:3000/api/report/new/id_1", {
@@ -285,15 +304,22 @@ export default class Report extends React.PureComponent {
         Accept: "application/json",
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(this.state.response, null, 2)
-    }).then(response => {
+      body: JSON.stringify(this.state.response)
+    }).then(data => data.json()).then(response => {
 
       if(JSON.parse(response)) {
         console.log(response)
         ToastAndroid.show("Report sent", ToastAndroid.SHORT);
+        REPORT_NAVIGATION_REF.navigate("Home")
       }
 
-    }).catch(err => console.log(err));
+    }).catch(err => {
+      ToastAndroid.show("Report will be sent when you're connected to the internet", ToastAndroid.SHORT);
+      console.log("Report saved");
+      console.log(JSON.stringify(this.state.response, null, 2));
+      AsyncStorage.setItem("savedReport", JSON.stringify(this.state.response));
+      REPORT_NAVIGATION_REF.navigate("Home")
+    });
   }
 
   render() {
@@ -338,6 +364,7 @@ export default class Report extends React.PureComponent {
             label="Verify Information"
             style={styles.fabGroup}
             onPress={this._getInformation}
+            loading={this.state.verifying}
           />
         </View>
         {
@@ -369,5 +396,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: (Dimensions.get("window").width - 32),
     bottom: 0,
+    backgroundColor: Theme.PrimaryColor
   },
 });

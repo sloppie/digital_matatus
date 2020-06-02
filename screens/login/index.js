@@ -31,20 +31,27 @@ export default class Login extends React.PureComponent {
     });
   }
 
+  _goBack = () => this.scrollViewRef.current.scrollTo({
+    x: 0,
+    y: 0,
+    animated: true
+  });
+
   render() {
 
     return (
       <SafeAreaView style={styles.screen}>
-        <ImageBackground
+        {/* <ImageBackground
           source={require("../../assets/images/nairobi-transit.jpg")}
           style={styles.imageBackground}
-        >
+        > */}
           <ScrollView
             style={styles.screen}
             ref={this.scrollViewRef}
             scrollEnabled={false}
             horizontal={true}
             pagingEnabled={true}
+            nestedScrollEnabled={true}
           >
             <Fragments.LoginScreen
               _setUserType={this.props._setUserType}
@@ -55,12 +62,13 @@ export default class Login extends React.PureComponent {
               (this.state.user)
               ? <Fragments.Confirm 
                   user={this.state.user}
+                  _goBack={this._goBack}
                 />
               : null
             }
 
           </ScrollView>
-        </ImageBackground>
+        {/* </ImageBackground> */}
       </SafeAreaView>
     );
   }

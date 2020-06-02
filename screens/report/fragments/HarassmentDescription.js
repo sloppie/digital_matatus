@@ -78,6 +78,7 @@ class Flag extends React.PureComponent {
         titleStyle={styles.flagTitle}
         titleNumberOfLines={3}
         onPress={this._updateFlags}
+        underlayColor={Colors.red600}
         right={props => (
           <List.Icon
             {...props}

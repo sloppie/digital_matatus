@@ -298,7 +298,7 @@ export default class Report extends React.PureComponent {
 
     console.log(this.state.response.culpritDescription)
     // console.log(`data to be sent: ${JSON.stringify(this.state.response, null, 2)}`)
-    fetch("http://192.168.43.99:3000/api/report/new/id_1", {
+    fetch("http://192.168.43.89:3000/api/report/new/", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -307,16 +307,17 @@ export default class Report extends React.PureComponent {
       body: JSON.stringify(this.state.response)
     }).then(data => data.json()).then(response => {
 
-      if(JSON.parse(response)) {
+      if(response) {
         console.log(response)
         ToastAndroid.show("Report sent", ToastAndroid.SHORT);
         REPORT_NAVIGATION_REF.navigate("Home")
       }
 
     }).catch(err => {
+      console.log(err);
       ToastAndroid.show("Report will be sent when you're connected to the internet", ToastAndroid.SHORT);
       console.log("Report saved");
-      console.log(JSON.stringify(this.state.response, null, 2));
+      // console.log(JSON.stringify(this.state.response, null, 2));
       AsyncStorage.setItem("savedReport", JSON.stringify(this.state.response));
       REPORT_NAVIGATION_REF.navigate("Home")
     });

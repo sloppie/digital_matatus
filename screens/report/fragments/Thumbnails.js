@@ -12,7 +12,8 @@ class Item extends React.PureComponent {
     return (
       <Card.Title 
         left={props => (
-          (this.props.thumbnailUri != null)
+          (this.props.type === "audio")? <Icon {...props} name="record-circle" size={30} />
+          :(this.props.thumbnailUri != null)
           ? <Image  source={{width: 30, height: 30, scale: 0.5, uri: this.props.thumbnailUri}}/>
           : <Icon {...props} name="file-video" size={30}/>
         )

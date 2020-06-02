@@ -58,7 +58,6 @@ export default class InitialSetup extends React.Component {
         res = this.preferencesRef.current.postFavourites(); // call the postReferences func in TerminalPreferences
       case 2:
         this.checkPermissions();
-        // this.finalise()
         break;
       case 3:
         break;

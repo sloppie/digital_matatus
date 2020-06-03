@@ -59,6 +59,7 @@ export default () => (
       name="Report"
       component={Report}
       options={{
+        unmountOnBlur: true,
         drawerIcon: (props) => <ReportIcon {...props} />
       }}
     />

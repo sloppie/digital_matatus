@@ -38,6 +38,7 @@ class App extends React.PureComponent {
 
   componentDidMount() {
     this.auth();
+    this.componentID = APP_STORE.subscribe(CONFIG_COMPLETE, this.setConfig);
   }
 
   _setUserType = (type) => (type == "NEW")? this.setState({isNewUser: true}): this.setState({isLegacyUser: true});
@@ -45,7 +46,7 @@ class App extends React.PureComponent {
   setConfig = () => {
     this.setState({
       isLoggedIn: true,
-      configComplete: true
+      configComplete: true,
     });
   }
 
@@ -62,7 +63,6 @@ class App extends React.PureComponent {
           configComplete: true
         });
       } else {
-        this.componentID = APP_STORE.subscribe(CONFIG_COMPLETE, this.setConfig.bind(this));
         this.setState({
           isLoading: false,
           configComplete: false
@@ -96,36 +96,20 @@ class App extends React.PureComponent {
     if(this.state.isLoading)
       return <SplashScreen />
     
-    if(!this.state.configComplete && !this.state.isNewUser) {
+    if(!this.state.configComplete) {
       console.log("Evaluated to true")
       return (
-        <LoginScreen 
-          _setUserType={this._setUserType}
-        />
+        <ConfigStack />
       )
     }
 
-    if(!this.state.configComplete) {
 
-      console.log("Evaluated to Welcome")
-      return (
-        <Stack.Navigator>
-          <Stack.Screen 
-            name="Welcome"
-            component={ConfigStack}
-            options={{headerShown: false, title: ""}}
-          />
-        </Stack.Navigator>
-      );
-    } else if(this.state.isLoggedIn && this.state.configComplete) {
+    if(typeof this.componentID == "string")
+      APP_STORE.unsubscribe(CONFIG_COMPLETE, this.componentID); // this is no longer needed
 
-      if(typeof this.componentID == "string")
-        APP_STORE.unsubscribe(CONFIG_COMPLETE, this.componentID); // this is no longer needed
-
-      return (
-        <AppDrawer />
-      );
-    }
+    return (
+      <AppDrawer />
+    );
 
   }
 

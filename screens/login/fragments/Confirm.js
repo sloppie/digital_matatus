@@ -54,6 +54,7 @@ export default class Confirm extends React.PureComponent {
     }
 
     if(deviceToken) {
+      console.log(deviceToken);
       fetch("http://192.168.43.89:3000/api/user/login", 
       {
         method: "PUT",
@@ -63,7 +64,7 @@ export default class Confirm extends React.PureComponent {
         },
         body: JSON.stringify({
           email: this.props.user.email,
-          deviceToken: JSON.parse(deviceToken) // the string is stringified a second time when neing stored
+          deviceToken: deviceToken // the string is stringified a second time when being stored
         })
       }
     ).then(response => response.json()).then(data => {
@@ -110,7 +111,7 @@ export default class Confirm extends React.PureComponent {
         <ScrollView 
           style={styles.scrollView}
           stickyHeaderIndices={[0]}>
-          <List.Section title="Your favourite routes" />
+          <List.Section title="Your favourite routes" titleStyle={styles.sectionTitle}/>
           {this._renderRoutes()}
         </ScrollView>
         <FAB 
@@ -119,6 +120,7 @@ export default class Confirm extends React.PureComponent {
           label="Confirm"
           icon="check"
           onPress={this._confirm}
+          color="white"
         />
       </SafeAreaView>
     );
@@ -129,21 +131,27 @@ export default class Confirm extends React.PureComponent {
 const styles = StyleSheet.create({
   screen: {
     width: Dimensions.get("window").width,
-    height: "100%"
+    height: "100%",
+    backgroundColor: Theme.PrimaryColor
   },
   screenLabel: {
     marginTop: 16,
     fontSize: 30,
     marginLeft: 16,
     fontFamily: Theme.OpenSansBold,
+    color: "white"
   },
   appBarIcon: {
     marginTop: 8,
-    paddingLeft: 8
+    paddingLeft: 8,
+    color: "white"
   },
   scrollView: {
     width: Dimensions.get("window").width,
     height: "50%",
+  },
+  sectionTitle: {
+    color: "white",
   },
   routeCard: {
     width: (Dimensions.get("window").width - 32),

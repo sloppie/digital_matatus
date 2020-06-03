@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
-import { Card, TouchableRipple, List } from 'react-native-paper';
+import { Card, TouchableRipple, Colors, List } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 class Item extends React.PureComponent {
@@ -12,7 +12,7 @@ class Item extends React.PureComponent {
     return (
       <Card.Title 
         left={props => (
-          (this.props.type === "audio")? <Icon {...props} name="record-circle" size={30} />
+          (this.props.type === "audio")? <Icon {...props} name="record-rec" color={Colors.red500} size={30} />
           :(this.props.thumbnailUri != null)
           ? <Image  source={{width: 30, height: 30, scale: 0.5, uri: this.props.thumbnailUri}}/>
           : <Icon {...props} name="file-video" size={30}/>

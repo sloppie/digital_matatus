@@ -56,6 +56,7 @@ export default class Login extends React.PureComponent {
             <Fragments.LoginScreen
               _setUserType={this.props._setUserType}
               _setUserDetails={this._setUserDetails}
+              navigation={this.props.navigation}
             />
 
             {

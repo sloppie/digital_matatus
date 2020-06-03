@@ -1,10 +1,13 @@
 import React from 'react';
-import { ScrollView, StyleSheet, ToastAndroid, Dimensions, View } from 'react-native';
-import { FAB, Divider } from 'react-native-paper';
+import { ScrollView, StyleSheet, ToastAndroid, Dimensions, View, DeviceEventEmitter } from 'react-native';
+import { FAB, Divider, Snackbar } from 'react-native-paper';
 
 import * as Fragments from './fragments';
 import Theme from '../../theme';
 import AsyncStorage from '@react-native-community/async-storage';
+import { API } from '../../utilities';
+import { APP_STORE } from '../..';
+import { REPORT_FILED } from '../../store';
 
 let REPORT_NAVIGATION_REF = null;
 
@@ -12,6 +15,20 @@ let REPORT_NAVIGATION_REF = null;
  * @todo use refs to fetch information from children
  */
 export default class Report extends React.PureComponent {
+
+  snackBarMessage = "";
+  actions = [
+    {icon: "file", label:"Send Publicly", onPress: this._publicSend},
+    {icon: "incognito", label: "Send Private", onPress: this._anonymousSend},
+  ];
+
+  FULL_SCREEN_HEIGHT = Dimensions.get("window").height;
+
+  // REFS CREATED
+  parentScrollViewRef =React.createRef(); // Parent ScrollView Ref
+  incidentDescriptionRef = React.createRef(); // incident description ref
+  culpritDescriptionRef = React.createRef(); // access to CulpritDescription methods
+  privateIformationRef = React.createRef();
 
   constructor(props) {
     super(props);
@@ -33,27 +50,20 @@ export default class Report extends React.PureComponent {
       response: null, // this is the data to be send to the server
       userID: "",
       posting: false,
-      verifying: false
+      verifying: false,
+      snackBarVisible: false,
     };
 
-    this.actions = [
-      {icon: "file", label:"Send Publicly", onPress: this._publicSend},
-      {icon: "incognito", label: "Send Private", onPress: this._anonymousSend},
-    ];
-
-    this.FULL_SCREEN_HEIGHT = Dimensions.get("window").height;
-
-    // REFS CREATED
-    this.parentScrollViewRef =React.createRef(); // Parent ScrollView Ref
-    this.incidentDescriptionRef = React.createRef(); // incident description ref
-    this.culpritDescriptionRef = React.createRef(); // access to CulpritDescription methods
-    this.privateIformationRef = React.createRef();
   }
 
   async componentDidMount() {
+    // set the UserID that is to be attached to the information
     let userID = await AsyncStorage.getItem("userID", (err) => console.log(err));
-
     this.setState({userID});
+
+  }
+
+  componentWillUnmount() {
   }
 
   _scrollTo = (tabName) => {
@@ -292,35 +302,27 @@ export default class Report extends React.PureComponent {
 
   // send verified data
   _sendVerifiedData = () => {
-
+    
     if(!REPORT_NAVIGATION_REF)
       REPORT_NAVIGATION_REF = require('../../routes/AppDrawer').REPORT_NAVIGATION_REF;
+    
+    const onSuccess = (payload) => {
+      console.log("Payload below");
+      console.log(payload);
+      // use payload here
+      this.snackBarMessage = "Report Sent"
+      this.setState({snackBarVisible: true});
+      REPORT_NAVIGATION_REF.navigate("Home");
+    }
 
-    console.log(this.state.response.culpritDescription)
-    // console.log(`data to be sent: ${JSON.stringify(this.state.response, null, 2)}`)
-    fetch("http://192.168.43.89:3000/api/report/new/", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(this.state.response)
-    }).then(data => data.json()).then(response => {
-
-      if(response) {
-        console.log(response)
-        ToastAndroid.show("Report sent", ToastAndroid.SHORT);
-        REPORT_NAVIGATION_REF.navigate("Home")
-      }
-
-    }).catch(err => {
-      console.log(err);
-      ToastAndroid.show("Report will be sent when you're connected to the internet", ToastAndroid.SHORT);
-      console.log("Report saved");
-      // console.log(JSON.stringify(this.state.response, null, 2));
+    const onErr = () => {
+      this.snackBarMessage = "Report will be sent once internet conection is back"
+      this.setState({snackBarVisible: true});
       AsyncStorage.setItem("savedReport", JSON.stringify(this.state.response));
       REPORT_NAVIGATION_REF.navigate("Home")
-    });
+    } 
+
+    API.fileReport(this.state.response, onSuccess, onErr);
   }
 
   render() {
@@ -329,56 +331,64 @@ export default class Report extends React.PureComponent {
     let lastFlags = {...this.state.flags[this.state.flags.length - 1]};
 
     return (
-      <ScrollView 
-        ref={this.parentScrollViewRef}
-        style={styles.screen}
-        onLayout={this._handleLayoutChange}
-        horizontal={true}
-        pagingEnabled={true}
-        nestedScrollEnabled={true}
-      >
-        <View style={styles.page}>
-          <Fragments.Chips
-            flags={lastFlags}
-            toggleFlag={this._toggleFlag}
-            navigation={this.props.navigation}
+      <>
+        <ScrollView 
+          ref={this.parentScrollViewRef}
+          style={styles.screen}
+          onLayout={this._handleLayoutChange}
+          horizontal={true}
+          pagingEnabled={true}
+          nestedScrollEnabled={true}
+        >
+          <View style={styles.page}>
+            <Fragments.Chips
+              flags={lastFlags}
+              toggleFlag={this._toggleFlag}
+              navigation={this.props.navigation}
+            />
+            <Divider />
+            <Fragments.IncedentDescription 
+              ref={this.incidentDescriptionRef}
+              setDescription={this._setDescription}
+              culpritDescriptionRef={this.culpritDescriptionRef}
+            />
+          </View>
+          <Fragments.CulpritDescription 
+            ref={this.culpritDescriptionRef}
+            setCulpritDescription={this._setCulpritDescription}
           />
-          <Divider />
-          <Fragments.IncedentDescription 
-            ref={this.incidentDescriptionRef}
-            setDescription={this._setDescription}
-            culpritDescriptionRef={this.culpritDescriptionRef}
-          />
-        </View>
-        <Fragments.CulpritDescription 
-          ref={this.culpritDescriptionRef}
-          setCulpritDescription={this._setCulpritDescription}
-        />
-        <View style={styles.page}>
-          <Fragments.PrivateInformation
-            ref={this.privateIformationRef}
-            setPrivateInormation={this._setPrivateInformation}
-          />
-          <FAB
-            visible={this.state.fabGroupVisible}
-            icon="file-send"
-            label="Verify Information"
-            style={styles.fabGroup}
-            onPress={this._getInformation}
-            loading={this.state.verifying}
-          />
-        </View>
-        {
-          (this.state.verified)
-          ? <Fragments.DataVerification 
-            _sendVerifiedData={this._sendVerifiedData}
-            _unverifyData={this._unverifyData}
-            _scrollTo={this._scrollTo}
-            queries={this.state.queries} 
-          />
-          : null
-        }
-      </ScrollView>
+          <View style={styles.page}>
+            <Fragments.PrivateInformation
+              ref={this.privateIformationRef}
+              setPrivateInormation={this._setPrivateInformation}
+            />
+            <FAB
+              visible={this.state.fabGroupVisible}
+              icon="file-send"
+              label="Verify Information"
+              style={styles.fabGroup}
+              onPress={this._getInformation}
+              loading={this.state.verifying}
+            />
+          </View>
+          {
+            (this.state.verified)
+            ? <Fragments.DataVerification 
+              _sendVerifiedData={this._sendVerifiedData}
+              _unverifyData={this._unverifyData}
+              _scrollTo={this._scrollTo}
+              queries={this.state.queries} 
+            />
+            : null
+          }
+        </ScrollView>
+        <Snackbar
+          visible={this.state.snackBarVisible}
+          onDismiss={this.dismissedSnackbar}
+        >
+          {(() => this.snackBarMessage)()}
+        </Snackbar>
+      </>
     );
   }
 

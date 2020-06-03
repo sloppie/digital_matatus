@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   SafeAreaView,
+  View,
   ToastAndroid,
   StyleSheet,
   Dimensions,
@@ -13,6 +14,9 @@ import * as Fragments from './fragments';
 import Theme from '../../theme';
 import { HOME_NAVIGATION_REF } from '../../routes/AppDrawer';
 
+let GTFSSearch = null;
+let TRIPS = null;
+
 const SHAPES = require("../../GTFS_FEED/shapes/shape.json");
 
 
@@ -23,6 +27,7 @@ export default class Home extends React.Component {
 
     this.state = {
       searchBar: "",
+      results: [],
       markers: [],
       region: {
         latitude: -1.28123,
@@ -40,7 +45,49 @@ export default class Home extends React.Component {
     this.setState({
       searchBar: text
     });
+    this._updateSearchEntry(text);
 
+  }
+
+  _updateSearchEntry = async (entry) => {
+
+    if(GTFSSearch == null) {
+      let node = require('../../utilities').GTFSSearch;
+      GTFSSearch = new node("routes");
+    }
+
+    let results = await GTFSSearch.searchSpecific("Route Long Name", entry);
+    
+    if(this.state.searchBar === entry) {
+      this.setState({results});
+    }
+  }
+
+  _renderSearchResults = () => {
+    
+    if(TRIPS == null)
+      TRIPS = require('../../GTFS_FEED/trips/trips.json');
+
+    let rendered = [];
+
+    if(this.state.results == [] || this.state.searchBar == "")
+      return [];
+
+    let {results} = this.state;
+    let batchSize = (results.length > 4)? 4: results.length;
+
+    for(let i=0; i<batchSize; i++) {
+      rendered.push(
+        <Fragments.MiniRouteCard
+          trip={TRIPS[results[i].data.route_id]}
+          navigation={this.props.navigation}
+          route_details={results[i].data}
+          key={i.toString()}
+        />
+      );
+    }
+
+    return rendered;
   }
 
   setBusTerminalMarker = (tripObj) => {
@@ -109,13 +156,17 @@ export default class Home extends React.Component {
         >
           {this.generateBusTerminalMarker()}
         </MapView>  
+        <View style={styles.searchContainer}>
           <Searchbar
+            value={this.state.searchBar}
             style={styles.searchBar}
             placeholder="Search for route"
             onChangeText={this._handleTextChange}
             icon="menu"
             onIconPress={this._openDrawer}
           />
+          {(this.state.results !== []) ? this._renderSearchResults(): null}
+        </View>
         <Fragments.RouteList 
           setBusTerminalMarker={this.setBusTerminalMarker}
           navigation={this.props.navigation}
@@ -145,11 +196,15 @@ const styles = StyleSheet.create({
     elevation: 1,
     backgroundColor: "white",
   },
+  searchContainer: {
+    width: "100%",
+    position: "absolute",
+    top: 8,
+  },
   searchBar: {
     width: (Dimensions.get("window").width - 32),
     alignSelf: "center",
-    position: "absolute",
-    top: 8
+    marginBottom: 8,
   },
   iconContainer: {
     padding: 8, 

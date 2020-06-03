@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, View, Dimensions, StyleSheet, ToastAndroid, DeviceEventEmitter, InteractionManager, SafeAreaView } from 'react-native';
-import { Surface, Card, Divider, IconButton, Colors, Menu, RadioButton, List, Caption } from 'react-native-paper';
+import { Surface, Card, Divider, IconButton, Colors, Menu, RadioButton, List, Caption, FAB } from 'react-native-paper';
 import Geolocation from '@react-native-community/geolocation';
 import AudioRecord from 'react-native-audio-record';
 import ImagePicker from 'react-native-image-picker';
@@ -38,6 +38,7 @@ AudioRecord.on("data", (data) => {
 
 export default class IncedentDescription extends React.Component {
 
+
   constructor(props) {
     super(props);
 
@@ -70,6 +71,7 @@ export default class IncedentDescription extends React.Component {
       isPlaying: false,
       audio: null,
       audioData: "",
+      attachOpen: false,
     };
 
     this.audio_count = 0;
@@ -295,13 +297,13 @@ export default class IncedentDescription extends React.Component {
 
     this.setState({isRecording: true});
     AudioRecord.start();
-    ToastAndroid.show("Tap the stop icon to stop recording", ToastAndroid.SHORT);
+    ToastAndroid.showWithGravity("Tap the stop icon to stop recording", ToastAndroid.SHORT, ToastAndroid.TOP);
   }
 
   _stopRecording = async () => {
     let audio = await AudioRecord.stop();
     this.setState({audio, isRecording: false, audioRecorded: true});
-    ToastAndroid.show("Tap the check icon to store recording", ToastAndroid.SHORT);
+    ToastAndroid.showWithGravity("Tap the check icon to store recording", ToastAndroid.SHORT, ToastAndroid.TOP);
   }
   
   _playAudio = () => {}
@@ -476,7 +478,7 @@ export default class IncedentDescription extends React.Component {
               attachedVideos.push(response.uri);
               attachedVideosData.push(response.data);
               attachedVideosThumbnails.push(path);
-              attachedVideosExtension.push(this._findFileExtension(responsse.uri, media_types.video));
+              attachedVideosExtension.push(this._findFileExtension(response.uri, media_types.video));
   
               this.setState({
                 attachedVideos, 
@@ -593,7 +595,7 @@ export default class IncedentDescription extends React.Component {
     if(type === media_types.audio)
       return (
         <Thumbnails 
-          thumbnails={AUDIO_ATTACHED_DATA}
+          thumbnails={this.state.attachedAudios}
           removeMedia={this._removeMedia}
           type={media_types.audio}
         />
@@ -738,6 +740,34 @@ export default class IncedentDescription extends React.Component {
     </RadioButton.Group>
   );
 
+  _toggleFABState = (attachOpen) => this.setState({attachOpen});
+
+  actions = [
+    {
+      icon: "crosshairs-gps", 
+      label: "Attach location", 
+      color: Colors.red800, 
+      onPress: this._handleLocation
+    },
+    {
+      icon: "microphone-outline", 
+      label: "Attach recording", 
+      // color: Colors.brown500, 
+      onPress: this._handleRecording
+    },
+    {
+      icon: "image", 
+      label: "Attach photo", 
+      color: Colors.brown500, 
+      onPress: this._handleMedia.bind(this, media_types.photo)
+    },
+    {
+      icon: "video", 
+      label: "Attach video", 
+      onPress: this._handleMedia.bind(this, media_types.video)
+    },
+  ];
+
   render() {
 
     let renderedDescriptions = this._generateFlags();
@@ -758,33 +788,6 @@ export default class IncedentDescription extends React.Component {
           </Card>
           <Divider />
           {renderedDescriptions}
-          <View style={styles.iconContainer}>
-            <IconButton
-              icon="crosshairs-gps"
-              onPress={this._handleLocation}
-              color={(this.state.location !== null) ? Colors.green600: Colors.brown500}
-              style={styles.mediaIcon}
-              size={30}
-            />
-            <IconButton
-              icon="microphone-outline"
-              onPress={this._handleRecording}
-              style={styles.mediaIcon}
-              size={30}
-            />
-            <IconButton
-              icon="image"
-              onPress={this._handleMedia.bind(this, media_types.photo)}
-              style={styles.mediaIcon}
-              size={30}
-            />
-            <IconButton
-              icon="video"
-              onPress={this._handleMedia.bind(this, media_types.video)}
-              style={styles.mediaIcon}
-              size={30}
-            />
-          </View>
           <Divider />
           {this.state.locationSet ? this._renderLocationRadio(): null}
           {this._renderThumbnails(media_types.photo)}
@@ -794,6 +797,13 @@ export default class IncedentDescription extends React.Component {
           {this._renderThumbnails(media_types.audio)}
         </ScrollView>
         {(this.state.recordingVisible)? this._renderRecordingTab(): null}
+        <FAB.Group
+          onStateChange={this._toggleFABState.bind(this, !this.state.attachOpen)}
+          onPress={this._toggleFABState.bind(this, !this.state.attachOpen)}
+          open={this.state.attachOpen}
+          icon="paperclip"
+          actions={this.actions}
+        />
       </>
     );
   }
@@ -829,7 +839,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 0,
-    zIndex: 4
+    zIndex: 4,
+    elevation: 10,
   },
   recordingButtons: {
     margin: 0,

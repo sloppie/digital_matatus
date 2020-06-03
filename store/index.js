@@ -7,6 +7,7 @@ const MEDIA_DELETED = "MEDIA_REMOVED";
 
 // REPORT SCREEN
 const DESCRIPTION_LOADED = "DESCRIPTION_LOADED";
+const REPORT_FILED = "REPORT_FILED";
 
 
 /**
@@ -122,4 +123,5 @@ export {
   MEDIA_UPLOADED, // used to monitor updates to the media the user has posted when posting a complaint
   MEDIA_DELETED, // used to notify that media has been deleted once a user does so
   DESCRIPTION_LOADED, // used to notify once the app fully renders the descriptions
+  REPORT_FILED, // used to initialise reset of the screen when the data sent or saved to the phone
 };

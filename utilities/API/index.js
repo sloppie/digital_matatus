@@ -68,6 +68,37 @@ export const fileReport = (report, onSuccess, onErr) => {
 }
 
 /**
+ * 
+ * @param {String} report_id report id of the data to be altered
+ * @param {{}} data data to be sent to the server
+ * @param {(payload: {}) => {}} onSuccess callback to be executed on success
+ * @param {() => {}} onErr callbackk to be executed on err
+ */
+export const sendCulpritInformation = (report_id, data, onSuccess, onErr) => {
+
+  fetch(
+    "http://192.168.43.89:3000/api/report/" + report_id + "/add/culpritInformation",
+    {
+      method: "PUT",
+      body: JSON.stringify(data),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+    }
+  ).then(response => response.json()).then(data => {
+    
+    if(data)
+      onSuccess(data);
+
+  }).catch(err => {
+    console.log(err);
+    onErr();
+  });
+
+}
+
+/**
  * interfaces with the servers isUser API to provide a response and execute a callback on completion
  * 
  * @param {string} email email to be crosschecked in the database
@@ -116,3 +147,72 @@ export const getLoginDetails = (email, onSuccess, onErr) => {
 }
 
 export const fetchReport = () => {}
+
+export const fetchRouteReports = (route_id, onSuccess, onErr) => {
+
+  fetch(`http://192.168.43.89:3000/api/routes/reports/${route_id}`)
+    .then(response => response.json())
+    .then(data => {
+
+      if(data)
+        onSuccess(data);
+
+    }).catch(err => {
+      console.log(err);
+      onErr();
+    });
+
+}
+
+/**
+ * Query the report collection in the database 
+ * 
+ * @param {Array<String>} categories this is a string of viable categories that can be used to query the data
+ * @param {{"category": String}} valuesObj this is an object that now contains 
+ * all the categories with their values
+ * @param {(payload: Object) => {}} onSuccess function executed onSuccess, payload passed in
+ * @param {() => {}} onErr function to be executed if an error occurrs
+ */
+export const queryReports = (categories, valuesObj, onSuccess, onErr) => {
+
+  // example output: category=route_id;date;location_type;flags
+  const unpackCategories = () => {
+    let categoryParamString = "category=";
+
+    categories.forEach((category, index) => {
+
+      if(index == 0)
+        categoryParamString += category;
+      else(index == (category.length - 1))
+        categoryParamString += `;${category}`;
+
+    });    
+
+    return categoryParamString;
+  }
+
+  // example output: &route_id=80170111&date=234342334:253553634&location_type=INSIDE_BUS&flags=Verbal;Physical
+  const unpackCategoryValues = () => {
+    let parameters = "";
+
+    for(let i in valuesObj) {
+      parameters += `&${i}=${valuesObj[i]}`;
+    }
+
+    return parameters;
+  }
+
+  fetch(
+    `http://192.168.43.89:3000/api/reports/find?${unpackCategories()}${unpackCategoryValues()}`
+  ).then(response => response.json())
+    .then(data => {
+
+      if(data)
+        onSuccess(data);
+
+    }).catch(err => {
+      console.log(err);
+      onErr();
+    });
+
+}

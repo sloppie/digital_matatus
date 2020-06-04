@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import HomeStack from './HomeStack';
 import ReportStack from './ReportStack';
+import ReportViewStack from './ReportViewStack';
 
 // ICONS
 
@@ -31,6 +32,18 @@ function ReportIcon({ focused, color, size}) {
   );
 }
 
+function ViewReportsIcon({ focused, color, size}) {
+
+  return (
+    <Icon 
+      name="information"
+      color={color}
+      size={size}
+    />
+  );
+}
+
+// SCREENS START HERE
 function Home(props) {
   HOME_NAVIGATION_REF = props.navigation;
 
@@ -43,6 +56,12 @@ function Report(props) {
   return <ReportStack />
 }
 
+function ViewReports(props) {
+  VIEW_REPORT_NAVIGATION_REF = props.navigation;
+
+  return <ReportViewStack />
+}
+
 // REFS
 let HOME_NAVIGATION_REF;
 let REPORT_NAVIGATION_REF;
@@ -51,7 +70,7 @@ const AppDrawer = createDrawerNavigator();
 
 export default () => (
   <AppDrawer.Navigator
-    initialRouteName="Report"
+    initialRouteName="Home"
     minSwipeDistance={30}
     edgeWidth={100}
   >
@@ -68,6 +87,13 @@ export default () => (
       component={Home}
       options={{
         drawerIcon: (props) => <HomeIcon {...props} />
+      }}
+    />
+    <AppDrawer.Screen 
+      name="ViewReports"
+      component={ViewReports}
+      options={{
+        drawerIcon: (props) => <ViewReportsIcon {...props} />
       }}
     />
   </AppDrawer.Navigator>

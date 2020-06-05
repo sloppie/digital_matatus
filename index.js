@@ -33,6 +33,8 @@ const APP_STORE = new Store(eventArr);
 // create NotificationToken to ease its fetching process
 NotificationSetup.configure();
 
+NotificationSetup.getNotificationId();
+
 AppRegistry.registerComponent(appName, () => App);
 
 

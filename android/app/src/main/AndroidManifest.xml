@@ -37,13 +37,31 @@
         android:value="AIzaSyDemWSH4ZFz8cZ8cQfHsUyuyJ3syIe4ACo"/>
       <uses-library android:name="org.apache.http.legacy" android:required="false"/> 
     
-      <!-- <service
-        android:name=".java.MyFirebaseMessagingService"
+        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_name"
+                android:value="Report matatu details"/>
+        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_description"
+                    android:value="Used to notify user to report on the details of the matatus they were in when the incident happened"/>
+ 
+        <!-- Change the value to true to enable pop-up for in foreground (remote-only, for local use ignoreInForeground) -->
+        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_foreground"
+                    android:value="true"/>
+        <!-- Change the resource name to your App's accent color - or any other color you want -->
+        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color"
+                    android:resource="@color/white"/> <!-- or @android:color/{name} to use a standard color -->
+ 
+        <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationPublisher" />
+        <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationBootEventReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+      <service
+        android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService"
         android:exported="false">
         <intent-filter>
           <action android:name="com.google.firebase.MESSAGING_EVENT" />
         </intent-filter>
-      </service> -->
+      </service>
 
     </application>
 

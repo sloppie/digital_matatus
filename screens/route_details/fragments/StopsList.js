@@ -1,9 +1,11 @@
 import React from 'react';
-import {View, FlatList, StyleSheet, ActivityIndicator, ScrollView} from 'react-native';
+import {View, Text, FlatList, StyleSheet, ActivityIndicator, ScrollView} from 'react-native';
 import { List } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const STOPS = require("../../../GTFS_FEED/stops/stops.json");
+
+let count = 0;
 
 
 export default class StopsList extends React.PureComponent {
@@ -97,34 +99,38 @@ export default class StopsList extends React.PureComponent {
 
   _keyExtractor = (item) => (++(this.id)).toString();
 
-  _renderItems = () => {
-    let renderedItem = [];
+  _renderItems = ({item}) => {
+    // let renderedItem = [];
 
-    this.state.data.forEach((item, index) => {
+    // this.state.data.forEach((item, index) => {
 
-      if(index == this.toStart)
-        renderedItem.push(
+      if(count == this.toStart) {
+        count++;
+        /* renderedItem.push */return (
+          // key={`${index}`}
           <List.Section
             style={styles.stickyHeader} 
             title={`from ${this.toName} - ${this.fromName}`}
-            key={`${index}`}
           />
         ); 
-      else
-        renderedItem.push(
+      }
+      else {
+        count++;
+        /*renderedItem.push*/return (
+          // key={`${index}`}
           <List.Item 
             style={styles.item}
             left={props => <Icon {...props} name="traffic-light" size={30} style={styles.stopIcon}/>}
             title={item.name}
             description={item.stopId}
             onPress={this._setMarker.bind(this, item)}
-            key={`${index}`}
           />
         );
+      }
   
-    });
+    // });
 
-    return renderedItem;
+    // return renderedItem;
   }
 
   render() {
@@ -137,21 +143,28 @@ export default class StopsList extends React.PureComponent {
             animating={true}
             style={{alignSelf: "center"}}
           />
+          <Text>Fetching stops...</Text>
         </View>
       );
     
-    let STAGES = this._renderItems();
+    // let STAGES = this._renderItems();
 
     return (
-      <ScrollView
-        stickyHeaderIndices={[0, this.state.toStart + 1]}
-      >
-        <List.Section 
-          title={`from ${this.fromName} - ${this.toName}`}
-          style={styles.stickyHeader}
-        />
-        {STAGES}
-      </ScrollView>
+      // <ScrollView
+      //   stickyHeaderIndices={[0, this.state.toStart + 1]}
+      // >
+      //   <List.Section 
+      //     title={`from ${this.fromName} - ${this.toName}`}
+      //     style={styles.stickyHeader}
+      //   />
+      //   {STAGES}
+      // </ScrollView>
+      <FlatList
+        data={this.state.data} 
+        renderItem={this._renderItems}
+        keyExtractor={this._keyExtractor}
+        maxToRenderPerBatch={10}
+      />
     );
   }
 

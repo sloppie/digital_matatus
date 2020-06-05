@@ -8,6 +8,8 @@ import LoginScreen from './login';
 import ReportCulprit from './report_culprit';
 import ReportDetails from './report_details';
 import AllReports from './all_reports';
+import SetReminder from './set_reminder';
+import NumberPlate from './number_plate';
 
 export {
   InitialSetup,
@@ -20,4 +22,6 @@ export {
   AllReports,
   ReportDetails,
   ReportCulprit,
+  SetReminder,
+  NumberPlate,
 };

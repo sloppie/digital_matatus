@@ -1,6 +1,6 @@
 import React from 'react'; 
 import { createStackNavigator } from '@react-navigation/stack';
-import { Report, CategoryDefinition } from './../screens';
+import { Report, CategoryDefinition, SetReminder, NumberPlate } from './../screens';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
@@ -10,7 +10,14 @@ const Stack = createStackNavigator();
 
 
 export default () => (
-  <Stack.Navigator>
+  <Stack.Navigator
+    screenOptions={{
+      headerTintColor: "white",
+      headerStyle: {
+        backgroundColor: "#444",
+      },
+    }}
+  >
     <Stack.Screen 
       name="ReportIncident"
       component={Report}
@@ -21,6 +28,7 @@ export default () => (
           {...props} 
           onPress={REPORT_NAVIGATION_REF.openDrawer}
           name="menu"
+          color="white"
           size={30}
         />
       ),
@@ -33,6 +41,16 @@ export default () => (
       name="CategoryDefinition"
       component={CategoryDefinition}
       options={{title: "Category Definition"}}
+    />
+    <Stack.Screen 
+      name="NumberPlate"
+      component={NumberPlate}
+      options={{title: "Fill Car Details"}}
+    />
+    <Stack.Screen 
+      name="SetReminder"
+      component={SetReminder}
+      options={{title: "Set Reminder"}}
     />
   </Stack.Navigator>
 );

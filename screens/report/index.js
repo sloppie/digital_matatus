@@ -307,18 +307,34 @@ export default class Report extends React.PureComponent {
       REPORT_NAVIGATION_REF = require('../../routes/AppDrawer').REPORT_NAVIGATION_REF;
     
     const onSuccess = (payload) => {
-      console.log("Payload below");
-      console.log(payload);
       // use payload here
       this.snackBarMessage = "Report Sent"
-      this.setState({snackBarVisible: true});
-      REPORT_NAVIGATION_REF.navigate("Home");
+      // this.setState({snackBarVisible: true});
+      
+      if(this.state.response.incidentDescription.location.type == "INSIDE_BUS") {
+        AsyncStorage.setItem("reportToUpdate", JSON.stringify(payload.report_id));
+        this.props.navigation.navigate("SetReminder");
+      } else {
+        REPORT_NAVIGATION_REF.navigate("Home");
+      }
+
     }
 
     const onErr = () => {
       this.snackBarMessage = "Report will be sent once internet conection is back"
       this.setState({snackBarVisible: true});
-      AsyncStorage.setItem("savedReport", JSON.stringify(this.state.response));
+
+      if(this.state.response.incidentDescription.location.type == "INSIDE_BUS") {
+        AsyncStorage.multiSet(
+          [
+            ["reportToUpdate", JSON.stringify("FETCH_REPORT_ID")],
+            ["savedReport", JSON.stringify(this.state.response)]
+          ],
+        );
+      } else {
+        AsyncStorage.setItem("savedReport", JSON.stringify(this.state.response));
+      }
+
       REPORT_NAVIGATION_REF.navigate("Home")
     } 
 

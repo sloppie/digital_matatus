@@ -1,21 +1,29 @@
 import React from 'react';
-import { ToastAndroid, StyleSheet } from 'react-native';
-import { Avatar, List } from 'react-native-paper';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ToastAndroid, StyleSheet, FlatList } from 'react-native';
+import { List } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Theme from '../../../theme';
+import { API } from '../../../utilities';
 
 class Message extends React.PureComponent {
+
+  _viewReport = () => {
+    ToastAndroid.show(`show the ${this.props.messageTitle} thread`, ToastAndroid.SHORT);
+
+    this.props.navigation.navigate("ReportDetails", {
+      report: this.props.report,
+    });
+  }
 
   render() {
     return (
       <>
         <List.Item 
-          left={props => <Icon {...props} name="face" size={30} style={styles.avatarIcon}/>}
+          left={props => <Icon {...props} name="file" size={30} style={styles.avatarIcon}/>}
           title={this.props.messageTitle}
           titleStyle={styles.titleStyle}
           description={this.props.comment}
-          onPress={() => ToastAndroid.show(`show the ${this.props.messageTitle} thread`, ToastAndroid.SHORT)}
+          onPress={this._viewReport}
         />
         
       </>
@@ -26,6 +34,25 @@ class Message extends React.PureComponent {
 
 
 export default class RatingsList extends React.PureComponent {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      reports: []
+    };
+
+  }
+
+  componentDidMount() {
+    let reports = API.fetchReportsByRoute(
+      this.props.route.route_id,
+      this._setReports,
+      this._setReports.bind(this, [])
+    );
+  }
+
+  _setReports = (reports) => this.setState({reports});
 
   _renderComments = () => {
     let comments = [];
@@ -59,12 +86,42 @@ export default class RatingsList extends React.PureComponent {
     return comments;
   }
 
+  _renderItem = ({item}) => {
+    let incidentDescription = JSON.parse(item.incidentDescription);
+
+    const renderFlags = () => {
+      let flags = "Flags: ";
+      Object.keys(incidentDescription.harassmentFlags).forEach((flag) => {
+        
+        if(incidentDescription.harassmentFlags[flag].length)
+          flags += `${flag}, `;
+
+      });
+
+      return flags;
+    }
+
+    return (
+      <Message 
+        messageTitle={`${item._id}, filed on: ${new Date(incidentDescription.date).toDateString()}`}
+        comment={renderFlags()}
+        report={item}
+        navigation={this.props.navigation}
+      />
+    );
+  }
+
+  _keyExtractor = (item) => item._id;
+
   render() {
 
     return (
-      <ScrollView>
-        {this._renderComments()}
-      </ScrollView>
+      <FlatList 
+        data={this.state.reports}
+        renderItem={this._renderItem}
+        keyExtractor={this._keyExtractor}
+        maxToRenderPerBatch={10}
+      />
     );
   }
 

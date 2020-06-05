@@ -206,6 +206,7 @@ export default class RouteDetails extends React.PureComponent {
               name={this._tabs[0]} 
               listItemAction={this.listItemActions[0]} data={{...this.state.comprehensive_routes}} 
               route={this.props.route.params.route}
+              navigation={this.props.navigation}
             />
         );
       case 1:
@@ -214,6 +215,7 @@ export default class RouteDetails extends React.PureComponent {
               name={this._tabs[1]} 
               listItemAction={this.listItemActions[1]} data={{...this.state.comprehensive_routes}} 
               route={this.props.route.params.route}
+              navigation={this.props.navigation}
             />
         );
       case 2:
@@ -222,6 +224,7 @@ export default class RouteDetails extends React.PureComponent {
               name={this._tabs[2]} 
               listItemAction={this.listItemActions[2]} data={{...this.state.comprehensive_routes}} 
               route={this.props.route.params.route}
+              navigation={this.props.navigation}
             />
         );
     }

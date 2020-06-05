@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { Chip } from 'react-native-paper';
+import { Chip, Divider } from 'react-native-paper';
 
 
 export default class RouteOptionsSlider extends React.PureComponent {
@@ -29,9 +29,10 @@ export default class RouteOptionsSlider extends React.PureComponent {
   _renderRouteChips = () => (
     this.props.routes.map((route, index) => (
       <Chip 
-        selected={this.state.chipSelected[index]}
+        selected={this.props.active == route.route_id}
         onPress={this._fetchRouteReports.bind(this, route.route_id, index)}
         key={index.toString()}
+        style={styles.chip}
       >
         {`Route ${route.route_short_name}`}
       </Chip>
@@ -42,6 +43,7 @@ export default class RouteOptionsSlider extends React.PureComponent {
 
     return (
       <ScrollView 
+        showsHorizontalScrollIndicator={false}
         horizontal={true}
         style={styles.optionSlider}
       >
@@ -53,5 +55,18 @@ export default class RouteOptionsSlider extends React.PureComponent {
 }
 
 const styles = StyleSheet.create({
-  optionSlider: {},
+  optionSlider: {
+    maxHeight: 50,
+    padding: 4,
+    paddingBottom: 8,
+  },
+  chip: {
+    padding: 4,
+    marginEnd: 4,
+    marginStart: 4
+  },
+  divider: {
+    color: "white",
+    backgroundColor: "white",
+  },
 });

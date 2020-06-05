@@ -65,6 +65,7 @@ function ViewReports(props) {
 // REFS
 let HOME_NAVIGATION_REF;
 let REPORT_NAVIGATION_REF;
+let VIEW_REPORT_NAVIGATION_REF;
 
 const AppDrawer = createDrawerNavigator();
 
@@ -101,5 +102,6 @@ export default () => (
 
 export {
   HOME_NAVIGATION_REF,
+  VIEW_REPORT_NAVIGATION_REF,
   REPORT_NAVIGATION_REF,
 };

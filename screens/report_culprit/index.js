@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, Dimensions, StyleSheet, Alert } from 'react-native';
+import { ScrollView, SafeAreaView, Dimensions, StyleSheet, Alert, ToastAndroid } from 'react-native';
 import { 
   TextInput, 
   Divider, 
@@ -10,7 +10,7 @@ import {
 } from 'react-native-paper';
 import { API } from '../../utilities';
 import AsyncStorage from '@react-native-community/async-storage';
-import { Icon } from 'react-native-vector-icons/Icon';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 export default class ReportCulprit extends React.PureComponent {
@@ -94,7 +94,7 @@ export default class ReportCulprit extends React.PureComponent {
       let data = {
         culprit,
         reporter,
-        highlightedMedia: this.props.routes.params.highlightedMediaUrl,
+        highlightedMedia: this.props.route.params.highlightedMediaUrl,
         userID: this.state.userID
       };
 
@@ -105,9 +105,24 @@ export default class ReportCulprit extends React.PureComponent {
           {
             text: "Confirm",
             onPress: () => {
-              API.sendCulpritInformation(this.props.routes.params.report._id, data);
+              API.sendCulpritInformation(
+                this.props.route.params.report._id, 
+                data,
+                (data) => {
+                  ToastAndroid.show("Culprit information added", ToastAndroid.SHORT);
+                  this.props.navigation.goBack();
+                }, 
+                () => {
+                  this.props.navigation.goBack();
+                }
+              );
             }
           },
+          {
+            text: "Cancel",
+            onPress: () => {
+            }
+          }
         ]
       );
     }
@@ -117,10 +132,10 @@ export default class ReportCulprit extends React.PureComponent {
   render() {
 
     return (
-      <SafeAreaView style={styles.screen}>
+      <ScrollView style={styles.screen}>
         <Surface>
           <Icon name="video" />
-          <Caption>{this.props.routes.params.highlightedMediaUrl}</Caption>
+          <Caption>{this.props.route.params.highlightedMediaUrl}</Caption>
         </Surface>
         <Divider />
         <List.Section title="Culprit information"/>
@@ -128,6 +143,8 @@ export default class ReportCulprit extends React.PureComponent {
           style={styles.textInput}
           value={this.state.culpritName}
           onChangeText={this._setCulpritsName}
+          label="Culprit's name"
+          placeholder="Enter culprit's name here"
         />
         <Divider />
         <List.Section title="Your information" />
@@ -135,21 +152,30 @@ export default class ReportCulprit extends React.PureComponent {
           style={styles.textInput}
           value={this.state.reportersName}
           onChangeText={this._setReportersName}
+          label="Your name"
+          placeholder="Enter your name here"
         />
         <TextInput 
           style={styles.textInput}
           value={this.state.reportersEmail}
           onChangeText={this._setReportersEmail}
+          label="Your email"
+          placeholder="email@example.com"
+          keyboardType="email-address"
         />
         <TextInput 
           style={styles.textInput}
           value={this.state.reportersPhone}
           onChangeText={this._setReportersPhone}
+          label="Phone Number"
+          placeholder="+2547XXXXXXX"
+          keyboardType="phone-pad"
         />
         <FAB 
-          label={submitDescription}
+          label={"submitDescription"}
+          onPress={this._generateReport}
         />
-      </SafeAreaView>
+      </ScrollView>
     );
   }
 

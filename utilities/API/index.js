@@ -20,12 +20,13 @@ export const resendReport = async () => {
       
       if(data) {
         sent = true; // sent
-        AsyncStorage.setItem("savedReports", JSON.stringify(""), (err) => {
+        AsyncStorage.multiSet(
+          [
+            ["savedReports", JSON.stringify("")],
+            ["reportToBeSaved", JSON.stringify(data.report_id)]
+          ]
+        );
           
-          if(err)
-            console.log(err);
-
-        });
       }
 
     }).catch(err => console.log(err));
@@ -74,13 +75,13 @@ export const fileReport = (report, onSuccess, onErr) => {
  * @param {(payload: {}) => {}} onSuccess callback to be executed on success
  * @param {() => {}} onErr callbackk to be executed on err
  */
-export const sendCulpritInformation = (report_id, data, onSuccess, onErr) => {
+export const sendCulpritInformation = (report_id, reportData, onSuccess, onErr) => {
 
   fetch(
     "http://192.168.43.89:3000/api/report/" + report_id + "/add/culpritInformation",
     {
       method: "PUT",
-      body: JSON.stringify(data),
+      body: JSON.stringify(reportData),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json"
@@ -89,12 +90,37 @@ export const sendCulpritInformation = (report_id, data, onSuccess, onErr) => {
   ).then(response => response.json()).then(data => {
     
     if(data)
-      onSuccess(data);
+      onSuccess();
 
   }).catch(err => {
     console.log(err);
     onErr();
   });
+
+}
+
+export const updateMatatuDetails = (report_id, payload, onSuccess, onErr) => {
+
+  fetch(
+    "http://192.168.43.89:3000/api/report/" + report_id + "add/matatuDetails",
+    {
+      method: "PUT",
+      body: JSON.stringify(payload),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+    }
+  ).then(response => response.json()). then(data => {
+    
+    if(data) {
+      onSuccess();
+    }
+
+  }).catch(err => {
+    console.log(err);
+    onErr();
+  })
 
 }
 
@@ -150,17 +176,38 @@ export const fetchReport = () => {}
 
 export const fetchRouteReports = (route_id, onSuccess, onErr) => {
 
-  fetch(`http://192.168.43.89:3000/api/routes/reports/${route_id}`)
+  fetch(`http://192.168.43.89:3000/api/routes/${route_id}/reports`)
     .then(response => response.json())
     .then(data => {
 
       if(data)
         onSuccess(data);
+      else
+        onSuccess([]);
 
     }).catch(err => {
       console.log(err);
       onErr();
     });
+
+}
+
+// http://localhost/find/categories=route_id;date;location_type;flags&route_id={string}&date={timestamp}:{timestamp}&location_type={string}&flags=Verbal;Non-verbal;Physical&key={string}
+export const fetchReportsByRoute = (route_id, onSuccess, onErr) => {
+
+  fetch(
+    "http://192.168.43.89:3000/api/report/find?categories=route_id&route_id=" + route_id
+  ).then(response => response.json()).then(data => {
+    
+    if(data)
+      onSuccess(data);
+    else
+      onSuccess([]);
+    
+  }).catch(err => {
+    console.log(err);
+    onErr();
+  })
 
 }
 

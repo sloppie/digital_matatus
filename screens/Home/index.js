@@ -13,6 +13,8 @@ import MapView, { PROVIDER_GOOGLE, Marker, OverlayComponent } from 'react-native
 import * as Fragments from './fragments';
 import Theme from '../../theme';
 import { HOME_NAVIGATION_REF } from '../../routes/AppDrawer';
+import AsyncStorage from '@react-native-community/async-storage';
+import { API } from '../../utilities';
 
 let GTFSSearch = null;
 let TRIPS = null;
@@ -36,6 +38,51 @@ export default class Home extends React.Component {
         longitudeDelta: 0.0121,
       }
     };
+  }
+
+  async componentDidMount() {
+
+    AsyncStorage.multiGet(
+      ["reportSaved", "reportToUpdate"],
+      (err, result) => {
+        
+        if(err)
+          console.log("ERR_FETCHING");
+        else {
+          let reportSaved; 
+
+          try {
+            reportSaved = JSON.parse(result[0][0]);
+          } catch(err) {
+            reportSaved = "";
+          }
+
+          console.log("report saved");
+          console.log(reportSaved);
+          if(reportSaved !== "" && reportSaved !== null) {
+            API.resendReport();
+            return; // break here because there is obviouslu no reportSaved ID
+          }
+
+          let reportToUpdate; 
+          
+          try {
+            reportToUpdate = JSON.parse(result[1][0]);
+          } catch(err) {
+            reportToUpdate = "";
+          }
+
+          console.log("reportToUpdate");
+          console.log(reportToUpdate);
+          if(reportToUpdate !== "" && reportToUpdate !== "FETCH_REPORT_ID" ) {
+            this.props.navigation.navigate("NumberPlate"); // update reports
+          }
+
+        }
+
+      }
+    );
+
   }
 
   _openDrawer = () => HOME_NAVIGATION_REF.openDrawer();

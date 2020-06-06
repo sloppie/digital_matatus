@@ -15,7 +15,7 @@ import Store, {
   DESCRIPTION_LOADED,
   REPORT_FILED, // event for when a report is filed
 } from './store';
-import NotificationSetup from './utilities/push-notifications';
+// import NotificationSetup from './utilities/push-notifications';
 
 const eventArr = [];
 
@@ -31,9 +31,9 @@ eventArr.push(new Event(REPORT_FILED));
 const APP_STORE = new Store(eventArr);
 
 // create NotificationToken to ease its fetching process
-NotificationSetup.configure();
+// NotificationSetup.configure();
 
-NotificationSetup.getNotificationId();
+// NotificationSetup.getNotificationId();
 
 AppRegistry.registerComponent(appName, () => App);
 

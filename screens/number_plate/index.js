@@ -4,6 +4,8 @@ import { TextInput, FAB, Caption } from 'react-native-paper';
 import { API } from '../../utilities';
 import AsyncStorage from '@react-native-community/async-storage';
 
+import { HOME_NAVIGATION_REF, REPORT_NAVIGATION_REF } from '../../routes/AppDrawer';
+
 
 export default class NumberPlateReminder extends React.PureComponent {
 
@@ -40,21 +42,30 @@ export default class NumberPlateReminder extends React.PureComponent {
       };
 
       if(conspicuous !== "")
-        matatuDetailsObj["conspicuous"] = conspicuous;
+        matatuDetailsObj.conspicuous = conspicuous;
       
       if(saccoName)
-        matatuDetailsObj["saccoName"] = saccoName;
+        matatuDetailsObj.saccoName = saccoName;
 
       const onSuccess = () => {
         AsyncStorage.setItem("reportToUpdate", JSON.stringify(""));
         ToastAndroid.show("Data updated", ToastAndroid.SHORT);
-        this.props.navigation.goBack();
+        
+        if(REPORT_NAVIGATION_REF == null)
+          HOME_NAVIGATION_REF.jumpTo("Home");
+        else
+          REPORT_NAVIGATION_REF.jumpTo("Home")
+        // this.props.navigation.goBack();
       }
 
       const onErr = () => {
         AsyncStorage.setItem("reportToUpdate", JSON.stringify(""));
         ToastAndroid.show("Data Not updated", ToastAndroid.SHORT);
-        this.props.navigation.goBack();
+        if(REPORT_NAVIGATION_REF == null)
+          HOME_NAVIGATION_REF.jumpTo("Home");
+        else
+          REPORT_NAVIGATION_REF.jumpTo("Home")
+        // this.props.navigation.goBack();
       }
 
       API.updateMatatuDetails(

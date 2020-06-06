@@ -6,6 +6,7 @@ import {
   List, 
   FAB, 
   Surface, 
+  Text,
   Caption 
 } from 'react-native-paper';
 import { API } from '../../utilities';
@@ -134,8 +135,8 @@ export default class ReportCulprit extends React.PureComponent {
     return (
       <ScrollView style={styles.screen}>
         <Surface>
-          <Icon name="video" />
-          <Caption>{this.props.route.params.highlightedMediaUrl}</Caption>
+          <Icon name="link" style={styles.mediaIcon} size={50} />
+          <Text style={styles.linkText} >{this.props.route.params.highlightedMediaUrl.replace("localhost", "192.168.43.89")}</Text>
         </Surface>
         <Divider />
         <List.Section title="Culprit information"/>
@@ -172,6 +173,7 @@ export default class ReportCulprit extends React.PureComponent {
           keyboardType="phone-pad"
         />
         <FAB 
+          style={styles.fab}
           label={"submitDescription"}
           onPress={this._generateReport}
         />
@@ -184,10 +186,25 @@ export default class ReportCulprit extends React.PureComponent {
 const styles = StyleSheet.create({
   screen: {
     width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
+  },
+  mediaIcon: {
+    alignSelf: "center",
+    marginBottom: 8,
+    marginTop: 8
+  },
+  linkText: {
+    textAlign: "center",
+    marginBottom: 8,
+    fontSize: 16,
   },
   textInput: {
     width: Dimensions.get("window").width - 32,
     alignSelf: "center",
     marginBottom: 8,
+  },
+  fab: {
+    width: Dimensions.get("window").width - 64,
+    alignSelf: "center"
   },
 });

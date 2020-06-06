@@ -1,6 +1,8 @@
 import React from 'react';
-import { ScrollView, Text, StyleSheet } from 'react-native';
-import { Card } from 'react-native-paper';
+import { ScrollView, Text, StyleSheet, Dimensions } from 'react-native';
+import { Card, Title, Divider, List } from 'react-native-paper';
+
+import * as Fragments from './fragments';
 
 const categories = {
   "Verbal": "This is unwelcome behaviour of a sexual nature conducted through verbal cues.",
@@ -44,35 +46,34 @@ const categoryExamples = {
 export default class CategoryDefinition extends React.PureComponent {
 
   _renderCategory = (category) => {
-    let definitions = [];
 
-    let explanation = (
-      <Card style={styles.explanationCard} key={category}>
-        <Card.Title 
-          title={category}
-        />
-        <Card.Content> 
-          <Text>{categories[category]}</Text>
-        </Card.Content>
-      </Card>
-    );
+    if(category == "Verbal")
+      return <Fragments.VerbalHarassment />
+    else if(category == "Non-verbal")
+      return <Fragments.NonVerbalHarassment />
+    else
+      return <Fragments.PhysicalHarassment />
 
-    return explanation;
   }
 
   _renderAll = () => {
-    // for(let cat in categories) {
-    //   definitions.push(this._renderCategory(cat));
-    // }
     
-    return Object.keys(categories)
-      .map(category => this._renderCategory(category));
+    return [
+      <Fragments.VerbalHarassment key="v" />,
+      <Fragments.NonVerbalHarassment key="nv" />,
+      <Fragments.PhysicalHarassment key="p" />
+    ]
   }
 
   render() {
 
     return (
-      <ScrollView style={styles.screen}>
+      <ScrollView 
+        style={styles.screen}
+        horizontal={true}
+        nestedScrollEnabled={true}
+        pagingEnabled={true}
+      >
         {
           (this.props.route.params.category != "all")
           ? this._renderCategory(this.props.route.params.category)
@@ -86,6 +87,8 @@ export default class CategoryDefinition extends React.PureComponent {
 
 const styles = StyleSheet.create({
   screen: {
-    height: "100%",
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
+    flex: 1,
   },
 });

@@ -10,7 +10,7 @@ class Message extends React.PureComponent {
   _viewReport = () => {
     ToastAndroid.show(`show the ${this.props.messageTitle} thread`, ToastAndroid.SHORT);
 
-    this.props.navigation.navigate("ReportDetails", {
+    this.props.secondaryNavigation.navigate("ReportDetails", {
       report: this.props.report,
     });
   }
@@ -45,7 +45,7 @@ export default class RatingsList extends React.PureComponent {
   }
 
   componentDidMount() {
-    let reports = API.fetchReportsByRoute(
+    API.fetchReportsByRoute(
       this.props.route.route_id,
       this._setReports,
       this._setReports.bind(this, [])
@@ -106,7 +106,7 @@ export default class RatingsList extends React.PureComponent {
         messageTitle={`${item._id}, filed on: ${new Date(incidentDescription.date).toDateString()}`}
         comment={renderFlags()}
         report={item}
-        navigation={this.props.navigation}
+        secondaryNavigation={this.props.secondaryNavigation}
       />
     );
   }

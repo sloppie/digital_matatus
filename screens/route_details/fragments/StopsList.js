@@ -6,9 +6,35 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const STOPS = require("../../../GTFS_FEED/stops/stops.json");
 
 let count = 0;
+let renderCount = 0;
 
 
-export default class StopsList extends React.PureComponent {
+class StopCard extends React.Component {
+
+  shouldComponentUpdate() {
+    return false;
+  }
+
+  _setMarker = (item) => {
+    requestAnimationFrame(() => this.props.listItemAction(item))
+  }
+
+  render() {
+    let {item} = this.props;
+
+    return (
+      <List.Item 
+        style={styles.item}
+        left={props => <Icon {...props} name="traffic-light" size={30} style={styles.stopIcon}/>}
+        title={item.name}
+        description={item.stopId}
+        onPress={this._setMarker.bind(this, item)}
+      />
+    );
+  }
+}
+
+export default class StopsList extends React.Component {
 
   constructor(props) {
     super(props);
@@ -26,12 +52,16 @@ export default class StopsList extends React.PureComponent {
     this.toName = "";
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.state.data.length !== nextState.data.length;
+  }
+
   componentDidMount() {
     this._setStateData();
   }
 
   componentWillUnmount() {
-    this.setState({isLoading: true})
+    // this.setState({isLoading: true})
   }
 
   parseComprehensiveRoute(stop, isSticky=false) {
@@ -118,13 +148,10 @@ export default class StopsList extends React.PureComponent {
         count++;
         /*renderedItem.push*/return (
           // key={`${index}`}
-          <List.Item 
-            style={styles.item}
-            left={props => <Icon {...props} name="traffic-light" size={30} style={styles.stopIcon}/>}
-            title={item.name}
-            description={item.stopId}
-            onPress={this._setMarker.bind(this, item)}
-          />
+          <StopCard 
+            listItemAction={this.props.listItemAction}  
+            item={item} 
+            />
         );
       }
   
@@ -135,8 +162,20 @@ export default class StopsList extends React.PureComponent {
 
   render() {
 
-    if(this.state.isLoading)
-      return (
+    renderCount++;
+    console.log("renderCount: " + renderCount)
+
+    return (
+      <FlatList
+        style={styles.flatList}
+        data={this.state.data} 
+        renderItem={this._renderItems}
+        keyExtractor={this._keyExtractor}
+        initialNumToRender={20}
+        maxToRenderPerBatch={10}
+        renderToHardwareTextureAndroid={true}
+        updateCellsBatchingPeriod={100}
+        ListEmptyComponent={props => (
         <View style={{justifyContent: "center", alignSelf: "center"}}>
           <ActivityIndicator
             size="large" 
@@ -145,25 +184,7 @@ export default class StopsList extends React.PureComponent {
           />
           <Text>Fetching stops...</Text>
         </View>
-      );
-    
-    // let STAGES = this._renderItems();
-
-    return (
-      // <ScrollView
-      //   stickyHeaderIndices={[0, this.state.toStart + 1]}
-      // >
-      //   <List.Section 
-      //     title={`from ${this.fromName} - ${this.toName}`}
-      //     style={styles.stickyHeader}
-      //   />
-      //   {STAGES}
-      // </ScrollView>
-      <FlatList
-        data={this.state.data} 
-        renderItem={this._renderItems}
-        keyExtractor={this._keyExtractor}
-        maxToRenderPerBatch={10}
+        )}
       />
     );
   }
@@ -177,5 +198,8 @@ const styles = StyleSheet.create({
   item: {},
   stopIcon: {
     textAlignVertical: "center"
+  },
+  flatList: {
+    flex: 1,
   },
 });

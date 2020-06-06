@@ -52,7 +52,9 @@ export default class Home extends React.Component {
           let reportSaved; 
 
           try {
-            reportSaved = JSON.parse(result[0][0]);
+            console.log("reportSaved")
+            console.log(result[0]);
+            reportSaved = JSON.parse(result[0][1]);
           } catch(err) {
             reportSaved = "";
           }
@@ -67,7 +69,9 @@ export default class Home extends React.Component {
           let reportToUpdate; 
           
           try {
-            reportToUpdate = JSON.parse(result[1][0]);
+            console.log("reportToUpdate")
+            console.log(result[1]);
+            reportToUpdate = JSON.parse(result[1][1]);
           } catch(err) {
             reportToUpdate = "";
           }

@@ -308,7 +308,7 @@ export default class Report extends React.PureComponent {
     
     const onSuccess = (payload) => {
       // use payload here
-      this.snackBarMessage = "Report Sent"
+      console.log(payload);
       // this.setState({snackBarVisible: true});
       
       if(this.state.response.incidentDescription.location.type == "INSIDE_BUS") {

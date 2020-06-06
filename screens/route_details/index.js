@@ -199,35 +199,44 @@ export default class RouteDetails extends React.PureComponent {
 
   _renderListView() {
     
-    switch(this.state.activeTab) {
-      case 0:
-        return(
-           <Fragments.ListView 
-              name={this._tabs[0]} 
-              listItemAction={this.listItemActions[0]} data={{...this.state.comprehensive_routes}} 
-              route={this.props.route.params.route}
-              navigation={this.props.navigation}
-            />
-        );
-      case 1:
-        return(
-           <Fragments.ListView 
-              name={this._tabs[1]} 
-              listItemAction={this.listItemActions[1]} data={{...this.state.comprehensive_routes}} 
-              route={this.props.route.params.route}
-              navigation={this.props.navigation}
-            />
-        );
-      case 2:
-        return(
-           <Fragments.ListView 
-              name={this._tabs[2]} 
-              listItemAction={this.listItemActions[2]} data={{...this.state.comprehensive_routes}} 
-              route={this.props.route.params.route}
-              navigation={this.props.navigation}
-            />
-        );
-    }
+    // switch(this.state.activeTab) {
+    //   case 0:
+    //     return(
+    //        <Fragments.ListView 
+    //           name={this._tabs[0]} 
+    //           listItemAction={this.listItemActions[0]} data={{...this.state.comprehensive_routes}} 
+    //           route={this.props.route.params.route}
+    //           navigation={this.props.navigation}
+    //         />
+    //     );
+    //   case 1:
+    //     return(
+    //        <Fragments.ListView 
+    //           name={this._tabs[1]} 
+    //           listItemAction={this.listItemActions[1]} data={{...this.state.comprehensive_routes}} 
+    //           route={this.props.route.params.route}
+    //           navigation={this.props.navigation}
+    //         />
+    //     );
+    //   case 2:
+    //     return(
+    //        <Fragments.ListView 
+    //           name={this._tabs[2]} 
+    //           listItemAction={this.listItemActions[2]} data={{...this.state.comprehensive_routes}} 
+    //           route={this.props.route.params.route}
+    //           navigation={this.props.navigation}
+    //         />
+    //     );
+    // }
+
+    return (
+      <Fragments.DetailsTab 
+        listItemAction={this.listItemActions[0]}
+        data={{...this.state.comprehensive_routes}}
+        secondaryNavigation={this.props.navigation}
+        route={this.props.route.params.route}
+      />
+    );
 
   }
 
@@ -261,11 +270,11 @@ export default class RouteDetails extends React.PureComponent {
               subtitle={this.props.route.params.route.route_long_name}
             />
           </Card>
-          <Fragments.TabBar 
+          {/* <Fragments.TabBar 
             tabs={this._tabs}
             icons={this._icons}
             actions={this.tabActions}
-          />
+          /> */}
           {(this.state.routesLoaded)?this._renderListView(): <View />}
         </SafeAreaView>
       </>

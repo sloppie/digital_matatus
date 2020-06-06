@@ -101,8 +101,10 @@ export const sendCulpritInformation = (report_id, reportData, onSuccess, onErr) 
 
 export const updateMatatuDetails = (report_id, payload, onSuccess, onErr) => {
 
+  console.log("Payload being sent" + payload);
+
   fetch(
-    "http://192.168.43.89:3000/api/report/" + report_id + "add/matatuDetails",
+    "http://192.168.43.89:3000/api/report/" + report_id + "/add/matatuDetails",
     {
       method: "PUT",
       body: JSON.stringify(payload),
@@ -114,6 +116,8 @@ export const updateMatatuDetails = (report_id, payload, onSuccess, onErr) => {
   ).then(response => response.json()). then(data => {
     
     if(data) {
+      onSuccess();
+    } else {
       onSuccess();
     }
 
@@ -190,6 +194,61 @@ export const fetchRouteReports = (route_id, onSuccess, onErr) => {
       onErr();
     });
 
+}
+
+/**
+ * http://localhost/find/categories=route_id;date;location_type;flags&route_id={string}&date={timestamp}:{timestamp}&location_type={string}&flags=Verbal;Non-verbal;Physical&key={string}
+ * 
+ * Queries the route linked above to return an array of result values
+ * @param {{}} filterObject object containing all categories to filter by
+ * @param {() => {}} onSuccess callback to be executed on success
+ * @param {() => {}} onErr callback to be executed on error
+ */
+export const filterByCategories = (filterObject, onSuccess, onErr) => {
+  let filterKeys = Object.keys(filterObject);
+  let length = filterKeys.length;
+
+  const generateCategories = () => {
+    let categories = "?categories=";
+
+    filterKeys.forEach((category, index) => {
+      
+      if((index + 1) == length)
+        categories += `${category}`;
+      else
+        categories += `${category};`;
+
+    });
+
+    console.log(categories);
+    return categories;
+  }
+
+  const generateCategoryValues = () => {
+    let values = "";
+
+    filterKeys.forEach(category => {
+      values += `&${category}=${filterObject[category]}`
+    });
+
+    console.log(values);
+    return values;
+  }
+
+  fetch(`http://192.168.43.89:3000/api/report/find${generateCategories()}${generateCategoryValues()}`)
+    .then(response => response.json())
+    .then(data => {
+ 
+      if(data)
+        onSuccess(data);
+      else {
+        onSuccess([]);
+      }
+
+    }).catch(err => {
+      console.log(err);
+      onErr();
+    });
 }
 
 // http://localhost/find/categories=route_id;date;location_type;flags&route_id={string}&date={timestamp}:{timestamp}&location_type={string}&flags=Verbal;Non-verbal;Physical&key={string}

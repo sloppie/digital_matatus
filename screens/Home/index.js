@@ -78,7 +78,7 @@ export default class Home extends React.Component {
 
           console.log("reportToUpdate");
           console.log(reportToUpdate);
-          if(reportToUpdate !== "" && reportToUpdate !== "FETCH_REPORT_ID" ) {
+          if(reportToUpdate !== "" && reportToUpdate !== "FETCH_REPORT_ID" && reportToUpdate !== null) {
             this.props.navigation.navigate("NumberPlate"); // update reports
           }
 

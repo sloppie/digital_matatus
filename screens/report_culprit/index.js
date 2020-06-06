@@ -50,7 +50,7 @@ export default class ReportCulprit extends React.PureComponent {
   _setReportersPhone = (reportersPhone) => this.setState({reportersPhone});
 
   _verifyInformation = () => {
-    let validName = /\w+/gi;
+    let validName = /\w+(\s\w+)*/;
     let validEmail = /\S+@\w+(\.\w+)*(\.\w+)/;
     let validPhone = /0\d{9}|\+254\d{9}/;
 
@@ -58,20 +58,25 @@ export default class ReportCulprit extends React.PureComponent {
 
     if(!validName.test(this.state.culpritName)) {
       this.setState({culpritNameError: true});
+      ToastAndroid.show("Invalid Culprit Name", ToastAndroid.SHORT);
       verified = false;
     }
 
+    console.log(validName.test(this.state.reportersName))
     if(!validName.test(this.state.reportersName)) {
       this.setState({reportersNameError: true});
+      ToastAndroid.show("Invalid Name", ToastAndroid.SHORT);
       verified = false;
     }
 
     if(!validEmail.test(this.state.reportersEmail)) {
+      ToastAndroid.show("Invalid Email", ToastAndroid.SHORT);
       this.setState({reportersEmailError: true});
       verified = false;
     }
     
     if(!validPhone.test(this.state.reportersPhone)) {
+      ToastAndroid.show("Invalid Phone", ToastAndroid.SHORT);
       this.setState({reportersPhoneError: true});
       verified = false;
     }

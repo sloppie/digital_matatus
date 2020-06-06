@@ -127,7 +127,7 @@ export default class DataVerification extends React.PureComponent {
 const styles = StyleSheet.create({
   page: {
     width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
+    // height: Dimensions.get("window").height,
   },
   completePage: {
     alignItems: "center",

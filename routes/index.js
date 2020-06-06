@@ -48,6 +48,7 @@ class App extends React.PureComponent {
       isLoggedIn: true,
       configComplete: true,
     });
+    AsyncStorage.setItem("isConfig", JSON.stringify(true));
   }
 
   auth = async () => {

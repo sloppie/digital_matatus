@@ -137,7 +137,7 @@ export const updateMatatuDetails = (report_id, payload, onSuccess, onErr) => {
  */
 export const isUser = (email, onSuccess, onErr) => {
 
-  fetch(`http://192.168.43.89:3000/api/user/isUser${email}`)
+  fetch(`http://192.168.43.89:3000/api/user/isUser/${email}`)
     .then(response => response.json())
     .then(data => {
 

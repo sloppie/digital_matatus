@@ -156,10 +156,12 @@ export default class Report extends React.PureComponent {
       userID: this.state.userID
     };
 
+    console.log(response.privateIformation)
+
     // verify data
     let incidentDescriptionQueries = this._verifyID({...response.incidentDescription});
     let culpritDescriptionQueries = this._verifyCD({...response.culpritDescription});
-    let privateIformationQueries = this._verifyPI({...response.privateIformation});
+    let privateIformationQueries = this._verifyPI(response.privateIformation);
     
     let queries;
 
@@ -286,6 +288,8 @@ export default class Report extends React.PureComponent {
 
   _verifyPI = (privateIformation) => {
     let queries = [];
+
+    console.log("PI == NOT_INPUT" + (privateIformation == "NOT_INPUT"))
 
     if(privateIformation == "NOT_INPUT")
       queries.push({

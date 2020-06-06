@@ -69,8 +69,8 @@ export default class Login extends React.PureComponent {
     }
 
     // callback to be executed if the user is not found
-    const isNotUserCallback = () => {
-      ToastAndroid.show("Error fetching data, check internet connection", ToastAndroid.SHORT);
+    const isNotUserCallback = (payload) => {
+      ToastAndroid.show(payload, ToastAndroid.SHORT);
     }
     
     // validate user

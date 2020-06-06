@@ -150,6 +150,7 @@ export default class InitialSetup extends React.Component {
 
     if(!deviceToken) {
       let NotificationSetup = require('../../utilities/push-notifications').default;
+      NotificationSetup.configure();
       deviceToken = await AsyncStorage.getItem("deviceNotificationToken")
     }
 
@@ -166,7 +167,7 @@ export default class InitialSetup extends React.Component {
       })
     }).then(data => data.json()).then(response => {
       console.log(response)
-      let state = JSON.parse(response);
+      let state = response;
 
       AsyncStorage.multiSet(
         [
@@ -180,7 +181,7 @@ export default class InitialSetup extends React.Component {
             }),
           ],
           ["isConfig", JSON.stringify(true)],
-          ["userID", state._id] // stores user's Hash
+          ["userID", response._id] // stores user's Hash
         ], 
         (err) => {
         

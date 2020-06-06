@@ -25,7 +25,7 @@ export default class PrivateInformation extends React.PureComponent {
   // SETTERS for the TextInputs
   _handleFirstName = (firstName) => this.setState({firstName});
 
-  _handleLatstName = (lastName) => this.setState({lastName});
+  _handleLastName = (lastName) => this.setState({lastName});
 
   _handleEmail = (email) => this.setState({email});
 
@@ -42,7 +42,7 @@ export default class PrivateInformation extends React.PureComponent {
         value={this.state.firstName}
         style={styles.textInput}
         placeholder="First name"
-        onChange={this._handleFirstName}
+        onChangeText={this._handleFirstName}
         mode="outlined"
         label="First Name"
         key="1"
@@ -55,7 +55,7 @@ export default class PrivateInformation extends React.PureComponent {
         value={this.state.lastName}
         style={styles.textInput}
         placeholder="Last name"
-        onChange={this._handleLastName}
+        onChangeText={this._handleLastName}
         mode="outlined"
         label="Last Name"
         key="2"

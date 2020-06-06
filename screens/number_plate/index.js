@@ -52,7 +52,7 @@ export default class NumberPlateReminder extends React.PureComponent {
         ToastAndroid.show("Data updated", ToastAndroid.SHORT);
         
         if(REPORT_NAVIGATION_REF == null)
-          HOME_NAVIGATION_REF.jumpTo("Home");
+          this.props.navigation.goBack();
         else
           REPORT_NAVIGATION_REF.jumpTo("Home")
         // this.props.navigation.goBack();
@@ -62,7 +62,7 @@ export default class NumberPlateReminder extends React.PureComponent {
         AsyncStorage.setItem("reportToUpdate", JSON.stringify(""));
         ToastAndroid.show("Data Not updated", ToastAndroid.SHORT);
         if(REPORT_NAVIGATION_REF == null)
-          HOME_NAVIGATION_REF.jumpTo("Home");
+          this.props.navigation.goBack();
         else
           REPORT_NAVIGATION_REF.jumpTo("Home")
         // this.props.navigation.goBack();

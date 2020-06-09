@@ -130,7 +130,7 @@ export default class ReportDetails extends React.PureComponent {
           _fetchRouteReports={this._fetchRouteReports}
           active={this.state.active}
         />
-        <FlatList 
+        {/* <FlatList 
           style={styles.flatList}
           data={this.state.reports}
           keyExtractor={this._keyExtractor}
@@ -140,6 +140,10 @@ export default class ReportDetails extends React.PureComponent {
           ListHeaderComponent={<TopPad />}
           ListFooterComponent={<BottomPad />}
           ListEmptyComponent={<Fragments.NoData />}
+        /> */}
+        <Fragments.ReportsList 
+          data={this.state.reports}
+          navigation={this.props.navigation}
         />
       </SafeAreaView>
     );

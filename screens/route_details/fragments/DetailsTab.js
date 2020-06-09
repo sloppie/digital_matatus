@@ -3,6 +3,7 @@ import {} from 'react-native';
 import {} from 'react-native-paper';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'; 
 import RatingsList from './RatingsList';
+import LargeRatingsList from './LargeRatingsList';
 import SaccoList from './SaccoList';
 import StopsList from './StopsList';
 import LargeStopList from './LargeStopList';
@@ -15,6 +16,13 @@ class DetailsTab extends React.PureComponent {
 
   _renderRatingsList = () => (
     <RatingsList 
+      secondaryNavigation={this.props.secondaryNavigation}
+      route={this.props.route}
+    />
+  );
+
+  _renderLargeRatingsList = () => (
+    <LargeRatingsList 
       secondaryNavigation={this.props.secondaryNavigation}
       route={this.props.route}
     />
@@ -55,16 +63,8 @@ class DetailsTab extends React.PureComponent {
       >
         <Tab.Screen 
           name="RatingsList"
-          component={this._renderRatingsList}
+          component={this._renderLargeRatingsList}
         />
-        {/* <Tab.Screen 
-          name="SaccoList"
-          component={this._renderSaccoList}
-        /> */}
-        {/* <Tab.Screen 
-          name="StopsList"
-          component={this._renderStopsList}
-        /> */}
         {/* Uses RecyclerListView */}
         <Tab.Screen 
           name="StopsList"

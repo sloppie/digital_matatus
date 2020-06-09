@@ -8,6 +8,7 @@ export default class ReportCard extends React.PureComponent {
 
   constructor(props) {
     super(props);
+    console.log("Rendering report...");
 
     let incidentDescription = JSON.parse(this.props.data.incidentDescription);
 
@@ -25,7 +26,12 @@ export default class ReportCard extends React.PureComponent {
   }
 
   _renderHarassmentFlagChips = () => this.state.flags.map(flag => (
-    <Chip style={styles.chip} icon="flag-triangle" >{flag}</Chip>
+    <Chip 
+      key={flag}
+      style={styles.chip} 
+      icon="flag-triangle" >
+        {flag}
+    </Chip>
   ));
 
   render() {
@@ -34,6 +40,7 @@ export default class ReportCard extends React.PureComponent {
       <Card
         onPress={this._viewReport}
         style={styles.reportCard}
+        onLayout={({nativeEvent}) => console.log(nativeEvent)}
       >
         <Card.Title 
           title={this.props.data._id}

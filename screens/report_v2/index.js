@@ -1,6 +1,5 @@
 import React from 'react';
 import { 
-  ScrollView, 
   StyleSheet, 
   ToastAndroid, 
   Dimensions, 
@@ -14,18 +13,14 @@ import {
   Snackbar 
 } from 'react-native-paper';
 
-import * as Fragments from './fragments';
 import Theme from '../../theme';
 import AsyncStorage from '@react-native-community/async-storage';
 import { API } from '../../utilities';
-import { APP_STORE } from '../..';
-import { REPORT_FILED } from '../../store';
+
+import * as Fragments from './fragments';
 
 let REPORT_NAVIGATION_REF = null;
 
-/**
- * @todo use refs to fetch information from children
- */
 export default class Report extends React.PureComponent {
 
   snackBarMessage = "";
@@ -40,7 +35,7 @@ export default class Report extends React.PureComponent {
   parentScrollViewRef =React.createRef(); // Parent ScrollView Ref
   incidentDescriptionRef = React.createRef(); // incident description ref
   culpritDescriptionRef = React.createRef(); // access to CulpritDescription methods
-  privateIformationRef = React.createRef();
+  privateInformationRef = React.createRef();
 
   constructor(props) {
     super(props);
@@ -164,11 +159,9 @@ export default class Report extends React.PureComponent {
     let response = {
       incidentDescription: this.incidentDescriptionRef.current._getInformation(),
       culpritDescription: this.culpritDescriptionRef.current._getInformation(),
-      privateIformation: this.privateIformationRef.current._getInformation(),
+      privateIformation: this.privateInformationRef.current._getInformation(),
       userID: this.state.userID
     };
-
-    // console.log(response.privateIformation)
 
     // verify data
     let incidentDescriptionQueries = this._verifyID({...response.incidentDescription});
@@ -189,8 +182,10 @@ export default class Report extends React.PureComponent {
       this.setState({queries, verified: true, response, verifying: false});
     }
 
-    setTimeout(() => this._scrollTo("DataVerification"), 100);
+    // setTimeout(() => this._scrollTo("DataVerification"), 100);
 
+    // bool used by the PrivateInformation BottomSheet to determine whether to activate the Submit button
+    return has_query; 
   }
 
   _verifyID = (incidentDescription) => {
@@ -358,87 +353,20 @@ export default class Report extends React.PureComponent {
   }
 
   render() {
-    // ALWAYS USE THE SPREAD OPERATOR, OBJECTS ARE ALWAYS PASSED BY REFERNCE AND THIS MAY LEAD
-    // TO DIFFERENCE OF VALUES ACROSS THE APPLICATION!!!!!!
-    let lastFlags = {...this.state.flags[this.state.flags.length - 1]};
+
+    let lastFlags = this.state.flags[this.state.flags.length - 1];
 
     return (
-      <>
-        <ScrollView 
-          ref={this.parentScrollViewRef}
-          style={styles.screen}
-          onLayout={this._handleLayoutChange}
-          horizontal={true}
-          pagingEnabled={true}
-          nestedScrollEnabled={true}
-        >
-          <View style={styles.page}>
-            <Fragments.Chips
-              flags={lastFlags}
-              toggleFlag={this._toggleFlag}
-              navigation={this.props.navigation}
-            />
-            <Divider />
-            <Fragments.IncedentDescription 
-              ref={this.incidentDescriptionRef}
-              setDescription={this._setDescription}
-              culpritDescriptionRef={this.culpritDescriptionRef}
-            />
-          </View>
-          <Fragments.CulpritDescription 
-            ref={this.culpritDescriptionRef}
-            setCulpritDescription={this._setCulpritDescription}
-          />
-          <View style={styles.page}>
-            <Fragments.PrivateInformation
-              ref={this.privateIformationRef}
-              setPrivateInormation={this._setPrivateInformation}
-            />
-            <FAB
-              visible={this.state.fabGroupVisible}
-              icon="file-send"
-              label="Verify Information"
-              style={styles.fabGroup}
-              onPress={this._getInformation}
-              loading={this.state.verifying}
-            />
-          </View>
-          {
-            (this.state.verified)
-            ? <Fragments.DataVerification 
-              _sendVerifiedData={this._sendVerifiedData}
-              _unverifyData={this._unverifyData}
-              _scrollTo={this._scrollTo}
-              queries={this.state.queries} 
-            />
-            : null
-          }
-        </ScrollView>
-        {/* <Snackbar
-          visible={this.state.snackBarVisible}
-          onDismiss={this.dismissedSnackbar}
-        >
-          {(() => this.snackBarMessage)()}
-        </Snackbar> */}
-      </>
+      <Fragments.TabLayout 
+        lastFlags={lastFlags}
+        _toggleFlag={this._toggleFlag}
+        secondaryNavigation={this.props.navigation}
+        incidentDescriptionRef={this.incidentDescriptionRef}
+        culpritDescriptionRef={this.culpritDescriptionRef}
+        privateInformationRef={this.privateInformationRef}
+        _getInformation={this._getInformation}
+      />
     );
   }
 
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    height: "100%",
-  },
-  page: {
-    width: Dimensions.get("window").width,
-  },
-  fabGroup: {
-    marginTop: 16,
-    marginBottom: 16,
-    alignSelf: "center",
-    width: (Dimensions.get("window").width - 32),
-    bottom: 0,
-    backgroundColor: Theme.PrimaryColor
-  },
-});

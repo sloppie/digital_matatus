@@ -11,7 +11,6 @@ export default class ReportsList extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    console.log("Reports loading..." + JSON.stringify(this.props.data, null, 2));
 
     let dataProvider = new DataProvider((r1, r2) => r1 !== r2);
 
@@ -27,7 +26,6 @@ export default class ReportsList extends React.PureComponent {
       }
     );
 
-    console.log("Finished setting reports....");
   }
 
   _rowRenderer = (type, item) => {
@@ -41,6 +39,7 @@ export default class ReportsList extends React.PureComponent {
   }
 
   render() {
+
     return (
       <RecyclerListView 
         dataProvider={this.state.dataProvider}

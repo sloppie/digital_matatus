@@ -8,7 +8,6 @@ export default class ReportCard extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    console.log("Rendering report...");
 
     let incidentDescription = JSON.parse(this.props.data.incidentDescription);
 
@@ -40,7 +39,6 @@ export default class ReportCard extends React.PureComponent {
       <Card
         onPress={this._viewReport}
         style={styles.reportCard}
-        onLayout={({nativeEvent}) => console.log(nativeEvent)}
       >
         <Card.Title 
           title={this.props.data._id}

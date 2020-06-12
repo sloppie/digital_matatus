@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeStack from './HomeStack';
 import ReportStack from './ReportStack';
 import ReportViewStack from './ReportViewStack';
+import ReportStackV2 from './ReportStackV2';
 
 // ICONS
 
@@ -56,6 +57,12 @@ function Report(props) {
   return <ReportStack />
 }
 
+function ReportV2(props) {
+  REPORT_NAVIGATION_REF = props.navigation;
+
+  return <ReportStackV2 />
+}
+
 function ViewReports(props) {
   VIEW_REPORT_NAVIGATION_REF = props.navigation;
 
@@ -78,6 +85,14 @@ export default () => (
     <AppDrawer.Screen 
       name="Report"
       component={Report}
+      options={{
+        unmountOnBlur: true,
+        drawerIcon: (props) => <ReportIcon {...props} />
+      }}
+    />
+    <AppDrawer.Screen 
+      name="ReportV2"
+      component={ReportV2}
       options={{
         unmountOnBlur: true,
         drawerIcon: (props) => <ReportIcon {...props} />

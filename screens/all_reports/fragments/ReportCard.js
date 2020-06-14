@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
-import { Card, Chip, Colors } from 'react-native-paper';
+import { View, StyleSheet, Dimensions } from 'react-native';
+import { Card, Chip, Colors, Paragraph, Caption, Divider } from 'react-native-paper';
 import Theme from '../../../theme';
+import ReportParser from '../../../utilities/report_parser';
 
 
-export default class ReportCard extends React.PureComponent {
+export default class ReportCard extends React.Component {
 
   constructor(props) {
     super(props);
@@ -12,10 +13,15 @@ export default class ReportCard extends React.PureComponent {
     let incidentDescription = JSON.parse(this.props.data.incidentDescription);
 
     this.state = {
+      report: new ReportParser(this.props.data),
       incidentDescription: incidentDescription,
       culpritDescription: JSON.parse(this.props.data.culpritDescription),
       flags: Object.keys(incidentDescription.harassmentFlags),
     };
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return false;
   }
 
   _viewReport = () => {
@@ -39,16 +45,22 @@ export default class ReportCard extends React.PureComponent {
       <Card
         onPress={this._viewReport}
         style={styles.reportCard}
+        renderToHardwareTextureAndroid={true}
       >
         <Card.Title 
-          title={this.props.data._id}
+          title={this.state.report.generateReportTitle()}
           titleStyle={styles.cardTitle}
-          subtitle={`Happened on: ${new Date(this.state.incidentDescription.date).toDateString()}`}
+          subtitle={`Reported on: ${this.state.report.date}`}
           subtitleStyle={styles.subtitle}
         />
-        <Card.Content style={styles.chipContainer}>
-          {this._renderHarassmentFlagChips()}
+        <Card.Content>
+          <Paragraph>{this.state.report.generateReportMessage()}</Paragraph>
+          <View style={styles.chipContainer}>
+            {this._renderHarassmentFlagChips()}
+          </View>
+          <Caption>Report ID: {this.state.report._id}</Caption>
         </Card.Content>
+        {/* <Divider style={styles.divider} /> */}
       </Card>
     );
   }
@@ -57,18 +69,27 @@ export default class ReportCard extends React.PureComponent {
 
 const styles = StyleSheet.create({
   reportCard: {
-    width: Dimensions.get("window").width - 32,
+    // width: Dimensions.get("window").width - 32,
     alignSelf: "center",
-    marginBottom: 8,
-    backgroundColor: "#444",
+    // marginBottom: 8,
+    // backgroundColor: "#444",
+    borderBottomWidth: 1,
+    borderColor: "#999",
+    borderStyle: "dotted",
   },
   cardTitle: {
-    color: "white",
+    // color: "white",
+    fontFamily: Theme.OpenSansBold
   },
   subtitle: {
-    color: "white",
+    // color: "white",
+  },
+  divider: {
+    marginTop: 4,
   },
   chipContainer: {
+    paddingTop: 4,
+    paddingBottom: 4,
     flexDirection: "row",
     flexWrap: "wrap"
   },

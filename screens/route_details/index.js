@@ -218,7 +218,7 @@ export default class RouteDetails extends React.PureComponent {
     //           navigation={this.props.navigation}
     //         />
     //     );
-    //   case 2:
+    //   case 2: 
     //     return(
     //        <Fragments.ListView 
     //           name={this._tabs[2]} 

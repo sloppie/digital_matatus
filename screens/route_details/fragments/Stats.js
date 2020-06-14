@@ -1,8 +1,151 @@
 import React from 'react';
 import { ScrollView, View, Text, StyleSheet, Dimensions } from 'react-native';
-import { List, Colors, Title } from 'react-native-paper';
+import { List, Colors, Title, Chip, Divider } from 'react-native-paper';
 import { API } from '../../../utilities';
 import { PieChart } from 'react-native-chart-kit';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+import Theme from '../../../theme';
+
+// prevent loading of a module that may not be directly used
+// let DatePicker = null;
+const year = 1000 * 60 * 60 * 24 * 365;
+
+
+class Filters extends React.PureComponent {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      fromDate: new Date().getTime() - year,
+      toDate: new Date().getTime(), // by default is the time it is when the screen renders
+      activeDate: "", // help know which date to set
+      filterByDate: false,
+      filterByLocationType: false,
+      showDatePicker: false,
+      location_type: ""
+    };
+  }
+
+  toggleDateFilter = () => this.setState({filterByDate: !this.state.filterByDate});
+
+  toggleLocationTypeFilter = () => this.setState({filterByLocationType: !this.state.filterByLocationType});
+
+  revealDateTimePicker = (activeDate) => this.setState({activeDate, showDatePicker: true})
+
+  _renderDateFilters = () => (
+    <>
+      <View style={styles.dateContainer}>
+        <Title style={styles.categoryTitle}>Date Filters</Title>
+        <View style={styles.dateSectionContainer}>
+          <Title style={styles.dateSectionTitle}>From: </Title>
+          <Chip 
+            mode="outlined"
+            onPress={this.revealDateTimePicker.bind(this, "fromDate")}>
+              {new Date(this.state.fromDate).toDateString()}
+          </Chip>
+        </View>
+        <View style={styles.dateSectionContainer}>
+          <Title style={styles.dateSectionTitle}>To: </Title>
+          <Chip 
+            mode="outlined"
+            onPress={this.revealDateTimePicker.bind(this, "toDate")}>
+              {new Date(this.state.toDate).toDateString()}
+          </Chip>
+        </View>
+      </View>
+      <Divider />
+    </>
+  );
+
+  _setDate = (event, date) => {
+    this.setState({
+      [this.state.activeDate]: date.getTime(),
+      showDatePicker: false,
+    });
+  }
+
+  renderDatePicker = () => {
+
+    // if(!DateTimePicker)
+    //   DateTimePicker = require('@react-native-community/datetimepicker');
+
+    return (
+      <DateTimePicker 
+        mode="date"
+        onChange={this._setDate}
+        value={this.state[this.state.activeDate]}
+      />
+    );
+  }
+
+  _setLocationFilter = (location_type) => this.setState({location_type});
+
+  _renderLocationFilters = () => (
+    <View style={styles.locationContainer}>
+      <Title style={styles.categoryTitle}>Location Filters</Title>
+      <View style={styles.locationFilterContainer}>
+        <Chip
+          mode="outlined"
+          style={styles.filterCategoryChip}
+          selected={this.state.location_type === "INSIDE_BUS"}
+          onPress={this._setLocationFilter.bind(this, "INSIDE_BUS")}
+        >
+          Inside Bus
+        </Chip>
+        <Chip
+          mode="outlined"
+          style={styles.filterCategoryChip}
+          selected={this.state.location_type === "ON_BUS_TERMINAL"}
+          onPress={this._setLocationFilter.bind(this, "ON_BUS_TERMINAL")}
+        >
+          On Bus Entrance
+        </Chip>
+        <Chip
+          mode="outlined"
+          style={styles.filterCategoryChip}
+          selected={this.state.location_type === "BUS_TERMINAL"}
+          onPress={this._setLocationFilter.bind(this, "BUS_TERMINAL")}
+        >
+          On Bus Terminal
+        </Chip>
+      </View>
+      <Divider />
+    </View>
+  );
+
+  render() {
+
+    return (
+      <>
+        <Title style={styles.categoryTitle}>Filter by</Title>
+        <View style={styles.filterWrapper}>
+          <Chip 
+            selected={this.state.filterByDate} 
+            style={styles.filterCategoryChip} 
+            onPress={this.toggleDateFilter}
+            mode="outlined">
+              Date
+          </Chip>
+          <Chip 
+            style={styles.filterCategoryChip} 
+            selected={this.state.filterByLocationType} 
+            onPress={this.toggleLocationTypeFilter}
+            mode="outlined">
+              Location Type
+          </Chip>
+        </View>
+        <Divider />
+        {this.state.filterByDate ? this._renderDateFilters(): null}
+        {this.state.filterByLocationType ? this._renderLocationFilters(): null}
+        <Divider />
+        {this.state.showDatePicker ? this.renderDatePicker(): null}
+      </>
+    );
+  }
+
+}
 
 const LOCATION_TYPES = Object.freeze({
   "INSIDE_BUS": "INSIDE_BUS",
@@ -20,6 +163,9 @@ export default class Stats extends React.Component {
       "INSIDE_BUS": 0,
       "BUS_TERMINAL": 0,
       "ON_BUS_ENTRANCE": 0,
+      date: new Date(),
+      startDate: null,
+      endDate: null
     };
 
   }
@@ -138,6 +284,7 @@ export default class Stats extends React.Component {
 
 
       <ScrollView style={{flex: 1, width: "100%", height: "100%"}}>
+        <Filters />
         <List.Section 
           title="Graph of incident filtered by location"
         />
@@ -177,5 +324,39 @@ const styles = StyleSheet.create({
   reportedCases: {
     textAlign: "center",
     fontWeight: "600"
+  },
+  // Filters styles
+  categoryTitle: {
+    marginTop: 8,
+    marginStart: 8,
+  },
+  filterWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    padding: 8,
+  },
+  filterCategoryChip: {
+    marginEnd: 4,
+  },
+  dateContainer: {
+  },
+  dateSectionContainer: {
+    marginStart: 16,
+    flexDirection: "row",
+    marginBottom: 4,
+  },
+  dateSectionTitle: {
+    fontWeight: "300",
+    fontFamily: Theme.OpenSansBold,
+    marginEnd: 8,
+  },
+  locationContainer: {},
+  locationFilterContainer: {
+    flexDirection: "row",
+    marginStart: 16,
+    padding: 4,
+  },
+  locationSectionTitle: {
+    marginEnd: 8,
   },
 });

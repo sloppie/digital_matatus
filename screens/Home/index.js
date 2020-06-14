@@ -10,6 +10,8 @@ import { Searchbar, Surface, TouchableRipple } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MapView, { PROVIDER_GOOGLE, Marker, OverlayComponent } from 'react-native-maps';
 
+const RNShake = require('react-native-shake');
+
 import * as Fragments from './fragments';
 import Theme from '../../theme';
 import { HOME_NAVIGATION_REF } from '../../routes/AppDrawer';
@@ -46,9 +48,9 @@ export default class Home extends React.Component {
       ["reportSaved", "reportToUpdate"],
       (err, result) => {
         
-        if(err)
+        if(err) {
           console.log("ERR_FETCHING");
-        else {
+        } else {
           let reportSaved; 
 
           try {
@@ -87,9 +89,16 @@ export default class Home extends React.Component {
       }
     );
 
+    RNShake.addEventListener("ShakeEvent", this._reportIncident.bind(this));
+  }
+
+  componentWillUnmount() {
+    RNShake.removeEventListener("ShakeEvent");
   }
 
   _openDrawer = () => HOME_NAVIGATION_REF.openDrawer();
+
+  _reportIncident = () => HOME_NAVIGATION_REF.navigate("Report");
 
   _handleTextChange = (text) => {
 

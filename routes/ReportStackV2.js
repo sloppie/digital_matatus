@@ -1,6 +1,6 @@
 import React from 'react'; 
 import { createStackNavigator } from '@react-navigation/stack';
-import { ReportV2, CategoryDefinition, SetReminder, NumberPlate } from './../screens';
+import { Report, CategoryDefinition, SetReminder, NumberPlate } from './../screens';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
@@ -20,7 +20,7 @@ export default () => (
   >
     <Stack.Screen 
       name="ReportIncident"
-      component={ReportV2}
+      component={Report}
       options={{
         title: "Report Incident",
       headerLeft: (props) => (

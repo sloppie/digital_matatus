@@ -5,9 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeStack from './HomeStack';
 import ReportStack from './ReportStack';
 import ReportViewStack from './ReportViewStack';
-import ReportStackV2 from './ReportStackV2';
 
-// ICONS
 
 // home icon
 function HomeIcon({ focused, color, size}) {
@@ -82,6 +80,13 @@ export default () => (
     minSwipeDistance={30}
     edgeWidth={100}
   >
+    <AppDrawer.Screen
+      name="Home"
+      component={Home}
+      options={{
+        drawerIcon: (props) => <HomeIcon {...props} />
+      }}
+    />
     <AppDrawer.Screen 
       name="Report"
       component={Report}
@@ -90,21 +95,14 @@ export default () => (
         drawerIcon: (props) => <ReportIcon {...props} />
       }}
     />
-    <AppDrawer.Screen 
-      name="ReportV2"
+    {/* <AppDrawer.Screen 
+      name="Report"
       component={ReportV2}
       options={{
         unmountOnBlur: true,
         drawerIcon: (props) => <ReportIcon {...props} />
       }}
-    />
-    <AppDrawer.Screen
-      name="Home"
-      component={Home}
-      options={{
-        drawerIcon: (props) => <HomeIcon {...props} />
-      }}
-    />
+    /> */}
     <AppDrawer.Screen 
       name="ViewReports"
       component={ViewReports}

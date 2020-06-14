@@ -154,7 +154,7 @@ export default class ReportDetails extends React.PureComponent {
 const styles = StyleSheet.create({
   screen: {
     // backgroundColor: Theme.PrimaryColor,
-    backgroundColor: "#121212",
+    // backgroundColor: "#121212",
     height: "100%",
   },
   flatList: {

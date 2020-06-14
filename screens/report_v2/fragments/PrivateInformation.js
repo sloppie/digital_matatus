@@ -1,10 +1,24 @@
 import React from 'react';
 import { View, Dimensions, StyleSheet, ToastAndroid } from 'react-native';
-import { Switch, Card, Colors, Caption, FAB, Title, Headline, Surface, Button } from 'react-native-paper';
+import { Switch, Card, Colors, Caption, FAB, Title, Headline, Surface, Button, List, Divider } from 'react-native-paper';
 import BottomSheet from 'reanimated-bottom-sheet';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import Theme from '../../../theme';
 
 let TextInput = null;
+
+const queryTitles = Object.freeze({
+  incidentDescriptionQueries: "Incident Description",
+  culpritDescriptionQueries: "Culprit Description",
+  privateInformationQueries: "Private Information"
+});
+
+const queryTabNames = Object.freeze({
+  incidentDescriptionQueries: "IncidentDescription",
+  culpritDescriptionQueries: "CulpritDescription",
+  privateInformationQueries: "PrivateInformation"
+});
 
 export default class PrivateInformation extends React.PureComponent {
 
@@ -20,6 +34,7 @@ export default class PrivateInformation extends React.PureComponent {
       email: "",
       submitDisabled: true,
       activeSnap: 0, // this will be used with the mechanical snapping of the BottomSheet
+      queries: null, // this is the queries from the data that is to be submitted 
     };
 
   }
@@ -93,26 +108,122 @@ export default class PrivateInformation extends React.PureComponent {
   }
 
   _BSLayout = ({nativeEvent}) => {
-    console.log(nativeEvent)
+    console.log(nativeEvent);
   }
 
   _renderHeader = () => (
-    <View style={styles.bottomSheetHeader}>
-      <Icon name="drag-horizontal" size={30} />
-    </View>
+    this.state.activeSnap < 2 ?
+      <View style={styles.bottomSheetHeader}>
+        <Button 
+          icon="chevron-up" 
+          size={30} 
+          color={Theme.PrimaryColor}
+          onPress={this._viewAllQueries}>
+            Expand
+        </Button>
+        {
+          !this.state.submitDisabled?
+            <Button 
+              style={{}} 
+              mode="contained"
+              disabled={this.state.submitDisabled}
+              onPress={this._submit}>
+                Submit
+            </Button>
+          : null
+        }
+      </View>
+    :
+      <View style={styles.bottomSheetHeaderFull}>
+        <Title style={{textAlign: "center", flex: 5}}>Submit Report</Title>
+        <Button 
+          style={styles.headerButton} 
+          mode="contained"
+          disabled={this.state.submitDisabled}
+          onPress={this._submit}>
+            Submit
+        </Button>
+        <Divider />
+      </View>
   );
 
+  _renderQueryBadges = () => {
+    
+    if(this.state.queries !== null) {
+
+      let badges = Object.keys(this.state.queries).map((query, index) => (
+        this.state.queries[query].length > 0 ?
+         <List.Item 
+          left={props => <List.Icon {...props} icon="file-alert-outline" color={Colors.red500} />}
+          title={`${queryTitles[query]} warnings`}
+          description={`Queries with regard to the ${queryTitles[query]} information input.`}
+          onPress={this._viewAllQueries}
+          key={index.toString()}
+         />
+        : null
+      ));
+
+      return badges;
+    } else {
+      return (
+        <Headline>No impending Queries</Headline>
+      );
+    }
+
+  }
+
+  _renderAllQueries = () => (
+    Object.keys(this.state.queries).map(query => {
+      
+      if(this.state.queries[query].length) {
+        return (
+          <>
+            <List.Section
+              title={`${queryTitles[query]} warnings`}
+            />
+            {this.state.queries[query].map((iq, index) => (
+              <List.Item 
+                left={props => <List.Icon {...props} icon="alert-outline" color={iq.priority? "red": "blue"} size={30} />}
+                title={iq.title}
+                description={iq.description}
+                onPress={this._navigateToQuery.bind(this, query)}
+                key={`query${index.toString()}`}
+              />
+            ))}
+          </>
+        );
+      } else {
+        return null;
+      }
+
+    })
+  );
+
+  _viewAllQueries = () => {
+    this.bottomSheetRef.current.snapTo(2);
+    this.setState({activeSnap: 2});
+  }
+
+  _navigateToQuery = (query) => {
+    // close BottomSheet
+    this.bottomSheetRef.current.snapTo(0);
+    // this was set because the 
+    this.setState({activeSnap: 0})
+    // navigate back to the query
+    this.props.navigation.navigate(queryTabNames[query]);
+  }
+
   _renderContent = () => (
+    (this.state.activeSnap < 2)?
     <View 
-      style={(this.state.activeSnap < 2)? styles.bottomSheetContent: styles.bottomSheetContentFull}
+      style={styles.bottomSheetContent}
     >
       <Headline style={styles.bottomSheetTitle}>Pending Issues</Headline>
-      <FAB 
-        icon="file-send"
-        label="Submit Report"
-        disabled={this.state.submitDisabled} 
-        style={styles.submitButton}
-      />
+      {this._renderQueryBadges()}
+    </View>
+    : 
+    <View style={styles.bottomSheetContentFull}>
+      {this._renderAllQueries()}
     </View>
   );
 
@@ -136,10 +247,23 @@ export default class PrivateInformation extends React.PureComponent {
   }
 
   _verifyInformation = () => {
-    let submitDisabled = this.props._getInformation();
-    console.log("Submit disabled: " + submitDisabled);
-    this.setState({submitDisabled});
+    let response = this.props._getInformation();
+    // console.log("Submit disabled: " + submitDisabled);
+
+    // the block below makes it easier to render if there are no impending queries
+    let submitDisabled = Object.keys(response.queries).some(query => response.queries[query].some(alerts => alerts.priority));
+    if(response.has_query)
+      this.setState({submitDisabled, queries: response.queries});
+    else
+      this.setState({submitDisabled: false});
+
     this.bottomSheetRef.current.snapTo(1);
+  }
+
+  _submit = () => { 
+    this.bottomSheetRef.current.snapTo(0);
+    this.setState({activeSnap: 0});
+    this.props._sendVerifiedData(); // send the data
   }
 
   render() {
@@ -168,14 +292,15 @@ export default class PrivateInformation extends React.PureComponent {
             : null 
           }
         </View>
-        <Button 
+        <FAB 
           icon="file-send"
           label="Verify Information"
           onPress={this._verifyInformation}
           style={styles.fab}
-        >
-          Verify Information
-        </Button>
+          mode="contained"
+        />
+          {/* Verify Information
+        </Button> */}
         <BottomSheet 
           ref={this.bottomSheetRef}
           snapPoints={[0, "50%", "90%"]}
@@ -224,11 +349,13 @@ const styles = StyleSheet.create({
   },
   fab: {
     elevation: 0,
-    zIndex: 0
+    zIndex: 0,
+    alignSelf: "center",
+    width: Dimensions.get("window").width - 64,
+    backgroundColor: Theme.PrimaryColor,
+    // marginTop: 8,
   },
   bottomSheet: {
-    // position: "absolute",
-    // bottom: 0,
     elevation: 3,
     zIndex: 3,
     backgroundColor: "white",
@@ -239,20 +366,45 @@ const styles = StyleSheet.create({
   },
   bottomSheetHeader: {
     backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
+    // alignItems: "center",
+    // justifyContent: "center",
     width: Dimensions.get("window").width,
+    borderTopStartRadius: 20,
+    borderTopEndRadius: 20,
+  },
+  bottomSheetHeaderFull: {
+    backgroundColor: "white",
+    // alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    width: Dimensions.get("window").width,
+    borderTopStartRadius: 20,
+    borderTopEndRadius: 20,
+    padding: 8,
+  },
+  headerButton: {
+    alignSelf: "flex-end",
+    marginRight: 16,
+    flex: 1,
   },
   bottomSheetContent: {
     backgroundColor: "white",
     alignSelf: "stretch",
-    height: (Dimensions.get("window").height * 0.5)
+    height: (Dimensions.get("window").height * 0.5),
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 5,
+    shadowOpacity: 0.4,
   },
   // for the full bottom sheet (screen 90%)
   bottomSheetContentFull: {
-    backgroundColor: "purple",
+    backgroundColor: "white",
     alignSelf: "stretch",
-    height: Dimensions.get("window").height
+    height: Dimensions.get("window").height,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 5,
+    shadowOpacity: 0.4,
   },
   bottomSheetTitle: {
     textAlign: "center",
@@ -260,5 +412,7 @@ const styles = StyleSheet.create({
   submitButton: {
     alignSelf: "center",
     width: Dimensions.get("window").width - 64,
+    marginTop: 8,
+    backgroundColor: Theme.PrimaryColor,
   },
 });

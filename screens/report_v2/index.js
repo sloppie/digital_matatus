@@ -185,7 +185,7 @@ export default class Report extends React.PureComponent {
     // setTimeout(() => this._scrollTo("DataVerification"), 100);
 
     // bool used by the PrivateInformation BottomSheet to determine whether to activate the Submit button
-    return has_query; 
+    return {has_query, queries}; 
   }
 
   _verifyID = (incidentDescription) => {
@@ -218,27 +218,6 @@ export default class Report extends React.PureComponent {
     if(location)
       locationType = (typeof incidentDescription.location.type == "string")? incidentDescription.location.type !== "": false; 
 
-    if(!videos)
-      queries.push({
-        title: "No video files attached",
-        description: "We advise attaching of any video evidence if available",
-        priority: false // LOW
-      });
-
-    if(!photos)
-      queries.push({
-        title: "No photos attached",
-        description: "We advise attaching of any photo evidence if available",
-        priority: false // LOW
-      });
-
-    if(!audio)
-      queries.push({
-        title: "no audio files attached",
-        description: "we advise attaching of any audio evidence if available",
-        priority: false // LOW
-      });
-
     if(!location)
       queries.push({
         title: "no location attached",
@@ -260,6 +239,28 @@ export default class Report extends React.PureComponent {
         priority: true // HIGH
       });
     
+
+    if(!videos)
+      queries.push({
+        title: "No video files attached",
+        description: "We advise attaching of any video evidence if available",
+        priority: false // LOW
+      });
+
+    if(!photos)
+      queries.push({
+        title: "No photos attached",
+        description: "We advise attaching of any photo evidence if available",
+        priority: false // LOW
+      });
+
+    if(!audio)
+      queries.push({
+        title: "no audio files attached",
+        description: "we advise attaching of any audio evidence if available",
+        priority: false // LOW
+      });
+
     return queries;
   }
 
@@ -267,7 +268,7 @@ export default class Report extends React.PureComponent {
     let queries = [];
     let nameIssue = culpritDescription.saccoName == "ALL" || culpritDescription != "";
     let culpritTypeIssue = culpritDescription.culpritType !== "";
-    let routeID = culpritDescription.routeID !== "";
+    let routeID = culpritDescription.routeID !== "" && culpritDescription.routeID !== undefined;
 
     if(!nameIssue)
       queries.push({
@@ -318,9 +319,6 @@ export default class Report extends React.PureComponent {
       REPORT_NAVIGATION_REF = require('../../routes/AppDrawer').REPORT_NAVIGATION_REF;
     
     const onSuccess = (payload) => {
-      // use payload here
-      // console.log(payload);
-      // this.setState({snackBarVisible: true});
       
       if(this.state.response.incidentDescription.location.type == "INSIDE_BUS") {
         AsyncStorage.setItem("reportToUpdate", JSON.stringify(payload.report_id));
@@ -346,7 +344,7 @@ export default class Report extends React.PureComponent {
         AsyncStorage.setItem("savedReport", JSON.stringify(this.state.response));
       }
 
-      REPORT_NAVIGATION_REF.navigate("Home")
+      REPORT_NAVIGATION_REF.navigate("Home");
     } 
 
     API.fileReport(this.state.response, onSuccess, onErr);
@@ -365,6 +363,7 @@ export default class Report extends React.PureComponent {
         culpritDescriptionRef={this.culpritDescriptionRef}
         privateInformationRef={this.privateInformationRef}
         _getInformation={this._getInformation}
+        _sendVerifiedData={this._sendVerifiedData}
       />
     );
   }

@@ -26,6 +26,7 @@ export default class TabLayout extends React.PureComponent {
       <IncidentDescription
         {...props}
         ref={this.props.incidentDescriptionRef}
+        culpritDescriptionRef={this.props.culpritDescriptionRef}
         secondaryNavigation={this.props.secondaryNavigation}
       />
     </>
@@ -45,6 +46,7 @@ export default class TabLayout extends React.PureComponent {
       ref={this.props.privateInformationRef}
       secondaryNavigation={this.props.secondaryNavigation}
       _getInformation={this.props._getInformation}
+      _sendVerifiedData={this.props._sendVerifiedData}
     />
   );
 
@@ -55,11 +57,11 @@ export default class TabLayout extends React.PureComponent {
         tabBar={this._renderTabBar}
       >
         <TopTab.Screen 
-          name="HarassmentDescription" 
+          name="IncidentDescription" 
           component={this._renderHarassmentDescriptionTab}
         />
         <TopTab.Screen 
-          name="IncidentDescription" 
+          name="CulpritDescription" 
           component={this._renderCulpritDescriptionTab}
         />
         {/**

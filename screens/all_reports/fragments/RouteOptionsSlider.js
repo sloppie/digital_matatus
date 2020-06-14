@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet } from 'react-native';
 import { Chip, Divider } from 'react-native-paper';
 
 
-export default class RouteOptionsSlider extends React.PureComponent {
+export default class RouteOptionsSlider extends React.Component {
 
   constructor(props) {
     super(props);
@@ -23,6 +23,7 @@ export default class RouteOptionsSlider extends React.PureComponent {
       this.setState({chipSelected});
       
       this.props._fetchRouteReports(route_id);
+      // unhealthy (chocked updated to the component unless the update is forced by the Chip press)
     });
   }
 
@@ -33,6 +34,7 @@ export default class RouteOptionsSlider extends React.PureComponent {
         onPress={this._fetchRouteReports.bind(this, route.route_id, index)}
         key={index.toString()}
         style={styles.chip}
+        mode="outlined"
       >
         {`Route ${route.route_short_name}`}
       </Chip>
@@ -56,6 +58,7 @@ export default class RouteOptionsSlider extends React.PureComponent {
 
 const styles = StyleSheet.create({
   optionSlider: {
+    minHeight: 50,
     maxHeight: 50,
     padding: 4,
     paddingBottom: 8,

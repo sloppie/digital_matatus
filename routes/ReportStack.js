@@ -5,6 +5,20 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 import { REPORT_NAVIGATION_REF } from './AppDrawer';
+import Theme from '../theme';
+
+function LeftIcon(props) {
+  return (
+    <Icon 
+      {...props}
+      onPress={REPORT_NAVIGATION_REF.openDrawer}
+      name="menu"
+      color="white"
+      size={30}
+    />
+  );
+}
+
 
 const Stack = createStackNavigator();
 
@@ -23,17 +37,9 @@ export default () => (
       component={Report}
       options={{
         title: "Report Incident",
-      headerLeft: (props) => (
-        <Icon 
-          {...props} 
-          onPress={REPORT_NAVIGATION_REF.openDrawer}
-          name="menu"
-          color="white"
-          size={30}
-        />
-      ),
+        headerLeft: LeftIcon,
         headerLeftContainerStyle: {
-          padding: 16
+          padding: 16,
         },
       }}
     />

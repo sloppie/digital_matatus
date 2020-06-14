@@ -22,7 +22,7 @@ export default class ReportsList extends React.PureComponent {
       (index) => {return "REPORT"},
       (type, dim) => {
         dim.width = SCREEN_WIDTH;
-        dim.height = 129;
+        dim.height = 177;
       }
     );
 

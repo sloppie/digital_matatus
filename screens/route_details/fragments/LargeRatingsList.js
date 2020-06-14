@@ -11,7 +11,12 @@ import { API } from '../../../utilities';
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 
-class Message extends React.PureComponent {
+class Message extends React.Component {
+
+  // component should not be updateable to increase app speed
+  shouldComponentUpdate() {
+    return false;
+  }
 
   _viewReport = () => {
     ToastAndroid.show(`show the ${this.props.messageTitle} thread`, ToastAndroid.SHORT);

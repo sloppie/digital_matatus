@@ -1,14 +1,198 @@
 import React from 'react';
-import { Dimensions, ActivityIndicator, StyleSheet, ToastAndroid } from 'react-native';
-import { List } from 'react-native-paper';
+import { View, Dimensions, ActivityIndicator, StyleSheet, ToastAndroid } from 'react-native';
+import { List, Title, Chip, Divider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { DataProvider, RecyclerListView, LayoutProvider } from 'recyclerlistview';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import Theme from '../../../theme';
 import { API } from '../../../utilities';
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
+
+
+const year = 1000 * 60 * 60 * 24 * 365;
+
+
+class Filters extends React.PureComponent {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      fromDate: new Date().getTime() - year,
+      toDate: new Date().getTime(), // by default is the time it is when the screen renders
+      activeDate: "", // help know which date to set
+      filterByDate: false,
+      filterByLocationType: false,
+      showDatePicker: false,
+      location_type: "",
+    };
+  }
+
+  toggleDateFilter = () => this.setState({filterByDate: !this.state.filterByDate});
+
+  toggleLocationTypeFilter = () => this.setState({filterByLocationType: !this.state.filterByLocationType});
+
+  revealDateTimePicker = (activeDate) => this.setState({activeDate, showDatePicker: true})
+
+  _renderDateFilters = () => (
+    <>
+      <View style={styles.dateContainer}>
+        <Title style={styles.categoryTitle}>Date Filters</Title>
+        <View style={styles.dateSectionContainer}>
+          <Title style={styles.dateSectionTitle}>From: </Title>
+          <Chip 
+            mode="outlined"
+            onPress={this.revealDateTimePicker.bind(this, "fromDate")}>
+              {new Date(this.state.fromDate).toDateString()}
+          </Chip>
+        </View>
+        <View style={styles.dateSectionContainer}>
+          <Title style={styles.dateSectionTitle}>To: </Title>
+          <Chip 
+            mode="outlined"
+            onPress={this.revealDateTimePicker.bind(this, "toDate")}>
+              {new Date(this.state.toDate).toDateString()}
+          </Chip>
+        </View>
+      </View>
+      <Divider />
+    </>
+  );
+
+  _setDate = (event, date) => {
+    this.setState({
+      [this.state.activeDate]: date.getTime(),
+      showDatePicker: false,
+    });
+  }
+
+  renderDatePicker = () => {
+
+    // if(!DateTimePicker)
+    //   DateTimePicker = require('@react-native-community/datetimepicker');
+
+    return (
+      <DateTimePicker 
+        mode="date"
+        onChange={this._setDate}
+        value={this.state[this.state.activeDate]}
+      />
+    );
+  }
+
+  _setLocationFilter = (location_type) => this.setState({location_type});
+
+  _renderLocationFilters = () => (
+    <View style={styles.locationContainer}>
+      <Title style={styles.categoryTitle}>Location Filters</Title>
+      <View style={styles.locationFilterContainer}>
+        <Chip
+          mode="outlined"
+          style={styles.filterCategoryChip}
+          selected={this.state.location_type === "INSIDE_BUS"}
+          onPress={this._setLocationFilter.bind(this, "INSIDE_BUS")}
+        >
+          Inside Bus
+        </Chip>
+        <Chip
+          mode="outlined"
+          style={styles.filterCategoryChip}
+          selected={this.state.location_type === "ON_BUS_TERMINAL"}
+          onPress={this._setLocationFilter.bind(this, "ON_BUS_TERMINAL")}
+        >
+          On Bus Entrance
+        </Chip>
+        <Chip
+          mode="outlined"
+          style={styles.filterCategoryChip}
+          selected={this.state.location_type === "BUS_TERMINAL"}
+          onPress={this._setLocationFilter.bind(this, "BUS_TERMINAL")}
+        >
+          On Bus Terminal
+        </Chip>
+      </View>
+      <Divider />
+    </View>
+  );
+
+  /**
+   * This method gets the filters enlisted by the user and packs them in an object that will be unpacked
+   * by `API.filterByCategory`
+   * 
+   * @returns {{date: String, location_type: String}} an object of all filters
+   */
+  getFilters = () => {
+    let filters = {};
+    filters.date = `${this.state.fromDate}:${this.state.toDate}`;
+
+    if(this.state.location_type)
+      filters.location_type = this.state.location_type;
+    
+    return filters;
+  }
+
+  render() {
+
+    return (
+      <>
+        {/* <Title style={styles.categoryTitle}>Filter by</Title> */}
+        <View style={styles.filterWrapper}>
+          {/* <Chip 
+            selected={this.state.filterByDate} 
+            style={styles.filterCategoryChip} 
+            onPress={this.toggleDateFilter}
+            mode="outlined">
+              Date
+          </Chip> */}
+          <Chip 
+            selected={this.state.filterByDate} 
+            style={styles.filterCategoryChip} 
+            onPress={this.toggleDateFilter}
+            mode="outlined">
+              All
+          </Chip>
+          <Chip 
+            selected={this.state.filterByDate} 
+            style={styles.filterCategoryChip} 
+            onPress={this.toggleDateFilter}
+            mode="outlined">
+              Past 7 Days
+          </Chip>
+          <Chip 
+            selected={this.state.filterByDate} 
+            style={styles.filterCategoryChip} 
+            onPress={this.toggleDateFilter}
+            mode="outlined">
+              Past 14 Days
+          </Chip>
+          <Chip 
+            selected={this.state.filterByDate} 
+            style={styles.filterCategoryChip} 
+            onPress={this.toggleDateFilter}
+            mode="outlined">
+              Past 30 Days
+          </Chip>
+          {/* <Chip 
+            style={styles.filterCategoryChip} 
+            selected={this.state.filterByLocationType} 
+            onPress={this.toggleLocationTypeFilter}
+            mode="outlined">
+              Location Type
+          </Chip> */}
+        </View>
+        <Divider />
+        {this.state.filterByDate ? this._renderDateFilters(): null}
+        {this.state.filterByLocationType ? this._renderLocationFilters(): null}
+        <Divider />
+        {this.state.showDatePicker ? this.renderDatePicker(): null}
+      </>
+    );
+  }
+
+}
 
 
 class Message extends React.Component {
@@ -54,6 +238,10 @@ export default class LargeRatingsList extends React.PureComponent {
     this.state = {
       dataProvider: [],
       fetching: true,
+      filterByAll: true,
+      filterBy7: false,
+      filterBy14: false,
+      filterBy30: false,
     };
 
     this.layoutProvider = new LayoutProvider(
@@ -71,6 +259,74 @@ export default class LargeRatingsList extends React.PureComponent {
       this.props.route.route_id,
       this._setReports,
       this._setReports.bind(this, [])
+    );
+  }
+
+  filterReportsByAll = () => {
+
+    this.setState({
+      filterByAll: true,
+      filterBy7: false,
+      filterBy14: false,
+      filterBy30: false
+    });
+
+    API.filterByCategories(
+      {route_id: this.props.route.route_id},
+      this._setReports,
+      this._setReports.bind([])
+    );
+  }
+
+  filterReportsBy7 = () => {
+    this.setState({
+      filterByAll: false,
+      filterBy7: true,
+      filterBy14: false,
+      filterBy30: false
+    });
+    let to = new Date().getTime();
+    let from = to - (1000 * 60 * 60 * 24 * 7);
+    let date = `${from}:${to}`;
+    API.filterByCategories(
+      {route_id: this.props.route.route_id, date},
+      this._setReports,
+      this._setReports.bind([])
+    );
+  }
+
+  filterReportsBy14 = () => {
+    this.setState({
+      filterByAll: false,
+      filterBy7: false,
+      filterBy14: true,
+      filterBy30: false
+    });
+    let to = new Date().getTime();
+    let from = to - (1000 * 60 * 60 * 24 * 14);
+    let date = `${from}:${to}`;
+    API.filterByCategories(
+      {route_id: this.props.route.route_id, date},
+      this._setReports,
+      this._setReports.bind([])
+    );
+  }
+
+  filterReportsBy30 = () => {    
+    this.setState({
+      filterByAll: false,
+      filterBy7: false,
+      filterBy14: false,
+      filterBy30: true
+    });
+
+    let to = new Date().getTime();
+    let from = to - (1000 * 60 * 60 * 24 * 30);
+    let date = `${from}:${to}`;
+    API.filterByCategories(
+      {route_id: this.props.route.route_id, date},
+      this._setReports,
+      this._setReports.bind([])
     );
   }
 
@@ -119,11 +375,44 @@ export default class LargeRatingsList extends React.PureComponent {
       );
 
     return (
-      <RecyclerListView 
-        dataProvider={this.state.dataProvider}
-        layoutProvider={this.layoutProvider}
-        rowRenderer={this._rowRenderer}
-      />
+      <>
+        <View style={styles.filterWrapper}>
+          <Chip 
+            selected={this.state.filterByAll} 
+            style={styles.filterCategoryChip} 
+            onPress={this.filterReportsByAll}
+            mode="outlined">
+              All
+          </Chip>
+          <Chip 
+            selected={this.state.filterBy7} 
+            style={styles.filterCategoryChip} 
+            onPress={this.filterReportsBy7}
+            mode="outlined">
+              Past 7 Days
+          </Chip>
+          <Chip 
+            selected={this.state.filterBy14} 
+            style={styles.filterCategoryChip} 
+            onPress={this.filterReportsBy14}
+            mode="outlined">
+              Past 14 Days
+          </Chip>
+          <Chip 
+            selected={this.state.filterBy30} 
+            style={styles.filterCategoryChip} 
+            onPress={this.filterReportsBy30}
+            mode="outlined">
+              Past 30 Days
+          </Chip>
+        </View>
+        <Divider />
+        <RecyclerListView 
+          dataProvider={this.state.dataProvider}
+          layoutProvider={this.layoutProvider}
+          rowRenderer={this._rowRenderer}
+        />
+      </>
     );
   }
 
@@ -136,5 +425,38 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     fontFamily: Theme.OpenSansBold
+  },
+  categoryTitle: {
+    marginTop: 8,
+    marginStart: 8,
+  },
+  filterWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    padding: 8,
+  },
+  filterCategoryChip: {
+    marginEnd: 4,
+  },
+  dateContainer: {
+  },
+  dateSectionContainer: {
+    marginStart: 16,
+    flexDirection: "row",
+    marginBottom: 4,
+  },
+  dateSectionTitle: {
+    fontWeight: "300",
+    fontFamily: Theme.OpenSansBold,
+    marginEnd: 8,
+  },
+  locationContainer: {},
+  locationFilterContainer: {
+    flexDirection: "row",
+    marginStart: 16,
+    padding: 4,
+  },
+  locationSectionTitle: {
+    marginEnd: 8,
   },
 });

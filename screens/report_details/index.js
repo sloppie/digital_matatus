@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { SafeAreaView, Text, StyleSheet } from 'react-native';
 import { Card, Title, List, Divider, ToggleButton } from 'react-native-paper'; 
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -8,12 +8,16 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 // ADD TOGGLE BUTTON
 
 import * as Fragments from './fragments';
+import { ReportParser } from '../../utilities';
 
 const toggleButtonIcons = Object.freeze({
   photo: "image",
   video: "video",
   audio: "microphone-outline",
 });
+
+let ReportTab = null;
+let ReportDetailsTab = null;
 
 export default class ReportDetails extends React.PureComponent {
 
@@ -29,6 +33,7 @@ export default class ReportDetails extends React.PureComponent {
       incidentDescription: JSON.parse(incidentDescription),
       mediaVisible: "",
       attachedMedia: [],
+      report: new ReportParser(this.props.route.params.report)
     };
     console.log(JSON.stringify(this.state.incidentDescription.media, null, 2));
   }
@@ -72,16 +77,8 @@ export default class ReportDetails extends React.PureComponent {
 
   _renderMediaTab = () => {
 
-          //   (Object.keys(this.state.incidentDescription.media)[0]) ?
-          
     let mediaKeys = Object.keys(this.state.incidentDescription.media);
 
-    // let attachedMedia = mediaKeys.filter(media => this.state.incidentDescription.media[media].length !== 0);
-
-    // if(attachedMedia.length > 0)
-    //   this.setState({mediaVisible: attachedMedia[0]});
-    // else
-    //   return [];
     if(!this.state.mediaVisible)
       return (
             <List.Item 
@@ -115,6 +112,29 @@ export default class ReportDetails extends React.PureComponent {
     );
   }
 
+  _renderTabLayout = () => {
+    if(ReportTab === null)
+      ReportTab = require('./fragments').ReportTab;
+    
+    return (
+      <ReportTab 
+        secondaryNavigation={this.props.navigation}
+        report={this.props.route.params.report}
+      />
+    );
+  }
+
+  _renderReportDetailsTab = () => {
+    if(ReportDetailsTab === null)
+      ReportDetailsTab = require('./fragments').ReportDetailsTab;
+    
+    return (
+      <ReportDetailsTab 
+        report={this.props.route.params.report}
+      />
+    );
+  }
+
   render() {
 
     const renderFlags = (incidentDescription) => {
@@ -130,76 +150,13 @@ export default class ReportDetails extends React.PureComponent {
     }
 
     return (
-      <ScrollView 
+      <SafeAreaView 
         style={styles.screen}
-        nestedScrollEnabled={true}
       >
-        <Icon 
-          name="chevron-left" 
-          size={30} 
-          style={styles.appBarIcon} 
-          onPress={this.props.navigation.goBack}
-        />
-        <Title style={styles.screenLabel}>{this.props.route.params.report._id}</Title>
-          {Object.keys(this.state.incidentDescription.media).length > 0 ? this._renderMediaTab(): 
-            <List.Item 
-              left={props => <List.Icon icon="cancel" color="white" />}
-              title="No media"
-              description="No media was attached to this report"
-            />
-          }
-        <List.Section
-          title="IncidentDescription"
-          titleStyle={styles.sectionTitleStyle}
-        >
-          <List.Item 
-            left={props => <List.Icon {...props} icon="calendar-clock" color="white" />}
-            title={new Date(this.state.incidentDescription.date).toDateString()}
-            titleStyle={styles.itemTitle}
-            description="Date of the occurrence"
-            descriptionStyle={styles.descriptionStyle}
-            style={styles.itemStyle}
-          />
-          <List.Item 
-            left={props => <List.Icon {...props} icon="flag-triangle" color="white" />}
-            title={renderFlags(this.state.incidentDescription)}
-            titleStyle={styles.itemTitle}
-            description="Flags"
-            descriptionStyle={styles.descriptionStyle}
-            style={styles.itemStyle}
-          />
-          <List.Item 
-            left={props => <List.Icon {...props} icon="map-marker" color="white" />}
-            title={this.state.incidentDescription.location.type}
-            titleStyle={styles.itemTitle}
-            description="Location where it ocurred"
-            descriptionStyle={styles.descriptionStyle}
-            style={styles.itemStyle}
-          />
-        </List.Section>
-        <Divider style={styles.divider} />
-        <List.Section
-          title="Culprit Description"
-          titleStyle={styles.sectionTitleStyle}
-        >
-          <List.Item 
-            left={props => <List.Icon {...props} icon="bus" color="white" />}
-            title="Sacco Implicated"
-            titleStyle={styles.itemTitle}
-            description={this.state.culpritDescription.saccoName}
-            descriptionStyle={styles.descriptionStyle}
-            style={styles.itemStyle}
-          />
-          <List.Item 
-            left={props => <List.Icon icon="face" color="white" />}
-            title={this.state.culpritDescription.culpritType}
-            titleStyle={styles.itemTitle}
-            description="Culprit Involved"
-            descriptionStyle={styles.descriptionStyle}
-            style={styles.itemStyle}
-          />
-        </List.Section>
-      </ScrollView>
+        {
+          (this.state.report.hasMedia()) ? this._renderTabLayout(): this._renderReportDetailsTab()
+        }
+      </SafeAreaView>
     );
   }
 
@@ -207,7 +164,8 @@ export default class ReportDetails extends React.PureComponent {
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: "#121212",
+    // backgroundColor: "#121212",
+    height: "100%",
   },
   screenLabel: {
     marginTop: 16,

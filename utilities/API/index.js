@@ -137,9 +137,12 @@ export const updateMatatuDetails = (report_id, payload, onSuccess, onErr) => {
  */
 export const isUser = (email, onSuccess, onErr) => {
 
+  console.log('Checking for user...' + email);
+
   fetch(`http://192.168.43.89:3000/api/user/isUser/${email}`)
     .then(response => response.json())
     .then(data => {
+      console.log(data);
 
       if (data)
         onSuccess(data);
@@ -205,6 +208,7 @@ export const fetchRouteReports = (route_id, onSuccess, onErr) => {
  * @param {() => {}} onErr callback to be executed on error
  */
 export const filterByCategories = (filterObject, onSuccess, onErr) => {
+  // console.log(filterObject)
   let filterKeys = Object.keys(filterObject);
   let length = filterKeys.length;
 

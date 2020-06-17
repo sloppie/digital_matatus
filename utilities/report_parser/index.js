@@ -12,19 +12,44 @@ export default class ReportParser {
 
   constructor(report) {
     this.report = report;
+    /**
+     * ```js
+     * {
+     *  "date": 1591438494412,
+     *  "location": {
+     *    "coordinates": {
+     *      "latitude": -1.1843883333333334,
+     *      "longitude": 36.68218
+     *    },
+     *    "type": "INSIDE_BUS"
+     *  },
+     *  "harassmentFlags": {
+     *    "Verbal": [
+     *      "Refering to an adult as a \\"girl\\", \\"hunk\\", \\"babe\\" or \\"honey\\"",
+     *      "Whistling at someone, e.g:cat calls"
+     *    ]
+     *  },
+     *  "media": {
+     *    "audio": [],
+     *    "photo": [],
+     *    "video": []
+     *  }
+     * }'
+     * ```
+     */
     this.incidentDescription = JSON.parse(report.incidentDescription);
     this.culpritDescription = JSON.parse(report.culpritDescription);
     // essentials
     this._id = report._id;
     this.date = new Date(this.incidentDescription.date).toDateString();
-    this.route_short_name = require('../../GTFS_FEED/routes/routes.json')[this.culpritDescription.routeID];
+    this.route_short_name = require('../../GTFS_FEED/routes/routes.json')[this.culpritDescription.routeID].route_short_name;
   }
 
   get location() {
     return Object.freeze({
-      INSIDE_BUS: `Inside a bus ${this.culpritDescription.saccoName}`,
-      ON_BUS_TERMINAL: `On the bus terminal of route ${this.route_short_name}`,
-      ON_BUS_ENTRANCE: `On the bus entrance of route ${this.route_short_name}`
+      INSIDE_BUS: `Inside a bus from ${this.culpritDescription.saccoName}`,
+      BUS_TERMINAL: `On the bus terminal of RT ${this.route_short_name}`,
+      ON_BUS_ENTRANCE: `On the bus entrance of RT ${this.route_short_name}`
     });
   }
 
@@ -74,6 +99,42 @@ export default class ReportParser {
    */
   getLocation() {
     return this.location[this.incidentDescription.location.type];
+  }
+
+  getHarassmentFlags() {
+    return this.incidentDescription.harassmentFlags;
+  }
+
+  /**
+   * Loops through all media type keys to look if there is any media that is stored
+   * in relation with the respective report
+   * 
+   * @returns {Boolean} boolean on whether there is any media found linked to the report
+   */
+  hasMedia() {
+    return Object.keys(this.incidentDescription.media)
+      .some(mediaType => this.incidentDescription.media[mediaType].length > 0);
+  }
+
+  /**
+   * @returns {Array<String>} the array of link to photos linked to the respective report
+   */
+  fetchPhotos() {
+    return this.incidentDescription.media.photo;
+  }
+
+  /**
+   * @returns {Array<String>} the array of link to videos linked to the respective report
+   */
+  fetchVideos() {
+    return this.incidentDescription.media.video;
+  }
+
+  /**
+   * @returns {Array<String>} the array of link to audios linked to the respective report
+   */
+  fetchAudios() {
+    return this.incidentDescription.media.audio;
   }
 
 }

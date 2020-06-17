@@ -24,7 +24,7 @@ class Filters extends React.PureComponent {
       filterByDate: false,
       filterByLocationType: false,
       showDatePicker: false,
-      location_type: ""
+      location_type: "",
     };
   }
 
@@ -115,6 +115,22 @@ class Filters extends React.PureComponent {
     </View>
   );
 
+  /**
+   * This method gets the filters enlisted by the user and packs them in an object that will be unpacked
+   * by `API.filterByCategory`
+   * 
+   * @returns {{date: String, location_type: String}} an object of all filters
+   */
+  getFilters = () => {
+    let filters = {};
+    filters.date = `${this.state.fromDate}:${this.state.toDate}`;
+
+    if(this.state.location_type)
+      filters.location_type = this.state.location_type;
+    
+    return filters;
+  }
+
   render() {
 
     return (
@@ -155,6 +171,11 @@ const LOCATION_TYPES = Object.freeze({
 
 export default class Stats extends React.Component {
 
+  /**
+   * this is used to access the Filters Component (to get the filters Object)
+   */
+  filtersRef: React.RefObject<Filters> = React.createRef();
+
   constructor(props) {
     super(props);
 
@@ -165,7 +186,7 @@ export default class Stats extends React.Component {
       "ON_BUS_ENTRANCE": 0,
       date: new Date(),
       startDate: null,
-      endDate: null
+      endDate: null,
     };
 
   }
@@ -177,6 +198,8 @@ export default class Stats extends React.Component {
       this._setTotal.bind(this, [])
     );
 
+    this.fetchFilters();
+    setTimeout(this.fetchFilters, 5000);
     this._getLocationGraph();
   }
 
@@ -259,6 +282,15 @@ export default class Stats extends React.Component {
 
   sliceColors = [Colors.red500, Colors.green400, Colors.yellow500];
 
+  fetchFilters = () => {
+    let filters = this.filtersRef.current.getFilters();
+    API.filterByCategories(
+      {report_id: this.props.route.route_id, ...filters},
+      (response) => console.log(response.length),
+      (err) => {console.log(err)}
+    );
+  }
+
   render() {
     let width = (Dimensions.get("window").width);
 
@@ -284,7 +316,7 @@ export default class Stats extends React.Component {
 
 
       <ScrollView style={{flex: 1, width: "100%", height: "100%"}}>
-        <Filters />
+        <Filters ref={this.filtersRef}/>
         <List.Section 
           title="Graph of incident filtered by location"
         />

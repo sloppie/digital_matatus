@@ -231,6 +231,7 @@ export default class RouteDetails extends React.PureComponent {
 
     return (
       <Fragments.DetailsTab 
+        style={styles.detailsTab}
         listItemAction={this.listItemActions[0]}
         data={{...this.state.comprehensive_routes}}
         secondaryNavigation={this.props.navigation}
@@ -302,5 +303,8 @@ const styles = StyleSheet.create({
   },
   flatList: {
     height: "30%"
+  },
+  detailsTab: {
+    height: Math.floor(Dimensions.get('window').height * 0.6),
   },
 });

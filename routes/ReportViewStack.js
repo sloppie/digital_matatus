@@ -5,6 +5,7 @@ import { AllReports, ReportDetails, ReportCulprit } from '../screens';
 
 import { VIEW_REPORT_NAVIGATION_REF } from './AppDrawer';
 import { View } from 'react-native';
+import Theme from '../theme';
 
 const Stack = createStackNavigator();
 
@@ -16,7 +17,8 @@ export default () => (
     screenOptions={{
       headerTintColor: "#fff",
       headerStyle: {
-        backgroundColor: "#444"
+        backgroundColor: Theme.PrimaryColor,
+        elevation: 0,
       },
     }}
   >
@@ -42,7 +44,7 @@ export default () => (
       name="ReportDetails" 
       component={ReportDetails} 
       options={{
-        headerShown: false,
+        // headerShown: false,
       }}
     />
     <Stack.Screen name="ReportCulprit" component={ReportCulprit} />

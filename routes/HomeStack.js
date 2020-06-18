@@ -7,7 +7,8 @@ import {
   RouteDetails,
   NumberPlate,
   ReportDetails,
-  ReportCulprit
+  ReportCulprit,
+  Camera,
 } from '../screens';
 
 const Stack = createStackNavigator();
@@ -17,6 +18,13 @@ export default () => (
     <Stack.Screen 
       name="Home" 
       component={Home} 
+      options={{
+        headerShown: false
+      }}
+    />
+    <Stack.Screen 
+      name="Camera" 
+      component={Camera} 
       options={{
         headerShown: false
       }}

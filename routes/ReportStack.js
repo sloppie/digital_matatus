@@ -1,4 +1,5 @@
 import React from 'react'; 
+import { View } from 'react-native'; 
 import { createStackNavigator } from '@react-navigation/stack';
 import { Report, CategoryDefinition, SetReminder, NumberPlate } from './../screens';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -16,6 +17,32 @@ function LeftIcon(props) {
       color="white"
       size={30}
     />
+  );
+}
+
+// We'll probably have to use events for the onPress on the Icons
+// The icons will emit an event when fired and the camera will respond
+// causing to either fire a video recording, or a picture capture
+function RightIcons() {
+  // FIRE_UP_CAMERA payload tells whether it'll be video or picture
+
+  return (
+    <View style={{flexDirection: "row", justifyContent: "center"}}>
+      <Icon 
+        onPress={REPORT_NAVIGATION_REF.openDrawer}
+        style={{padding: 8, marginLeft: 8}}
+        name="video-outline"
+        color="white"
+        size={30}
+      />
+      <Icon 
+        onPress={REPORT_NAVIGATION_REF.openDrawer}
+        style={{padding: 8, alignSelf: "center"}}
+        name="image-outline"
+        color="white"
+        size={24}
+      />
+    </View>
   );
 }
 
@@ -41,6 +68,7 @@ export default () => (
         headerLeftContainerStyle: {
           padding: 16,
         },
+        headerRight: RightIcons,
       }}
     />
     <Stack.Screen 

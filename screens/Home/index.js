@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Searchbar, Surface, TouchableRipple } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import MapView, { PROVIDER_GOOGLE, Marker, OverlayComponent } from 'react-native-maps';
+import MapView, { PROVIDER_OSMDROID, Marker, OverlayComponent } from 'react-native-maps-osmdroid';
 
 const RNShake = require('react-native-shake');
 
@@ -98,7 +98,8 @@ export default class Home extends React.Component {
 
   _openDrawer = () => HOME_NAVIGATION_REF.openDrawer();
 
-  _reportIncident = () => HOME_NAVIGATION_REF.navigate("Report");
+  // _reportIncident = () => HOME_NAVIGATION_REF.navigate("Report");
+  _reportIncident = () => this.props.navigation.navigate("Camera");
 
   _handleTextChange = (text) => {
 
@@ -204,7 +205,7 @@ export default class Home extends React.Component {
     return (
       <SafeAreaView style={styles.screen}>
         <MapView 
-          provider={PROVIDER_GOOGLE}
+          provider={PROVIDER_OSMDROID}
           initialRegion={{
             latitude: -1.28123,
             longitude: 36.822596,

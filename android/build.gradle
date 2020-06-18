@@ -8,6 +8,7 @@ buildscript {
         targetSdkVersion = 28
         playServicesVersion="17.0.0"
         firebaseMessagingVersion="20.2.0"
+        osmdroidVersion="6.1.6"
     }
     repositories {
         google()

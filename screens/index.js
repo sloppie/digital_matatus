@@ -10,6 +10,7 @@ import AllReports from './all_reports';
 import ReportDetails from './report_details';
 import ReportCulprit from './report_culprit';
 import NumberPlate from './number_plate';
+import Camera from './camera';
 // import ReportV2 from './report_v2';
 
 export {
@@ -25,5 +26,6 @@ export {
   ReportCulprit,
   SetReminder,
   NumberPlate,
+  Camera,
   // ReportV2,
 };

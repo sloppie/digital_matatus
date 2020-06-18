@@ -13,7 +13,7 @@ import {
   Card,
   List
 } from 'react-native-paper';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import MapView, { PROVIDER_OSMDROID, Marker } from 'react-native-maps-osmdroid';
 import Theme from '../../theme';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Fragments from './fragments';
@@ -252,7 +252,7 @@ export default class RouteDetails extends React.PureComponent {
         <SafeAreaView style={styles.screen}>
           <Card style={styles.card}>
             <MapView 
-              provider={PROVIDER_GOOGLE}
+              provider={PROVIDER_OSMDROID}
               initialRegion={{
                 latitude: -1.28123,
                 longitude: 36.822596,

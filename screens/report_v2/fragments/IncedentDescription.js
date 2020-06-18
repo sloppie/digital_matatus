@@ -108,6 +108,8 @@ export default class IncedentDescription extends React.Component {
     let options = {
     };
 
+    this._handleLocation();
+
   }
 
   componentWillUnmount() {
@@ -198,6 +200,7 @@ export default class IncedentDescription extends React.Component {
     if(this.state.location !== null) // prevents re-adding of location
       return;
 
+    ToastAndroid.show("Fetching location", ToastAndroid.SHORT);
     // REFACTOR!!!! BAD CODE WRITING
     if(Permissions.checkGeolocationPermission()) {
       Geolocation.getCurrentPosition(
@@ -205,6 +208,7 @@ export default class IncedentDescription extends React.Component {
           if (position["coords"] == undefined)
             ToastAndroid.show("Make sure location services are turned on on your phone", ToastAndroid.SHORT);
           else {
+            ToastAndroid.show("Location pinned successfully", ToastAndroid.SHORT);
             let { coords } = position;
 
             let location = {
@@ -230,6 +234,7 @@ export default class IncedentDescription extends React.Component {
             if (position["coords"] == undefined)
               ToastAndroid.show("Make sure location services are turned on on your phone", ToastAndroid.SHORT);
             else {
+              ToastAndroid.show("Location pinned successfully", ToastAndroid.SHORT);
               let { coords } = position;
               let location = {
                 coordinates: {
@@ -260,6 +265,7 @@ export default class IncedentDescription extends React.Component {
       location.type = value;
   
       this.setState({location});
+      ToastAndroid.show("Location Pinned", ToastAndroid.SHORT);
   
       this.props.culpritDescriptionRef.current._setLocation(location.type);
     });

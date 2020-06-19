@@ -38,7 +38,7 @@ function RightIcons() {
       <Icon 
         onPress={REPORT_NAVIGATION_REF.openDrawer}
         style={{padding: 8, alignSelf: "center"}}
-        name="image-outline"
+        name="camera-outline"
         color="white"
         size={24}
       />

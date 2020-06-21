@@ -2,13 +2,11 @@ package com.digital_matatus.utilities;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 
 import android.provider.MediaStore;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -112,61 +110,63 @@ public class FileManager extends ReactContextBaseJavaModule {
    *            resources such as the File extension name to avoid data getting lost in translation.
    * @param type this is the type of Media being saved to the DIGITAL_MATATUS_FOLDER (makes it easier)
    *             to know which dir to access.
-   * @param onFinish this is the Callback to be invoked on the JS side containing the location to the new
-   *                 file saved (first argument) in the DIGITAL_MATATUS_{IMAGES/VIDEOS} folder
    */
   @ReactMethod
   private void copyMediaFile(String uri, String type) {
 
+      // dispatch a thread to reduce the computation cost on the main thread
+      WorkerThread workerThread = new WorkerThread(uri, type, reactContext);
+      Thread copyThread = new Thread(workerThread);
+      copyThread.start();
 //    if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
 
-      Uri fileUri = Uri.parse(uri);
-      String[] segments = uri.split("/");
-      String ext = segments[(segments.length - 1)];
-      // get the fileName and the fileExtension
-      String fileName = new File(
-              uri.split("file://")[1] // file absolute location
-      ).getName(); // get the fileName
-//    String fileExtension = fileName.split(".")[1]; // gets the file extension
-
-      // instantiate workingDir based on fileType
-      File workingDir = (type.compareTo((String) constants.get("IMAGE")) == 0) ?
-              DIGITAL_MATATUS_IMAGES : // is an image
-              DIGITAL_MATATUS_VIDEOS; // is not IMAGE (thus video)
-
-      // creates a new fileName based on the working timestamp and fileExtension
-      String timestamp = "" + new Date().getTime();
-      String newFileName = timestamp + ext;
-      File newMediaFile = new File(workingDir, newFileName);
-
-      try {
-        boolean created = newMediaFile.createNewFile();
-
-        if (created) {
-          FileOutputStream fileOutputStream = new FileOutputStream(newMediaFile);
-          InputStream inputStream = contentResolver.openInputStream(fileUri);
-          int c = inputStream.read();
-
-          while (c != -1) {
-            // type cast to char
-            fileOutputStream.write(c); // move all the bytes to the newMediaFie
-            // get next char
-            c = inputStream.read();
-          }
-
-          // close the current Streams
-          inputStream.close();
-          fileOutputStream.close();
-
-          // return the file location of the newMediaFileSaved
-//          onFinish.invoke(constants.get("WRITE_SUCCESS"), newMediaFile.getAbsolutePath());
-        }
-
-      } catch (Exception e) {
-        // error writing new media file
-        // return "WRITE_ERR" and null
-//        onFinish.invoke(constants.get("WRITE_ERR"), null);
-      }
+//      Uri fileUri = Uri.parse(uri);
+//      String[] segments = uri.split("/");
+//      String ext = segments[(segments.length - 1)];
+//      // get the fileName and the fileExtension
+//      String fileName = new File(
+//              uri.split("file://")[1] // file absolute location
+//      ).getName(); // get the fileName
+////    String fileExtension = fileName.split(".")[1]; // gets the file extension
+//
+//      // instantiate workingDir based on fileType
+//      File workingDir = (type.compareTo((String) constants.get("IMAGE")) == 0) ?
+//              DIGITAL_MATATUS_IMAGES : // is an image
+//              DIGITAL_MATATUS_VIDEOS; // is not IMAGE (thus video)
+//
+//      // creates a new fileName based on the working timestamp and fileExtension
+//      String timestamp = "" + new Date().getTime();
+//      String newFileName = timestamp + ext;
+//      File newMediaFile = new File(workingDir, newFileName);
+//
+//      try {
+//        boolean created = newMediaFile.createNewFile();
+//
+//        if (created) {
+//          FileOutputStream fileOutputStream = new FileOutputStream(newMediaFile);
+//          InputStream inputStream = contentResolver.openInputStream(fileUri);
+//          int c = inputStream.read();
+//
+//          while (c != -1) {
+//            // type cast to char
+//            fileOutputStream.write(c); // move all the bytes to the newMediaFie
+//            // get next char
+//            c = inputStream.read();
+//          }
+//
+//          // close the current Streams
+//          inputStream.close();
+//          fileOutputStream.close();
+//
+//          // return the file location of the newMediaFileSaved
+////          onFinish.invoke(constants.get("WRITE_SUCCESS"), newMediaFile.getAbsolutePath());
+//        }
+//
+//      } catch (Exception e) {
+//        // error writing new media file
+//        // return "WRITE_ERR" and null
+////        onFinish.invoke(constants.get("WRITE_ERR"), null);
+//      }
 //    } else {
 //      String absoluteValue = this.insertQPlus(uri, type);
 //    }

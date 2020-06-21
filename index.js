@@ -14,6 +14,7 @@ import Store, {
   MEDIA_DELETED, // deleting media when uploading a claim
   DESCRIPTION_LOADED,
   REPORT_FILED, // event for when a report is filed
+  // WRITE_SUCCESS, // event fired when the the file is copied to the Pictures folder
 } from './store';
 // import NotificationSetup from './utilities/push-notifications';
 
@@ -26,6 +27,7 @@ eventArr.push(new Event(MEDIA_UPLOADED));
 eventArr.push(new Event(MEDIA_DELETED));
 eventArr.push(new Event(DESCRIPTION_LOADED));
 eventArr.push(new Event(REPORT_FILED));
+// eventArr.push(new Event(WRITE_SUCCESS));
 
 // create the store
 const APP_STORE = new Store(eventArr);

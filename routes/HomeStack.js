@@ -26,7 +26,8 @@ export default () => (
       name="Camera" 
       component={Camera} 
       options={{
-        headerShown: false
+        // unmountOnBlur: true,
+        headerShown: false,
       }}
     />
     <Stack.Screen 

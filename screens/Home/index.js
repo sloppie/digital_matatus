@@ -99,7 +99,7 @@ export default class Home extends React.Component {
   _openDrawer = () => HOME_NAVIGATION_REF.openDrawer();
 
   // _reportIncident = () => HOME_NAVIGATION_REF.navigate("Report");
-  _reportIncident = () => this.props.navigation.navigate("Camera");
+  _reportIncident = () => this.props.navigation.navigate("Camera", {type: "camera", source: "Home"});
 
   _handleTextChange = (text) => {
 

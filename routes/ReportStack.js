@@ -1,7 +1,13 @@
 import React from 'react'; 
-import { View } from 'react-native'; 
+import { View, DeviceEventEmitter } from 'react-native'; 
 import { createStackNavigator } from '@react-navigation/stack';
-import { Report, CategoryDefinition, SetReminder, NumberPlate } from './../screens';
+import { 
+  Report, 
+  CategoryDefinition, 
+  SetReminder, 
+  NumberPlate, 
+  Camera 
+} from './../screens';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
@@ -25,18 +31,21 @@ function LeftIcon(props) {
 // causing to either fire a video recording, or a picture capture
 function RightIcons() {
   // FIRE_UP_CAMERA payload tells whether it'll be video or picture
+  const launchCamera = (type) => {
+    DeviceEventEmitter.emit("LAUNCH_CAMERA", type);
+  }
 
   return (
     <View style={{flexDirection: "row", justifyContent: "center"}}>
       <Icon 
-        onPress={REPORT_NAVIGATION_REF.openDrawer}
+        onPress={launchCamera.bind(this, "video")}
         style={{padding: 8, marginLeft: 8}}
         name="video-outline"
         color="white"
         size={30}
       />
       <Icon 
-        onPress={REPORT_NAVIGATION_REF.openDrawer}
+        onPress={launchCamera.bind(this, "camera")}
         style={{padding: 8, alignSelf: "center"}}
         name="camera-outline"
         color="white"
@@ -69,6 +78,14 @@ export default () => (
           padding: 16,
         },
         headerRight: RightIcons,
+      }}
+    />
+    <Stack.Screen 
+      name="Camera" 
+      component={Camera} 
+      options={{
+        // unmountOnBlur: true,
+        headerShown: false,
       }}
     />
     <Stack.Screen 

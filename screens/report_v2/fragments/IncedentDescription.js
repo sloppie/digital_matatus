@@ -26,6 +26,7 @@ import Permissions from '../../../utilities/permissions';
 import { APP_STORE } from '../../..';
 import { MEDIA_DELETED, MEDIA_UPLOADED, DESCRIPTION_LOADED } from '../../../store';
 import Theme from '../../../theme';
+import { FileManager } from '../../../utilities';
 
 let HarassmentDescription = null;
 let RNThumbnail = null; // resuce the amount of modules loaded at start
@@ -104,6 +105,11 @@ export default class IncedentDescription extends React.Component {
   componentDidMount() {
     this.watchMediaUpload = APP_STORE.subscribe(MEDIA_UPLOADED, this.onMediaUpload.bind(this));
     this.descriptionLoaded = APP_STORE.subscribe(DESCRIPTION_LOADED, this.setDescriptionLoad.bind(this, true));
+    // this.writeSuccess = APP_STORE.subscribe(FileManager.WRITE_SUCCESS, this.onWriteSuccess);
+    this.cameraPayloadSubscription = DeviceEventEmitter.addListener(
+      FileManager.WRITE_SUCCESS, // WRITE SUCCESS Event
+      this.onWriteSuccess.bind(this) // callback on successfull write
+    );
 
     let options = {
     };
@@ -116,6 +122,61 @@ export default class IncedentDescription extends React.Component {
     // unsubscribe from all impending Events
     APP_STORE.unsubscribe(MEDIA_UPLOADED, this.watchMediaUpload);
     APP_STORE.unsubscribe(DESCRIPTION_LOADED);
+  }
+
+  onWriteSuccess(fileLocation, mediaType) {
+    let fileUri = `${fileLocation}`;
+    console.log("File uri: " + fileUri);
+    this._addMediaFile(fileUri, mediaType);
+  }
+
+  _addMediaFile = async (fileUri, mediaType) => {
+    console.log("File URI\n" + fileUri);
+    if(FileManager.IMAGE === mediaType) {
+      let attachedPhotos = [...this.state.attachedPhotos];
+      let attachedPhotosData = [...this.state.attachedPhotosData];
+      let attachedPhotosThumbnails = [...this.state.attachedPhotosThumbnails];
+      let attachedPhotosExtension = [...this.state.attachedPhotosExtension];
+
+      attachedPhotos.push(fileUri);
+      attachedPhotosData.push(fileUri);
+      attachedPhotosThumbnails.push(fileUri);
+      attachedPhotosExtension.push(fileUri);
+
+      setTimeout(() => this.setState({
+        attachedPhotos,
+        attachedPhotosData,
+        attachedPhotosExtension,
+        attachedPhotosThumbnails,
+      }), 1000);
+
+    } else {
+      let attachedVideos = [...this.state.attachedVideos];
+      let attachedVideosData = [...this.state.attachedVideosData];
+      let attachedVideosThumbnails = [...this.state.attachedVideosThumbnails];
+      let attachedVideosExtension = [...this.state.attachedVideosExtension];
+
+      attachedVideos.push(fileUri);
+      attachedVideosData.push(fileUri);
+      attachedVideosExtension.push(fileUri);
+
+      if(RNThumbnail == null)
+        RNThumbnail = require('react-native-thumbnail').default;
+
+      try {
+        let {path} = await RNThumbnail.get(fileUri);
+        attachedVideosThumbnails.push(path);
+      } catch (err) {
+        attachedVideosThumbnails.push(fileUri);
+      }
+
+      setTimeout(() => this.setState({
+        attachedVideos,
+        attachedVideosData,
+        attachedVideosExtension,
+        attachedVideosThumbnails
+      }), 1000);
+    }
   }
 
   // EVENT SUBSCRIPTIONS

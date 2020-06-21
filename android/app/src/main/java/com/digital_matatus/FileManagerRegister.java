@@ -7,6 +7,10 @@ import com.facebook.react.uimanager.ViewManager;
 
 import com.digital_matatus.utilities.FileManager;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class FileManagerRegister implements ReactPackage {
 
   @Override

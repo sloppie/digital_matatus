@@ -9,6 +9,9 @@ const MEDIA_DELETED = "MEDIA_REMOVED";
 const DESCRIPTION_LOADED = "DESCRIPTION_LOADED";
 const REPORT_FILED = "REPORT_FILED";
 
+// CAMERA EVENT
+const WRITE_SUCCESS = "WRITE_SUCCESS"; // emitted once the copying is complete
+
 
 /**
  * @description This is the class is used as a metaphorical store that takes in registered events, 
@@ -124,4 +127,5 @@ export {
   MEDIA_DELETED, // used to notify that media has been deleted once a user does so
   DESCRIPTION_LOADED, // used to notify once the app fully renders the descriptions
   REPORT_FILED, // used to initialise reset of the screen when the data sent or saved to the phone
+  WRITE_SUCCESS, // used to notify that the COPYING of the file is complete
 };

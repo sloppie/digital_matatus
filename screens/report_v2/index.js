@@ -3,7 +3,8 @@ import {
   StyleSheet, 
   ToastAndroid, 
   Dimensions, 
-  View, 
+  View,
+  DeviceEventEmitter, 
   // DeviceEventEmitter 
 } from 'react-native';
 
@@ -15,7 +16,7 @@ import {
 
 import Theme from '../../theme';
 import AsyncStorage from '@react-native-community/async-storage';
-import { API } from '../../utilities';
+import { API, FileManager } from '../../utilities';
 
 import * as Fragments from './fragments';
 
@@ -65,12 +66,24 @@ export default class Report extends React.PureComponent {
 
   async componentDidMount() {
     // set the UserID that is to be attached to the information
+    this.launchCameraSubscription = DeviceEventEmitter.addListener("LAUNCH_CAMERA", this._getCameraType);
     let userID = await AsyncStorage.getItem("userID", (err) => console.log(err));
     this.setState({userID});
+  }
 
+  _getCameraType = (type) => {
+    this._launchCamera(type);
+  }
+
+  _launchCamera = (type) => {
+    this.props.navigation.navigate("Camera", {
+      source: "Report", // helps know which screen the camera has been launched from.
+      type // helps know whether to launch the video or photo camera.
+    });
   }
 
   componentWillUnmount() {
+    this.launchCameraSubscription.remove();
   }
 
   _scrollTo = (tabName) => {

@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -18,6 +19,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
@@ -91,11 +93,11 @@ public class FileManager extends ReactContextBaseJavaModule {
    * @param details <b>Callback</b> invoked after the the function finishes executing
    */
   @ReactMethod
-  public void getContentType(String uri, Callback details) {
+  public void getContentType(String uri, Promise details) {
     Uri fileUri = Uri.parse(uri);
 
     // send back the MIME type of the file in question
-    details.invoke(contentResolver.getType(fileUri));
+    details.resolve(contentResolver.getType(fileUri));
   }
 
   /**
@@ -202,15 +204,26 @@ public class FileManager extends ReactContextBaseJavaModule {
    *               </ol>
    */
   @ReactMethod
-  public void readFileContentFromUri(String uri, Callback onData) {
+  public void readFileContentFromUri(String uri, Promise onData) {
     Uri fileUri = Uri.parse(uri);
     // open stream for data to be read from in bytes
     try {
       InputStream inputStream = contentResolver.openInputStream(fileUri);
       String data = ""; // where file data will be stored
+      int c = inputStream.read();
+
+      while(c != -1) {
+        data += (char) c;
+        c = inputStream.read();
+      }
+
+      inputStream.close();
+
+      onData.resolve(data);
+
     } catch(Exception e) {
       // declares that an error occurred while reading (i.e FileNotFoundException)
-      onData.invoke(constants.get("READ_ERR"));
+//      onData.reject(e);
     }
   }
 

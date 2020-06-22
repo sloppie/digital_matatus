@@ -1,38 +1,158 @@
 import AsyncStorage from "@react-native-community/async-storage"
+import {FileManager} from '../';
+import { ReportTab } from "../../screens/report_details/fragments";
+import { DeviceEventEmitter } from "react-native";
 
 /**
  * This function is used to resend reports when internet connection is back
  */
 export const resendReport = async () => {
   let savedReport = JSON.parse(await AsyncStorage.getItem("savedReport"));
+  let sendableReport = {
+    culpritDescription: savedReport.culpritDescription,
+    privateInformation: savedReport.privateInformation,
+    userID: savedReport.userID
+  };
 
-  if(typeof savedReport === "string" && savedReport !== "") {
-    console.log(Object.keys(savedReport));
+  uploadMediaFiles(savedReport.incidentDescription);
 
-    fetch("http://192.168.43.89:3000/api/report/new", {
-      method: "POST",
-      body: JSON.stringify(savedReport),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      }
-    }).then(response => response.json()).then(data => {
-      
-      if(data) {
-        sent = true; // sent
-        AsyncStorage.multiSet(
-          [
-            ["savedReports", JSON.stringify("")],
-            ["reportToBeSaved", JSON.stringify(data.report_id)]
-          ]
-        );
-          
-      }
+  // do a garbage collection of eventListeners
+  DeviceEventEmitter.removeAllListeners("AllMediaResolved");
 
-    }).catch(err => console.log(err));
+  DeviceEventEmitter.addListener("AllMediaResolved", (data) => {
+    sendableReport.incidentDescription = JSON.parse(data);
+
+    if(typeof savedReport === "string" && savedReport !== "") {
+  
+      fetch("http://192.168.43.89:3000/api/report/new", {
+        method: "POST",
+        body: JSON.stringify(sendableReport),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        }
+      }).then(response => response.json()).then(data => {
+        
+        if(data) {
+          sent = true; // sent
+          AsyncStorage.multiSet(
+            [
+              ["savedReports", JSON.stringify("")],
+              ["reportToBeSaved", JSON.stringify(data.report_id)]
+            ]
+          );
+            
+        }
+  
+      }).catch(err => console.log(err));
+  
+    }
+  });
+
+
+}
+
+/**
+ * 
+ * @param {{
+ *  date: Number,
+ *  location: {
+ *    coords: {},
+ *    type: String,
+ *  },
+ *  attachedAudiosData: Array<{}>,
+ *  attachedVideosData: Array<{}>,
+ *  attachedPhotosData: Array<{}>,
+ *  flags: {}
+ * }} incidentDescription this is the incident Description to be sent
+ */
+const uploadMediaFiles = (incident) => {
+  let incidentDescription = incident;
+  console.log(incidentDescription.attachedPhotosData[0].uri);
+  let newIncidentDescription = {
+    date: incidentDescription.date,
+    location: incidentDescription.location,
+    flags: incidentDescription.flags,
+  };
+  let mediaType = {
+    attachedAudiosData: "audio",
+    attachedVideosData: "video",
+    attachedPhotosData: "photo",
+  };
+
+  let err = false;
+
+  let mediaObj = {
+    "attachedAudiosData": incidentDescription.attachedAudiosData,
+    "attachedPhotosData": incidentDescription.attachedPhotosData,
+    "attachedVideosData": incidentDescription.attachedVideosData,
+  };
+
+  // this function is used to update media so as to help know when to disburse the complete event
+  
+  const media = {
+    "audio": [],
+    "photo": [],
+    "video": [],
+  };
+  const updateMedia = (mediaObjKey, url) => {
+    media[mediaObjKey].push(url);
+    let allMediaResolved = (
+      mediaObj["attachedAudiosData"].length === media["audio"].length &&
+      mediaObj["attachedPhotosData"].length === media["photo"].length &&
+      mediaObj["attachedVideosData"].length === media["video"].length
+    );
+
+    if(allMediaResolved) {
+      newIncidentDescription.media = media;
+      DeviceEventEmitter.emit("AllMediaResolved", JSON.stringify(newIncidentDescription));
+    }
 
   }
 
+  console.log("Looping through URIs");
+  for(let attachedMedia in mediaObj) {
+      incidentDescription[attachedMedia]
+        .forEach(async (file) => {
+          console.log(file.uri);
+          uploadMediaFile(mediaType[attachedMedia], file.uri, updateMedia.bind(this));
+        });
+  }
+
+}
+
+// {POST} api/cdn/upload/:mediaType
+export const uploadMediaFile = async (mediaType, mediaUri, updateMedia) => {
+  let mediaUrl = null;
+  let mediaObjKey = {
+    photo: "attachedPhotosData",
+    video: "attachedVideosData",
+    audio: "attachedAudiosData",
+  };
+  
+  // let fileData = await FileManager.readFileContentFromUri(mediaUri);
+  let contentType = await FileManager.getContentType(mediaUri);
+  console.log("File content type: " + contentType);
+  let fileDetails = mediaUri.split("/").pop().split(".");
+  let fileExt = fileDetails[1];
+  let mediaData = new FormData();
+  mediaData.append("media", {
+    uri: mediaUri,
+    type: contentType,
+    name: `${fileDetails[0]}.${fileExt}`,
+  });
+
+  mediaData.append("fileExt", fileExt);
+  let xhr = new XMLHttpRequest();
+  xhr.open("POST", "http://192.168.43.98:3000/cdn/upload/" + mediaType);
+  xhr.setRequestHeader("Accept", "application/json");
+  xhr.onload = (e) => {
+    let res = JSON.parse(xhr.response);
+    mediaUrl = res.mediaUrl;
+    updateMedia(mediaType, mediaUrl); // add the new Url
+  }
+
+  xhr.send(mediaData);
 }
 
 /**
@@ -42,21 +162,40 @@ export const resendReport = async () => {
  * @param {(payload: {}) => {}} onSuccess callback to be executed onSuccess
  * @param {() => {}} onErr callback to be executed on failure
  */
-export const fileReport = (report, onSuccess, onErr) => {
+export const fileReport = async (report, onSuccess, onErr) => {
+  let incidentDescription = report.incidentDescription;
+
+  try {
+    incidentDescription = await uploadMediaFiles(report.incidentDescription);
+  } catch(err) {
+    // incidentDescription = {};
+  }
+
+  let sendableReport = {
+    culpritDescription: report.culpritDescription,
+    privateInformation: report.privateInformation,
+    userID: report.userID,
+  };
+
+// do a garbage collection of eventListeners
+DeviceEventEmitter.removeAllListeners("AllMediaResolved");
+
+DeviceEventEmitter.addListener("AllMediaResolved", (data) => {
+  sendableReport.incidentDescription = JSON.parse(data);
 
   fetch(
     "http://192.168.43.89:3000/api/report/new",
     {
       method: "POST",
-      body: JSON.stringify(report),
+      body: JSON.stringify(sendableReport),
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json"
       },
     }
   ).then(response => response.json()).then(data => {
-    
-    if(data)
+
+    if (data)
       onSuccess(data);
     else
       onErr();
@@ -65,6 +204,9 @@ export const fileReport = (report, onSuccess, onErr) => {
     console.log(err);
     onErr();
   });
+
+});
+
 
 }
 

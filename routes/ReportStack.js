@@ -15,6 +15,7 @@ import { REPORT_NAVIGATION_REF } from './AppDrawer';
 import Theme from '../theme';
 
 function LeftIcon(props) {
+
   return (
     <Icon 
       {...props}
@@ -39,14 +40,14 @@ function RightIcons() {
     <View style={{flexDirection: "row", justifyContent: "center"}}>
       <Icon 
         onPress={launchCamera.bind(this, "video")}
-        style={{padding: 8, marginLeft: 8}}
+        style={{padding: 8, marginEnd: 8}}
         name="video-outline"
         color="white"
         size={30}
       />
       <Icon 
         onPress={launchCamera.bind(this, "camera")}
-        style={{padding: 8, alignSelf: "center"}}
+        style={{padding: 8, alignSelf: "center", marginEnd: 8}}
         name="camera-outline"
         color="white"
         size={24}

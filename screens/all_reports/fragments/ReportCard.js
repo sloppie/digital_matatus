@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { Card, Chip, Colors, Paragraph, Caption, Divider } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import Theme from '../../../theme';
 import ReportParser from '../../../utilities/report_parser';
 
@@ -39,6 +41,48 @@ export default class ReportCard extends React.Component {
     </Chip>
   ));
 
+  _renderMediaIcons = () => {
+    let icons = [];
+
+    if(this.state.report.hasMedia()) {
+
+      if(this.state.report.hasPhotos())
+        icons.push(
+          <Icon 
+            name="camera-outline"
+            size="30"
+            key="icon_1"
+          />
+        );
+
+      if(this.state.report.hasVideos())
+        icons.push(
+          <Icon 
+            name="video-outline"
+            size="30"
+            key="icon_2"
+          />
+        );
+      if(this.state.report.hasAudios())
+        icons.push(
+          <Icon 
+            name="record"
+            size="30"
+            key="icon_3"
+          />
+        );
+
+    } else {
+      return (
+        <Icon 
+          name="close"
+          size={30}
+        />
+      );
+    }
+
+  }
+
   render() {
 
     return (
@@ -54,9 +98,12 @@ export default class ReportCard extends React.Component {
           subtitleStyle={styles.subtitle}
         />
         <Card.Content>
-          <Paragraph>{this.state.report.generateReportMessage()}</Paragraph>
+          {/* <Paragraph>{this.state.report.generateReportMessage()}</Paragraph> */}
           <View style={styles.chipContainer}>
             {this._renderHarassmentFlagChips()}
+          </View>
+          <View style={styles.attachedMedia}>
+            {this._renderMediaIcons()}
           </View>
           <Caption>Report ID: {this.state.report._id}</Caption>
         </Card.Content>
@@ -96,5 +143,9 @@ const styles = StyleSheet.create({
   chip: {
     alignSelf: "baseline",
     marginEnd: 4,
+  },
+  attachedMedia: {
+    flexDirection: "row",
+    alignContent: "center",
   },
 });

@@ -745,26 +745,32 @@ export default class IncedentDescription extends React.Component {
   }
 
   createFileObjects(type) {
-    let extensions, fileData;
+    let extensions, fileData, uris;
 
     switch(type) {
       case media_types.audio:
+        uris = this.state.attachedAudios;
         extensions = this.state.attachedAudiosExtension;
         fileData = this.state.attachedAudiosData;
         break;
       case media_types.photo:
+        uris = this.state.attachedPhotos;
+        console.log(uris);
         extensions = this.state.attachedPhotosExtension;
         fileData = this.state.attachedPhotosData;
         break;
       case media_types.video:
+        uris = this.state.attachedVideos;
         extensions = this.state.attachedVideosExtension;
         fileData = this.state.attachedVideosData;
+        break;
     }
 
     let fileObjects = fileData.map((data, index) => {
       return {
         data,
-        extension: extensions[index]
+        extension: extensions[index],
+        uri: uris[index],
       };
     });
 

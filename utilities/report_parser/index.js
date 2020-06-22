@@ -116,6 +116,18 @@ export default class ReportParser {
       .some(mediaType => this.incidentDescription.media[mediaType].length > 0);
   }
 
+  hasPhotos() {
+    return this.incidentDescription.media.photo.length > 0;
+  }
+
+  hasVideos() {
+    return this.incidentDescription.media.video.length > 0;
+  }
+
+  hasAudios() {
+    return this.incidentDescription.media.audio.length > 0;
+  }
+
   /**
    * @returns {Array<String>} the array of link to photos linked to the respective report
    */

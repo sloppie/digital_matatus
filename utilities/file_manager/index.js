@@ -9,8 +9,8 @@ import { NativeModules } from 'react-native';
  * @param {(status: String, data: String) => {}} callback callback to be invoked once the
  *      the contents of the File are read.
  */
-export const readFileContentFromUri = (uri, callback) => {
-  NativeModules.FileManager.readFileContentFromUri(uri, callback);
+export const readFileContentFromUri = (uri) => {
+  return NativeModules.FileManager.readFileContentFromUri(uri);
 }
 
 /**
@@ -38,8 +38,8 @@ export const copyMediaFile = (uri, type) => {
  * @param {String} uri this is a string containing the URI of the File in question. 
  * @param {(mimeType: String) => {}} onFinish this is a callback which will have the ContentType of the file passed to it.
  */
-export const getContentType = (uri, onFinish) => {
-  NativeModules.FileManager.getContentType(uri, onFinish);
+export const getContentType = (uri) => {
+  return NativeModules.FileManager.getContentType(uri);
 }
 
 // exporting all the constants

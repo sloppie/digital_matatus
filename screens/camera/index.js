@@ -328,12 +328,14 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     backgroundColor: "red",
+    marginEnd: 24,
+    marginStart: 24,
   },
   controlBar: {
     width: Dimensions.get("window").width,
     height: Math.floor(Dimensions.get("window").height * 0.3333),
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
     position: "absolute",
     bottom: 0,

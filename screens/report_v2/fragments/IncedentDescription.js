@@ -131,7 +131,7 @@ export default class IncedentDescription extends React.Component {
   }
 
   _addMediaFile = async (fileUri, mediaType) => {
-    console.log("File URI\n" + fileUri);
+    console.log("File URI\n" + FileManager.getMimeTypeFromExtension(fileUri));
     if(FileManager.IMAGE === mediaType) {
       let attachedPhotos = [...this.state.attachedPhotos];
       let attachedPhotosData = [...this.state.attachedPhotosData];

@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-community/async-storage"
-import {FileManager} from '../';
-import { ReportTab } from "../../screens/report_details/fragments";
+import { FileManager } from '../';
 import { DeviceEventEmitter } from "react-native";
 
 /**
@@ -110,11 +109,9 @@ const uploadMediaFiles = (incident) => {
 
   }
 
-  console.log("Looping through URIs");
   for(let attachedMedia in mediaObj) {
       incidentDescription[attachedMedia]
         .forEach(async (file) => {
-          console.log(file.uri);
           uploadMediaFile(mediaType[attachedMedia], file.uri, updateMedia.bind(this));
         });
   }
@@ -122,20 +119,44 @@ const uploadMediaFiles = (incident) => {
 }
 
 // {POST} api/cdn/upload/:mediaType
+/**
+ * This method is used to upload media to the to the server. After the method is finished uploading,
+ * the response is populated with a json Object which contains ```js{mediaUrl: String}``` a barebones
+ * skeleton of the url that can be used to fetch the media afterwards.
+ * 
+ * an uploaded `photo` can return the link: `http://digitalmatatus.com/cdn/fetch/photo/IMG_2.jpeg`
+ * 
+ * @param {("photo" | "video" | "audio")} mediaType this is the media type of the file being uploaded.
+ *                                                  This is very essential to help add the Object to the
+ *                                                  correct media object using `updateMedia` function
+ * @param {String} mediaUri this is the uri of the File being to be uploaded: `file://` or `content://` uri
+ * @param {(mediaType: String, mediaUrl: String)} updateMedia this is a method that accesses
+ *                                                             the underlying `report` Object to
+ *                                                             add the `mediaUrl` to the respective 
+ *                                                             `mediaType`
+ */
 export const uploadMediaFile = async (mediaType, mediaUri, updateMedia) => {
   let mediaUrl = null;
-  let mediaObjKey = {
-    photo: "attachedPhotosData",
-    video: "attachedVideosData",
-    audio: "attachedAudiosData",
-  };
-  
-  // let fileData = await FileManager.readFileContentFromUri(mediaUri);
-  let contentType = await FileManager.getContentType(mediaUri);
+
+  // checks if this is a content URI by looking for the substring 'content://'
+  // if the index of the substring is 0, it means that this is a content uri
+  let isContentUri = mediaUri.indexOf("content://") == 0;
+  let contentType;
+
+  // get content type for file:// and content:// URIs
+  if(isContentUri) 
+    await FileManager.getContentType(mediaUri); // content:// uri
+  else
+    contentType = FileManager.getContentType(mediaUri); // file:// uri
+
   console.log("File content type: " + contentType);
+
   let fileDetails = mediaUri.split("/").pop().split(".");
   let fileExt = fileDetails[1];
+
+  // create the FormData to be added to the request
   let mediaData = new FormData();
+
   mediaData.append("media", {
     uri: mediaUri,
     type: contentType,
@@ -143,16 +164,44 @@ export const uploadMediaFile = async (mediaType, mediaUri, updateMedia) => {
   });
 
   mediaData.append("fileExt", fileExt);
+
+  // create the request
   let xhr = new XMLHttpRequest();
   xhr.open("POST", "http://192.168.43.98:3000/cdn/upload/" + mediaType);
   xhr.setRequestHeader("Accept", "application/json");
+
+  // once the API responds, the xhr.response has a JSON Object which has the media url
+  // of the file that was just uploaded.
   xhr.onload = (e) => {
     let res = JSON.parse(xhr.response);
     mediaUrl = res.mediaUrl;
     updateMedia(mediaType, mediaUrl); // add the new Url
   }
 
+  // send the payload
   xhr.send(mediaData);
+}
+
+/**
+ * @deprecated
+ * Not used since we don't have direct access it would prove cumbersome to try to move the whole 
+ * got over the network string over the JSBridge for caching and future use purposes.
+ * Instead using `FileManager.fetchFileFromUrl(url)` to help fetch the file and cache it for later use
+ * 
+ * @param {String} url this is the url that will be concatenated to the DigitalMatatus url to carry out
+ *                 the fetch request.
+ */
+const fetchMediaFile = (url) => {
+  const splitUrl = url.split("/");
+  const mediaName = splitUrl.pop();
+  const mediaType = splitUrl.pop();
+  const newUrl = `http://192.168.43.89:3000/cdn/fetch/${mediaType}/${mediaName}`;
+  // create the XMLHttp request for the to fetch the file
+
+  // get the data returned in the response
+  xhr.onloadend = (e) => {
+    let data = xhr.respo
+  }
 }
 
 /**

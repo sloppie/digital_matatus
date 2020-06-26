@@ -5,7 +5,6 @@ import {
   Dimensions, 
   View,
   DeviceEventEmitter, 
-  // DeviceEventEmitter 
 } from 'react-native';
 
 import { 

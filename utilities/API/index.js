@@ -23,7 +23,7 @@ export const resendReport = async () => {
 
     if(typeof savedReport === "string" && savedReport !== "") {
   
-      fetch("http://192.168.43.89:3000/api/report/new", {
+      fetch("http://192.168.43.98:3000/api/report/new", {
         method: "POST",
         body: JSON.stringify(sendableReport),
         headers: {
@@ -147,7 +147,7 @@ export const uploadMediaFile = async (mediaType, mediaUri, updateMedia) => {
   if(isContentUri) 
     await FileManager.getContentType(mediaUri); // content:// uri
   else
-    contentType = FileManager.getContentType(mediaUri); // file:// uri
+    contentType = FileManager.getMimeTypeFromExtension(mediaUri); // file:// uri
 
   console.log("File content type: " + contentType);
 
@@ -195,7 +195,7 @@ const fetchMediaFile = (url) => {
   const splitUrl = url.split("/");
   const mediaName = splitUrl.pop();
   const mediaType = splitUrl.pop();
-  const newUrl = `http://192.168.43.89:3000/cdn/fetch/${mediaType}/${mediaName}`;
+  const newUrl = `http://192.168.43.98:3000/cdn/fetch/${mediaType}/${mediaName}`;
   // create the XMLHttp request for the to fetch the file
 
   // get the data returned in the response
@@ -233,7 +233,7 @@ DeviceEventEmitter.addListener("AllMediaResolved", (data) => {
   sendableReport.incidentDescription = JSON.parse(data);
 
   fetch(
-    "http://192.168.43.89:3000/api/report/new",
+    "http://192.168.43.98:3000/api/report/new",
     {
       method: "POST",
       body: JSON.stringify(sendableReport),
@@ -269,7 +269,7 @@ DeviceEventEmitter.addListener("AllMediaResolved", (data) => {
 export const sendCulpritInformation = (report_id, reportData, onSuccess, onErr) => {
 
   fetch(
-    "http://192.168.43.89:3000/api/report/" + report_id + "/add/culpritInformation",
+    "http://192.168.43.98:3000/api/report/" + report_id + "/add/culpritInformation",
     {
       method: "PUT",
       body: JSON.stringify(reportData),
@@ -374,7 +374,7 @@ export const fetchReport = () => {}
 
 export const fetchRouteReports = (route_id, onSuccess, onErr) => {
 
-  fetch(`http://192.168.43.89:3000/api/routes/${route_id}/reports`)
+  fetch(`http://192.168.43.98:3000/api/routes/${route_id}/reports`)
     .then(response => response.json())
     .then(data => {
 
@@ -430,7 +430,7 @@ export const filterByCategories = (filterObject, onSuccess, onErr) => {
     return values;
   }
 
-  fetch(`http://192.168.43.89:3000/api/report/find${generateCategories()}${generateCategoryValues()}`)
+  fetch(`http://192.168.43.98:3000/api/report/find${generateCategories()}${generateCategoryValues()}`)
     .then(response => response.json())
     .then(data => {
  
@@ -450,7 +450,7 @@ export const filterByCategories = (filterObject, onSuccess, onErr) => {
 export const fetchReportsByRoute = (route_id, onSuccess, onErr) => {
 
   fetch(
-    "http://192.168.43.89:3000/api/report/find?categories=route_id&route_id=" + route_id
+    "http://192.168.43.98:3000/api/report/find?categories=route_id&route_id=" + route_id
   ).then(response => response.json()).then(data => {
     
     if(data)
@@ -504,7 +504,7 @@ export const queryReports = (categories, valuesObj, onSuccess, onErr) => {
   }
 
   fetch(
-    `http://192.168.43.89:3000/api/reports/find?${unpackCategories()}${unpackCategoryValues()}`
+    `http://192.168.43.98:3000/api/reports/find?${unpackCategories()}${unpackCategoryValues()}`
   ).then(response => response.json())
     .then(data => {
 

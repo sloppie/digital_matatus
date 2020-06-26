@@ -1,12 +1,12 @@
 import React from 'react';
-import { SafeAreaView, Text, StyleSheet } from 'react-native';
-import { Card, Title, List, Divider, ToggleButton } from 'react-native-paper'; 
-import { ScrollView } from 'react-native-gesture-handler';
+import { SafeAreaView, View, Text, StyleSheet, Dimensions } from 'react-native';
+import { Card, Button } from 'react-native-paper'; 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Theme from '../../theme';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import BottomSheet from 'reanimated-bottom-sheet';
+
 // ADD TOGGLE BUTTON
 
+import Theme from '../../theme';
 import * as Fragments from './fragments';
 import { ReportParser } from '../../utilities';
 
@@ -33,7 +33,8 @@ export default class ReportDetails extends React.PureComponent {
       incidentDescription: JSON.parse(incidentDescription),
       mediaVisible: "",
       attachedMedia: [],
-      report: new ReportParser(this.props.route.params.report)
+      report: new ReportParser(this.props.route.params.report),
+      highlightedUrl: null,
     };
     console.log(JSON.stringify(this.state.incidentDescription.media, null, 2));
   }
@@ -49,68 +50,49 @@ export default class ReportDetails extends React.PureComponent {
 
   _setMediaVisible = (mediaVisible) => this.setState({mediaVisible});
 
-  _renderToggleButtons = () => {
-    let toggleButtons = [];
+  _reportCulprit = () => {
+    this.bottomSheetRef.current.snapTo(0);
 
-    toggleButtons = this.state.attachedMedia.map((type, index) => {
-      return (
-        <ToggleButton 
-          icon={props => (
-            <Icon
-              {...props} 
-              name={toggleButtonIcons[type]}
-              color={this.state.mediaVisible == type? Colors.red500: "black"}
-            />
-          )
-          }
-          value={type}
-          status={this.state.mediaVisible === type? "checked": "unchecked"}
-          style={styles.toggleButton}
-              color={this.state.mediaVisible == type? Colors.red500: "black"}
-          key={index.toString()}
-        />
-      )
+    this.props.navigation.navigate("ReportCulprit", {
+      highlightedMediaUrl: this.state.highlightedUrl,
+      report: this.state.report
     });
-
-    return toggleButtons;
   }
 
-  _renderMediaTab = () => {
+  bottomSheetRef: React.RefObject<BottomSheet> = React.createRef();
 
-    let mediaKeys = Object.keys(this.state.incidentDescription.media);
+  _openBottomSheet = (highlightedUrl) => {
+    this.setState({highlightedUrl});
 
-    if(!this.state.mediaVisible)
-      return (
-            <List.Item 
-              left={props => <List.Icon icon="cancel" color="white" />}
-              title="No media"
-              titleStyle={styles.itemTitle}
-              description="No media was attached to this report"
-              descriptionStyle={styles.descriptionStyle}
-            />
-      );
+    this.bottomSheetRef.current.snapTo(1);
+  }
+
+  _renderHeader = () => (
+    <Card.Title 
+      style={styles.bottomSheetHeader}
+      title="Help Report Culprit"
+      right={props => <Icon {...props} name="file-find-outline" />}
+    />
+  );
+
+  _renderContent = () => {
+    let contentStyle = {
+      height: (Dimensions.get("window").height * 0.5 - 77),
+      backgroundColor: "white",
+    };
 
     return (
-      <>
-        <Card.Title
-          right={props => <List.Icon icon="paperclip"  color="white" />}
-          title="Media Attached"
-          titleStyle={styles.sectionTitleStyle}
-        />
-        <Fragments.Media 
-          navigation={this.props.navigation}
-          media={this.state.incidentDescription.media[this.state.mediaVisible]}
-          report={this.props.route.params.report}
-          mediaType={this.state.mediaVisible}
-        />
-        <ToggleButton.Row 
-          onValueChange={this._setMediaVisible}
-          style={styles.toggleButtons}>
-          {this._renderToggleButtons()}
-        </ToggleButton.Row>
-      </>
+      <View style={contentStyle}>
+        <Text style={{textAlign: "center"}}>{this.state.highlightedUrl}</Text>
+        <Button 
+          style={styles.reportCulpritButton} 
+          onPress={this._reportCulprit}>
+            Report Culprit
+        </Button>
+      </View>
     );
-  }
+  };
+
 
   _renderTabLayout = () => {
     if(ReportTab === null)
@@ -120,6 +102,7 @@ export default class ReportDetails extends React.PureComponent {
       <ReportTab 
         secondaryNavigation={this.props.navigation}
         report={this.props.route.params.report}
+        openBottomSheet={this._openBottomSheet}
       />
     );
   }
@@ -137,18 +120,6 @@ export default class ReportDetails extends React.PureComponent {
 
   render() {
 
-    const renderFlags = (incidentDescription) => {
-      let flags = "Flags: ";
-      Object.keys(incidentDescription.harassmentFlags).forEach((flag) => {
-        
-        if(incidentDescription.harassmentFlags[flag].length)
-          flags += `${flag}, `;
-
-      });
-
-      return flags;
-    }
-
     return (
       <SafeAreaView 
         style={styles.screen}
@@ -156,6 +127,13 @@ export default class ReportDetails extends React.PureComponent {
         {
           (this.state.report.hasMedia()) ? this._renderTabLayout(): this._renderReportDetailsTab()
         }
+        <BottomSheet 
+          ref={this.bottomSheetRef}
+          snapPoints={[0, "50%"]}
+          initialSnap={0}
+          renderContent={this._renderContent}
+          renderHeader={this._renderHeader}
+        />
       </SafeAreaView>
     );
   }
@@ -203,4 +181,19 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
   },
+
+  // BottomSheet
+  bottomSheetHeader: {
+    backgroundColor: "white",
+    borderTopEndRadius: 20,
+    borderTopStartRadius: 20,
+  },
+
+  // BottomSheetContent
+  reportCulpritButton: {
+    position: "absolute",
+    width: Dimensions.get("window").width - 64,
+    alignSelf: "center",
+    bottom: 16,
+  }
 });

@@ -102,7 +102,14 @@ export default class ReportParser {
   }
 
   getHarassmentFlags() {
-    return this.incidentDescription.harassmentFlags;
+    let harassmentFlags;
+
+    harassmentFlags = this.incidentDescription.harassmentFlags;
+
+    if(!harassmentFlags)
+      harassmentFlags = this.incidentDescription.flags;
+
+    return harassmentFlags;
   }
 
   /**

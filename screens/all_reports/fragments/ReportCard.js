@@ -13,12 +13,18 @@ export default class ReportCard extends React.Component {
     super(props);
 
     let incidentDescription = JSON.parse(this.props.data.incidentDescription);
+    let flags;
+    try {
+      flags = Object.keys(incidentDescription.harassmentFlags);
+    } catch(err) {
+      flags = Object.keys(incidentDescription.flags);
+    }
 
     this.state = {
       report: new ReportParser(this.props.data),
-      incidentDescription: incidentDescription,
+      incidentDescription,
       culpritDescription: JSON.parse(this.props.data.culpritDescription),
-      flags: Object.keys(incidentDescription.harassmentFlags),
+      flags,
     };
   }
 
@@ -49,8 +55,8 @@ export default class ReportCard extends React.Component {
       if(this.state.report.hasPhotos())
         icons.push(
           <Icon 
-            name="camera-outline"
-            size="30"
+            name="camera"
+            size={30}
             key="icon_1"
           />
         );
@@ -58,7 +64,7 @@ export default class ReportCard extends React.Component {
       if(this.state.report.hasVideos())
         icons.push(
           <Icon 
-            name="video-outline"
+            name="video"
             size="30"
             key="icon_2"
           />
@@ -89,7 +95,6 @@ export default class ReportCard extends React.Component {
       <Card
         onPress={this._viewReport}
         style={styles.reportCard}
-        renderToHardwareTextureAndroid={true}
       >
         <Card.Title 
           title={this.state.report.generateReportTitle()}
@@ -102,9 +107,9 @@ export default class ReportCard extends React.Component {
           <View style={styles.chipContainer}>
             {this._renderHarassmentFlagChips()}
           </View>
-          <View style={styles.attachedMedia}>
+          {/* <View style={styles.attachedMedia}>
             {this._renderMediaIcons()}
-          </View>
+          </View> */}
           <Caption>Report ID: {this.state.report._id}</Caption>
         </Card.Content>
         {/* <Divider style={styles.divider} /> */}
@@ -116,9 +121,9 @@ export default class ReportCard extends React.Component {
 
 const styles = StyleSheet.create({
   reportCard: {
-    // width: Dimensions.get("window").width - 32,
+    width: Dimensions.get("window").width - 32,
     alignSelf: "center",
-    // marginBottom: 8,
+    marginBottom: 8,
     // backgroundColor: "#444",
     borderBottomWidth: 1,
     borderColor: "#999",

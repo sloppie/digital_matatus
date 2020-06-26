@@ -247,9 +247,9 @@ public class FileManager extends ReactContextBaseJavaModule {
     // var to be returned
     File workingCacheDir;
 
-    if(type == "IMAGE")
+    if(type.compareTo("IMAGE") == 0)
       workingCacheDir = CACHED_PICTURES;
-    else if(type == "AUDIO")
+    else if(type.compareTo("AUDIO") == 0)
       workingCacheDir = CACHED_AUDIOS;
     else
       workingCacheDir = CACHED_VIDEOS;

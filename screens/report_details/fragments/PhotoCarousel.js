@@ -1,9 +1,54 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { Card, List, IconButton, FAB } from 'react-native-paper';
-import { ReportParser } from '../../../utilities';
+import { ReportParser, FileManager } from '../../../utilities';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+class MediaCard extends React.PureComponent {
+ 
+  state = {
+    mediaUri: FileManager.fetchAttributesFromUrl(this.props.uri).absoluteUrl, // used to fetch files
+  };
+
+  componentDidMount() {
+    // FileManager.fetchMediaFromUrl(this.props.url, this.onFetchPicture.bind(this));
+  }
+
+  onFetchPicture = (uri) => this.setState({mediaUri: uri});
+
+  _openBottomSheet = () => {
+    this.props.openBottomSheet(this.props.uri);
+  }
+
+  render() {
+
+    return (
+      <Card 
+        style={styles.mediaCard}
+        onLongPress={this._openBottomSheet}>
+        {
+          this.state.mediaUri ?
+          <Card.Cover 
+            source={{uri: this.state.mediaUri}} 
+            onLoadEnd={() => console.log("Load of image finished")}
+          />
+          : <Card.Content 
+              style={{
+                width: Dimensions.get("window").width, 
+                backgroundColor: "#141414"
+              }}></Card.Content>
+        }
+        <Card.Title 
+          style={styles.cardTitle}
+          left={props => <Icon {...props} name="image" />}
+          title="Image"
+          subtitle="Photo taken during the incident"/>
+      </Card>
+    );
+  }
+
+}
 
 export default class PhotoCarousel extends React.PureComponent {
 
@@ -30,17 +75,12 @@ export default class PhotoCarousel extends React.PureComponent {
           style={styles.carouselButtons} 
           icon="chevron-left" />
       </View>
-      <Card
+      {/* onLongPress={this._showReportOptions} */}
+      <MediaCard
         style={styles.mediaCard}
-        onLongPress={this._showReportOptions}
-      >
-        <Card.Cover source={item} />
-        <Card.Title 
-          style={styles.cardTitle}
-          left={props => <Icon {...props} name="image" />}
-          title="Image"
-          subtitle="Photo taken during the incident"/>
-      </Card>
+        uri={item}
+        openBottomSheet={this.props.openBottomSheet}
+      />
       <View style={styles.iconButtonContainer}>
         <IconButton 
           disabled={this.state.activeFile !== this.state.data.length - 1} 
@@ -68,6 +108,8 @@ export default class PhotoCarousel extends React.PureComponent {
 
     if(this.state.data.length == 0)
       return <View />
+    
+    console.log("Phot length: " + this.state.data.length);
 
     return (
       <>

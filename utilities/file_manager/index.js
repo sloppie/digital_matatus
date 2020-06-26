@@ -57,7 +57,8 @@ export const getContentType = (uri) => {
 
 /************************************ MEDIA FETCHING SECTION *************************************/
 
-/****** UTILITARIAN FUNCTIONS */
+/************************************ UTILITARIAN FUNCTIONS **************************************/
+
 // these methods are used by some (maybe all) the functions below. Thus it is more prudent to create
 // a function for them instead of having redundant code.
 
@@ -70,14 +71,17 @@ export const getContentType = (uri) => {
  * @returns {{
  *  mediaName: String,
  *  extension: String,
- *  mediaType: ("AUDIO" | "IMAGE" | "VIDEO")
+ *  mediaType: ("AUDIO" | "IMAGE" | "VIDEO"),
+ *  type: ("photo" | "video" | "audio"),
+ *  absoluteUrl: String
  * }} object containing all the values that are of importance from the url passed in as an arg 
  */
 export const fetchAttributesFromUrl = (mediaUrl) => {
+  console.log(mediaUrl);
   /**
    * These are the only types that can be referenced by the NativeModules APIs
    */
-  const converetedTypes = {
+  const convertedTypes = {
     "photo": IMAGE,
     "video": VIDEO,
     "audio": AUDIO
@@ -85,13 +89,22 @@ export const fetchAttributesFromUrl = (mediaUrl) => {
 
   let splitUrl = mediaUrl.split("/");
   let mediaName = splitUrl.pop(); // the last element is the Media name
-  let mediaType = converetedTypes[splitUrl.pop()]; // the second last element is the media type
-  let extension = mediaName.split(".").pop(); // the last element houses the extension
+  let type = splitUrl.pop(); // get the type from the relative url
+  let mediaType = convertedTypes[type];
+  let absoluteUrl = `http://192.168.43.98:3000/cdn/fetch/${type}/${mediaName}`;
+  let extension;
+  try {
+    extension= mediaName.split(".").pop(); // the last element houses the extension
+  } catch(err) {
+    extension = ""
+  }
 
   return {
     mediaName,
     mediaType,
-    extension
+    extension, // extracted from the 
+    type, // media type from url
+    absoluteUrl, // http://192.168.43.89:3000/cdn/phot/IMG_2.jpeg
   };
 }
 
@@ -105,20 +118,21 @@ export const fetchAttributesFromUrl = (mediaUrl) => {
  *                                      is successfully fetched from either server, or the internal
  *                                      storage.
  */
-export const fetchMediaFromUrl = (mediaUrl, onFetch) => {
+export const fetchMediaFromUrl = async (mediaUrl, onFetch) => {
   // get file details
-  let {mediaName, mediaType} = fetchAttributesFromUrl(mediaUrl);
+  let {mediaName, mediaType, absoluteUrl} = fetchAttributesFromUrl("/cdn/fetch/photo/IMG_62.jpeg");
   let uri; // variable to store the media's uri
+  console.log("Media url: " + absoluteUrl);
 
   let eventListener = null; // may not be used if the image is cached
 
   /**
    * This method is fired once the uri is fetched after creation of a new file to the cache
    * 
-   * @param {WritableMap} e this is the writableMap (mimmicks a JSObject) that is sent over the Bridge 
+   * @param { {mediaName: String} } e this is the writableMap (mimmicks a JSObject) that is sent over the Bridge 
    */
   const onFileFetch = (e) => {
-    uri = e[mediaName]; // fetch the unique key that helps access the File's URI
+    let uri = e[mediaName]; // fetch the unique key that helps access the File's URI
 
     // call the passed in callnack and pass the uri as an argument
     onFetch(uri);
@@ -140,7 +154,7 @@ export const fetchMediaFromUrl = (mediaUrl, onFetch) => {
     onFetch(uri);
   } else {
     // initiate the thread fetching the Media from the App's externalCacheDir
-    NativeModules.FileManager.fetchMediaFromUrl(mediaUrl, mediaName, mediaType);
+    NativeModules.FileManager.fetchMediaFromUrl(absoluteUrl, mediaName, mediaType);
     // get the FileManager module and add the unique app listener
     eventListener = new NativeEventEmitter(NativeModules.FileManager).addListener(mediaName, onFileFetch);
   }

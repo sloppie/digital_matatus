@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
-import { Card, List } from 'react-native-paper';
+import { Card, List, IconButton } from 'react-native-paper';
 import { ReportParser } from '../../../utilities';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -14,6 +14,7 @@ export default class AudioCarousel extends React.PureComponent {
       report,
       data: report.fetchAudios()
     };
+
   }
 
   _showReportOptions = () => {
@@ -54,14 +55,16 @@ export default class AudioCarousel extends React.PureComponent {
     if(this.state.data.length == 0)
       return <View />
 
+    console.log("Audio data size: " + this.state.data);
+
     return (
       <>
         <List.Section title="Audio Files" />
         <FlatList
           style={styles.flatList}
+          data={this.state.data}
           renderItem={this._renderItem}
           keyExtractor={this._keyExtractor}
-          data={this.state.data}
           pagingEnabled={true}
           horizontal={true}
         />

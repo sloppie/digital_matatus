@@ -34,6 +34,7 @@ export default class Report extends React.PureComponent {
     <MediaTab 
       secondaryNavigation={this.props.secondaryNavigation}
       report={this.props.report}
+      openBottomSheet={this.props.openBottomSheet}
     />
   );
 

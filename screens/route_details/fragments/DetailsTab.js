@@ -1,5 +1,5 @@
 import React from 'react';
-import {} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import {} from 'react-native-paper';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'; 
 import RatingsList from './RatingsList';
@@ -12,7 +12,7 @@ import Stats from './Stats';
 const Tab = createMaterialTopTabNavigator();
 
 
-class DetailsTab extends React.PureComponent {
+export default class DetailsTab extends React.PureComponent {
 
   _renderRatingsList = () => (
     <RatingsList 
@@ -57,13 +57,14 @@ class DetailsTab extends React.PureComponent {
   )
 
   render() {
+
     return (
       <Tab.Navigator
         lazy={true}
       >
         <Tab.Screen 
           name="RatingsList"
-          component={this._renderLargeRatingsList}
+          component={this._renderRatingsList}
         />
         {/* Uses RecyclerListView */}
         <Tab.Screen 
@@ -79,4 +80,8 @@ class DetailsTab extends React.PureComponent {
   }
 }
 
-export default DetailsTab;
+const styles = StyleSheet.create({
+  tabNavigator: {
+    height: Math.floor(Dimensions.get("window").width * 0.6),
+  },
+});

@@ -228,12 +228,15 @@ class Message extends React.Component {
 }
 
 
-export default class LargeRatingsList extends React.PureComponent {
+export default class LargeRatingsList extends React.Component {
 
   constructor(props) {
     super(props);
 
-    this.dataProvider = new DataProvider((r1, r2) => r1 !== r2);
+    this.dataProvider = new DataProvider((r1, r2) => {
+
+      return r1 !== r2
+    });
 
     this.state = {
       dataProvider: [],
@@ -268,7 +271,8 @@ export default class LargeRatingsList extends React.PureComponent {
       filterByAll: true,
       filterBy7: false,
       filterBy14: false,
-      filterBy30: false
+      filterBy30: false,
+      fetching: true
     });
 
     API.filterByCategories(
@@ -283,7 +287,8 @@ export default class LargeRatingsList extends React.PureComponent {
       filterByAll: false,
       filterBy7: true,
       filterBy14: false,
-      filterBy30: false
+      filterBy30: false,
+      fetching: true
     });
     let to = new Date().getTime();
     let from = to - (1000 * 60 * 60 * 24 * 7);
@@ -300,7 +305,8 @@ export default class LargeRatingsList extends React.PureComponent {
       filterByAll: false,
       filterBy7: false,
       filterBy14: true,
-      filterBy30: false
+      filterBy30: false,
+      fetching: true
     });
     let to = new Date().getTime();
     let from = to - (1000 * 60 * 60 * 24 * 14);
@@ -317,7 +323,8 @@ export default class LargeRatingsList extends React.PureComponent {
       filterByAll: false,
       filterBy7: false,
       filterBy14: false,
-      filterBy30: true
+      filterBy30: true,
+      fetching: true
     });
 
     let to = new Date().getTime();
@@ -333,7 +340,10 @@ export default class LargeRatingsList extends React.PureComponent {
   _setReports = (reports) => {
     // clone new rows
     this.setState({
-      dataProvider: this.dataProvider.cloneWithRows(reports),
+      dataProvider: new DataProvider(
+        (r1, r2) => false, 
+        (index) => reports[index]._id
+      ).cloneWithRows(reports),
       fetching: false,
     });
 
@@ -345,9 +355,17 @@ export default class LargeRatingsList extends React.PureComponent {
 
     const renderFlags = () => {
       let flags = "Flags: ";
-      Object.keys(incidentDescription.harassmentFlags).forEach((flag) => {
+      let harrassmentFlags;
+
+      try {
+        harrassmentFlags = Object.keys(incidentDescription.harassmentFlags);
+      } catch(err) {
+        harrassmentFlags = Object.keys(incidentDescription.flags)
+      }
+
+      harrassmentFlags.forEach((flag) => {
         
-        if(incidentDescription.harassmentFlags[flag].length)
+        // if(incidentDescription.harassmentFlags[flag].length)
           flags += `${flag}, `;
 
       });

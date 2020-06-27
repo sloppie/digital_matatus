@@ -1,11 +1,15 @@
 import React from 'react';
-import { ToastAndroid, StyleSheet, FlatList } from 'react-native';
+import { ToastAndroid, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { List } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Theme from '../../../theme';
 import { API } from '../../../utilities';
 
-class Message extends React.PureComponent {
+class Message extends React.Component {
+
+  shouldComponentUpdate() {
+    return false;
+  }
 
   _viewReport = () => {
     ToastAndroid.show(`show the ${this.props.messageTitle} thread`, ToastAndroid.SHORT);
@@ -115,12 +119,15 @@ export default class RatingsList extends React.PureComponent {
 
   render() {
 
+    // const length = Dimensions.get("window").width;
+
     return (
       <FlatList 
         data={this.state.reports}
         renderItem={this._renderItem}
         keyExtractor={this._keyExtractor}
         maxToRenderPerBatch={10}
+        getItemLayout={(data, index) => {return {length: 77, offset: (77 * index), index}}}
       />
     );
   }

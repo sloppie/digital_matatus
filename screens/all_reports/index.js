@@ -141,7 +141,7 @@ export default class ReportDetails extends React.PureComponent {
           ListFooterComponent={<BottomPad />}
           ListEmptyComponent={<Fragments.NoData />}
         /> */}
-        <Fragments.ReportsList 
+        <Fragments.ReportsFlatList 
           data={this.state.reports}
           navigation={this.props.navigation}
         />

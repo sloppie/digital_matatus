@@ -10,6 +10,7 @@ import {
   ReportCulprit,
   Camera,
 } from '../screens';
+import Theme from '../theme';
 
 const Stack = createStackNavigator();
 
@@ -49,7 +50,11 @@ export default () => (
       name="ReportDetails" 
       component={ReportDetails} 
       options={{
-        headerShown: false,
+        // headerShown: false,
+        headerStyle: {
+          backgroundColor: Theme.PrimaryColor,
+        },
+        headerTintColor: "white",
       }} 
     />
     <Stack.Screen 

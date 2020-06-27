@@ -91,10 +91,13 @@ export default class ReportCard extends React.Component {
 
   render() {
 
+    const showSize = ({nativeEvent}) => console.log(JSON.stringify(nativeEvent, null, 2));
+
     return (
       <Card
         onPress={this._viewReport}
         style={styles.reportCard}
+        onLayout={showSize}
       >
         <Card.Title 
           title={this.state.report.generateReportTitle()}

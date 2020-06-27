@@ -199,36 +199,6 @@ export default class RouteDetails extends React.PureComponent {
 
   _renderListView() {
     
-    // switch(this.state.activeTab) {
-    //   case 0:
-    //     return(
-    //        <Fragments.ListView 
-    //           name={this._tabs[0]} 
-    //           listItemAction={this.listItemActions[0]} data={{...this.state.comprehensive_routes}} 
-    //           route={this.props.route.params.route}
-    //           navigation={this.props.navigation}
-    //         />
-    //     );
-    //   case 1:
-    //     return(
-    //        <Fragments.ListView 
-    //           name={this._tabs[1]} 
-    //           listItemAction={this.listItemActions[1]} data={{...this.state.comprehensive_routes}} 
-    //           route={this.props.route.params.route}
-    //           navigation={this.props.navigation}
-    //         />
-    //     );
-    //   case 2: 
-    //     return(
-    //        <Fragments.ListView 
-    //           name={this._tabs[2]} 
-    //           listItemAction={this.listItemActions[2]} data={{...this.state.comprehensive_routes}} 
-    //           route={this.props.route.params.route}
-    //           navigation={this.props.navigation}
-    //         />
-    //     );
-    // }
-
     return (
       <Fragments.DetailsTab 
         style={styles.detailsTab}
@@ -265,17 +235,13 @@ export default class RouteDetails extends React.PureComponent {
               {this._generateBusTerminalMarkers()}
             </MapView>
             <Card.Title 
+              style={styles.cardTitleContainer}
               left={props => <Icon {...props} name="bus"/>}
               title={`Route ${this.props.route.params.route.route_short_name}`}
               titleStyle={styles.cardTitle}
               subtitle={this.props.route.params.route.route_long_name}
             />
           </Card>
-          {/* <Fragments.TabBar 
-            tabs={this._tabs}
-            icons={this._icons}
-            actions={this.tabActions}
-          /> */}
           {(this.state.routesLoaded)?this._renderListView(): <View />}
         </SafeAreaView>
       </>
@@ -286,11 +252,19 @@ export default class RouteDetails extends React.PureComponent {
 
 const styles = StyleSheet.create({
   screen: {
-    height: "100%",
+    height: Dimensions.get("window").height,
   },
   card: {
-    height: "40%",
-    elevation: 0
+    height: Math.floor(Dimensions.get("window").height * 0.4),
+    elevation: 0,
+    backgroundColor: "white",
+    borderBottomWidth: 2,
+    borderBottomEndRadius: 0,
+    borderBottomStartRadius: 0,
+    borderBottomColor: "#f4f4f4"
+  },
+  cardTitleContainer: {
+    backgroundColor: "white",
   },
   cardTitle: {
     fontFamily: Theme.OpenSansBold

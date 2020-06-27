@@ -12,7 +12,10 @@ export default class ReportsList extends React.PureComponent {
   constructor(props) {
     super(props);
 
-    let dataProvider = new DataProvider((r1, r2) => r1 !== r2);
+    let dataProvider = new DataProvider((r1, r2) => {
+
+      return r1.incidentDescription !== r2.incidentDescription;
+    });
 
     this.state = {
       dataProvider: dataProvider.cloneWithRows(this.props.data),
@@ -42,9 +45,9 @@ export default class ReportsList extends React.PureComponent {
 
     return (
       <RecyclerListView 
+        rowRenderer={this._rowRenderer}
         dataProvider={this.state.dataProvider}
         layoutProvider={this.layoutProvider}
-        rowRenderer={this._rowRenderer}
       />
     );
   }

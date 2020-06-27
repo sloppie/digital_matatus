@@ -150,10 +150,8 @@ export const getMimeTypeFromExtension = (fileUri) => {
  */
 export const fetchMediaFromUrl = async (mediaUrl, onFetch, onThumbnailFetch=null) => {
   // get file details
-  console.log("Media url: " + mediaUrl);
   let {mediaName, mediaType, absoluteUrl} = fetchAttributesFromUrl(mediaUrl);
   let uri; // variable to store the media's uri
-  console.log("Media url: " + absoluteUrl);
 
   let eventListener = null; // may not be used if the image is cached
   let thumbnailEventListener = null; // this will only be used if this is a video file
@@ -164,7 +162,6 @@ export const fetchMediaFromUrl = async (mediaUrl, onFetch, onThumbnailFetch=null
    * @param { {uri: String} } e this is the writableMap (mimmicks a JSObject) that is sent over the Bridge 
    */
   const onFileFetch = (e) => {
-    console.log("onFileFetch called");
     let uri = e.uri; // fetch the unique key that helps access the File's URI
 
     // call the passed in callnack and pass the uri as an argument
@@ -189,7 +186,6 @@ export const fetchMediaFromUrl = async (mediaUrl, onFetch, onThumbnailFetch=null
    * }} uris this  is an object uri containing all the thumbnails passed created for the video
    */
   const onThumbnailsCreated = (uris) => {
-    console.log("OnThumbnailsCreated called");
     onThumbnailFetch(uris);
 
     thumbnailEventListener.remove();
@@ -203,14 +199,12 @@ export const fetchMediaFromUrl = async (mediaUrl, onFetch, onThumbnailFetch=null
     uri = await NativeModules.FileManager.getCachedUri(mediaName, mediaType);
 
     // pass the uri to the callback for action
-    console.log("Cached URI: " + uri);
     onFetch(uri);
 
     // call the FileManager.fetchThumbnails if the mediaType == VIDEO
     if(onThumbnailFetch)
       fetchThumbnails(mediaUrl, onThumbnailFetch);
   } else {
-    console.log("Media isn't cached... establishing connection");
     // initiate the thread fetching the Media from the App's externalCacheDir
     NativeModules.FileManager.fetchMediaFromUrl(absoluteUrl, mediaName, mediaType);
     // initiate the EventEmitter

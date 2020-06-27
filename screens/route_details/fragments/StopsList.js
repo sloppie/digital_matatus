@@ -165,6 +165,16 @@ export default class StopsList extends React.Component {
     renderCount++;
     console.log("renderCount: " + renderCount)
 
+        // ListEmptyComponent={props => (
+        // <View style={{justifyContent: "center", alignSelf: "center"}}>
+        //   <ActivityIndicator
+        //     size="large" 
+        //     animating={true}
+        //     style={{alignSelf: "center"}}
+        //   />
+        //   <Text>Fetching stops...</Text>
+        // </View>
+        // )}
     return (
       <FlatList
         style={styles.flatList}
@@ -174,16 +184,9 @@ export default class StopsList extends React.Component {
         initialNumToRender={20}
         maxToRenderPerBatch={10}
         renderToHardwareTextureAndroid={true}
-        updateCellsBatchingPeriod={100}
-        ListEmptyComponent={props => (
-        <View style={{justifyContent: "center", alignSelf: "center"}}>
-          <ActivityIndicator
-            size="large" 
-            animating={true}
-            style={{alignSelf: "center"}}
-          />
-          <Text>Fetching stops...</Text>
-        </View>
+        removeClippedSubviews={true}
+        getItemLayout={(data, index) => (
+          {length: 77, offset: index * 77, index}
         )}
       />
     );

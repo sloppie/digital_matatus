@@ -1,8 +1,63 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { Card, List, IconButton } from 'react-native-paper';
-import { ReportParser } from '../../../utilities';
+import { ReportParser, FileManager } from '../../../utilities';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+
+class VideoCard extends React.PureComponent {
+
+  state = {
+    thumbnailUri: null,
+    videoUri: null,
+  };
+
+  componentDidMount() {
+
+    FileManager.fetchMediaFromUrl(
+      this.props.uri, // media url
+      this.onFetchVideo, // successful video fetch
+      this.onFetchThumbnail // successful thumbnail fetch
+    );
+  }
+
+  onFetchVideo = (videoUri) => this.setState({videoUri})
+
+  onFetchThumbnail = (uris) => this.setState({thumbnailUri: uris.mini});
+
+  _openBottomSheet = () => {
+    this.props.openBottomSheet(this.props.uri);
+  }
+
+  render() {
+    
+    return (
+      <Card 
+        style={styles.mediaCard}
+        onLongPress={this._openBottomSheet}>
+        {
+          this.state.mediaUri ?
+          <Card.Cover 
+            source={{uri: this.state.thumbnailUri}} 
+            onLoadEnd={() => console.log("Load of image finished from: " + this.state.mediaUri)}
+          />
+          : <Card.Content 
+              style={{
+                height: (Dimensions.get("window").height * 0.4) - 70,
+                backgroundColor: "#141414",
+                alignSelf: "stretch",
+              }}></Card.Content>
+        }
+        <Card.Title 
+          style={styles.cardTitle}
+          left={props => <Icon {...props} name="file-video" />}
+          title="Video recorded"
+          subtitle="Video recorded during the incident"/>
+      </Card>
+    );
+  }
+
+}
 
 export default class VideoCarousel extends React.PureComponent {
 
@@ -30,16 +85,9 @@ export default class VideoCarousel extends React.PureComponent {
           style={styles.carouselButtons} 
           icon="chevron-left" />
       </View>
-      <Card
-        style={styles.mediaCard}
-        onLongPress={this._showReportOptions}
-      >
-        <Card.Cover source={item} />
-        <Card.Title 
-          left={props => <Icon {...props} name="file-video" />}
-          title="Video Recorded"
-          subtitle="Video taken during the incident"/>
-      </Card>
+      <VideoCard 
+        uri={item}
+      />
       <View style={styles.iconButtonContainer}>
         <IconButton 
           disabled={this.state.activeFile === this.state.data.length - 1} 
@@ -94,10 +142,23 @@ const styles = StyleSheet.create({
     zIndex: 3,
     backgroundColor: "teal",
   },
+  // mediaCard: {
+  //   flex: 9,
+  //   width: (Dimensions.get("window").width - 32),
+  //   height: Math.floor(Dimensions.get("window").height * 0.4),
+  //   alignSelf: "center",
+  // },
   mediaCard: {
     flex: 9,
     width: (Dimensions.get("window").width - 32),
-    height: Math.floor(Dimensions.get("window").height * 0.4),
+    minHeight: Math.floor(Dimensions.get("window").height * 0.4),
+    maxHeight: Math.floor(Dimensions.get("window").height * 0.4),
     alignSelf: "center",
+    paddingBottom: 0,
+  },
+  cardTitle: {
+    paddingBottom: 0,
+    marginBottom: 0,
+    alignSelf: "baseline",
   },
 });

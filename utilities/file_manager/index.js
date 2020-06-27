@@ -93,73 +93,25 @@ export const fetchAttributesFromUrl = (mediaUrl) => {
   let mediaType = convertedTypes[type];
   let absoluteUrl = `http://192.168.43.98:3000/cdn/fetch/${type}/${mediaName}`;
   let extension;
+  let mediaNameWithoutExtension;
   try {
-    extension= mediaName.split(".").pop(); // the last element houses the extension
+    let splitMediaName = mediaName.split(".");
+    extension= splitMediaName.pop(); // the last element houses the extension
+    mediaNameWithoutExtension = splitMediaName.pop(); // the first element is the fileName (w/o ext)
   } catch(err) {
     extension = ""
+    mediaNameWithoutExtension = "";
   }
 
   return {
     mediaName,
+    extension, // ext of the file
+    mediaNameWithoutExtension,
     mediaType,
-    extension, // extracted from the 
     type, // media type from url
     absoluteUrl, // http://192.168.43.89:3000/cdn/phot/IMG_2.jpeg
   };
 }
-
-/**
- * This is used to fetch images from the underlying DigitalMatatus server. This is
- * done using the underlying `NativeModule.FileManager` to help in the caching of the media
- * for future use.
- *
- * @param { String } mediaUrl this is the URL the media is going to be fetched from.
- * @param {(uri: String) => {}} onFetch this is the callback that will be executed once the image
- *                                      is successfully fetched from either server, or the internal
- *                                      storage.
- */
-export const fetchMediaFromUrl = async (mediaUrl, onFetch) => {
-  // get file details
-  let {mediaName, mediaType, absoluteUrl} = fetchAttributesFromUrl("/cdn/fetch/photo/IMG_62.jpeg");
-  let uri; // variable to store the media's uri
-  console.log("Media url: " + absoluteUrl);
-
-  let eventListener = null; // may not be used if the image is cached
-
-  /**
-   * This method is fired once the uri is fetched after creation of a new file to the cache
-   * 
-   * @param { {mediaName: String} } e this is the writableMap (mimmicks a JSObject) that is sent over the Bridge 
-   */
-  const onFileFetch = (e) => {
-    let uri = e[mediaName]; // fetch the unique key that helps access the File's URI
-
-    // call the passed in callnack and pass the uri as an argument
-    onFetch(uri);
-
-    // since this can only be called in the case that an event Listener was fired and that
-    // the event was executed, it is by good practice that we remove the listener
-    // by accessing it through the variable that is supposed to access the listener.
-    eventListener.remove();
-  }
-
-  // check if the media file of mediaName is cached in the App's cache directory
-  // if so: just fetch the cached version
-  // else: fetch from the remote server and cache it for future putposes
-  if(NativeModules.FileManager.isCached(mediaName, mediaType)) {
-    // fetch the media from the App's cache directory sinct the image is clearly cached;
-    uri = await NativeModules.FileManager.getCachedUri(mediaName, mediaType);
-
-    // pass the uri to the callback for action
-    onFetch(uri);
-  } else {
-    // initiate the thread fetching the Media from the App's externalCacheDir
-    NativeModules.FileManager.fetchMediaFromUrl(absoluteUrl, mediaName, mediaType);
-    // get the FileManager module and add the unique app listener
-    eventListener = new NativeEventEmitter(NativeModules.FileManager).addListener(mediaName, onFileFetch);
-  }
-  
-} 
 
 /**
  * This uses the inderlying Android API `MimeTypeMap` to get the file mimeType based on the file's
@@ -179,6 +131,140 @@ export const getMimeTypeFromExtension = (fileUri) => {
 
   // return the mimeType obtained below
   return mimeType;
+}
+
+/************************************** MEDIA FETCH FUNCTIONS ************************************/
+
+/**
+ * This is used to fetch images from the underlying DigitalMatatus server. This is
+ * done using the underlying `NativeModule.FileManager` to help in the caching of the media
+ * for future use.
+ *
+ * @param { String } mediaUrl this is the URL the media is going to be fetched from.
+ * @param {(uri: String) => {}} onFetch this is the callback that will be executed once the image
+ *                                      is successfully fetched from either server, or the internal
+ *                                      storage.
+ * @param {(uris: {}) => {}} onThumbnailFetch this is called once the thumbnails are fetched in case
+ *                                            the media was a video url. This parameter is `null` unless
+ *                                            it is being called from a video component.
+ */
+export const fetchMediaFromUrl = async (mediaUrl, onFetch, onThumbnailFetch=null) => {
+  // get file details
+  console.log("Media url: " + mediaUrl);
+  let {mediaName, mediaType, absoluteUrl} = fetchAttributesFromUrl(mediaUrl);
+  let uri; // variable to store the media's uri
+  console.log("Media url: " + absoluteUrl);
+
+  let eventListener = null; // may not be used if the image is cached
+  let thumbnailEventListener = null; // this will only be used if this is a video file
+
+  /**
+   * This method is fired once the uri is fetched after creation of a new file to the cache
+   * 
+   * @param { {uri: String} } e this is the writableMap (mimmicks a JSObject) that is sent over the Bridge 
+   */
+  const onFileFetch = (e) => {
+    let uri = e.uri; // fetch the unique key that helps access the File's URI
+
+    // call the passed in callnack and pass the uri as an argument
+    onFetch(uri);
+
+    // since this can only be called in the case that an event Listener was fired and that
+    // the event was executed, it is by good practice that we remove the listener
+    // by accessing it through the variable that is supposed to access the listener.
+    eventListener.remove();
+  }
+
+  /**
+   * This callback os only called in the event that the file was not availabe and needed to be
+   * fetched from the remote url. All the thumbnails created are passed in as an argument to this
+   * callback which will then call the `onThumbnailFetch` call back passed in by the component
+   * that called upon this API.
+   * 
+   * @param {{
+   *  micro: String,
+   *  mini: String,
+   *  full: String
+   * }} uris this  is an object uri containing all the thumbnails passed created for the video
+   */
+  const onThumbnailsCreated = (uris) => {
+    onThumbnailFetch(uris);
+
+    
+  }
+
+  // check if the media file of mediaName is cached in the App's cache directory
+  // if so: just fetch the cached version
+  // else: fetch from the remote server and cache it for future putposes
+  if(NativeModules.FileManager.isCached(mediaName, mediaType)) {
+    // fetch the media from the App's cache directory sinct the image is clearly cached;
+    uri = await NativeModules.FileManager.getCachedUri(mediaName, mediaType);
+
+    // pass the uri to the callback for action
+    console.log("Cached URI: " + uri);
+    onFetch(uri);
+
+    // call the FileManager.fetchThumbnails if the mediaType == VIDEO
+    if(mediaType == VIDEO)
+      fetchThumbnails(mediaUrl, onThumbnailFetch);
+  } else {
+    console.log("Media isn't cached... establishing connection");
+    // initiate the thread fetching the Media from the App's externalCacheDir
+    NativeModules.FileManager.fetchMediaFromUrl(absoluteUrl, mediaName, mediaType);
+    // initiate the EventEmitter
+    let eventEmitter = new NativeEventEmitter(NativeModules.FileManager);
+    // listen for media fetch completion
+    eventListener = eventEmitter.addListener(mediaName, onFileFetch);
+
+    // if mediaType == VIDEO, listen for the thumbnail creation completion
+    if(mediaType == VIDEO)
+      thumbnailEventListener = eventEmitter.addListener(`${mediaName}_thumbnails`, onThumbnailsCreated);
+
+  }
+  
+}
+
+/**
+ * This is a helper function that makes it easier to pull the relevant thumbnails from cache.
+ * 
+ * @param {String} mediaUrl this is the url of the file whose thumbnail is to be pulled from cache
+ * @param {("micro" | "mini" | "full")} size these determins the uri that will be sent back to the
+ *                                            component that requested the thumbnail.
+ * @param {(uri:{}) => {}} onFetch this is a callback that has the uris passed to it once the
+ *                                      thumbnails are fetched from storage
+ */
+export const fetchThumbnails = (mediaUrl, onFetch) => {
+  let {mediaNameWithoutExtension} = fetchAttributesFromUrl(mediaUrl);
+  let thumbnailFileName = {
+    micro: `MICRO_${mediaNameWithoutExtension}.jpeg`,
+    mini: `MINI_${mediaNameWithoutExtension}.jpeg`,
+    full: `FULL_${mediaNameWithoutExtension}.jpeg`
+}
+  let thumbnailsFound = await NativeModules.fetchThumbnails(
+    thumbnailFileName.micro, // micro thumbnail
+    thumbnailFileName.mini, // mini thumbnail name
+    thumbnailFileName.full // full thumbnail name
+  );
+
+  let uris = {};
+
+  // map all the URIs to the object
+  thumbnailsFound.split("&").forEach(uri => {
+    const microRegExp = /MICRO/i;
+    const miniRegExp = /MINI/i;
+    const fullRegExp = /FULL/i;
+
+    if(microRegExp.test(uri))
+      uris.micro = uri;
+    else if(miniRegExp.test(uri))
+      uris.mini = uri;
+    else
+      uris.full = uri;
+
+  });
+
+  // return the URIs
+  onFetch(uris);
 }
 
 // exporting all the constants required to communicate nack and forth over the bridge

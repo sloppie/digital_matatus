@@ -2,26 +2,28 @@ import React from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { Card, List, IconButton, FAB } from 'react-native-paper';
 import { ReportParser, FileManager } from '../../../utilities';
-import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 class MediaCard extends React.PureComponent {
  
   state = {
-    mediaUri: FileManager.fetchAttributesFromUrl(this.props.uri).absoluteUrl, // used to fetch files
+    mediaUri: null,
   };
 
   componentDidMount() {
-    // FileManager.fetchMediaFromUrl(this.props.url, this.onFetchPicture.bind(this));
+    FileManager.fetchMediaFromUrl(this.props.uri, this.onFetchPicture.bind(this));
   }
 
-  onFetchPicture = (uri) => this.setState({mediaUri: uri});
+  onFetchPicture = (uri) => {
+    this.setState({mediaUri: uri})
+    this.forceUpdate();
+  }
 
   _openBottomSheet = () => {
     this.props.openBottomSheet(this.props.uri);
   }
 
-  render() {
+  render() { 
 
     return (
       <Card 
@@ -31,12 +33,13 @@ class MediaCard extends React.PureComponent {
           this.state.mediaUri ?
           <Card.Cover 
             source={{uri: this.state.mediaUri}} 
-            onLoadEnd={() => console.log("Load of image finished")}
+            onLoadEnd={() => console.log("Load of image finished from: " + this.state.mediaUri)}
           />
           : <Card.Content 
               style={{
-                width: Dimensions.get("window").width, 
-                backgroundColor: "#141414"
+                height: (Dimensions.get("window").height * 0.4) - 70,
+                backgroundColor: "#141414",
+                alignSelf: "stretch",
               }}></Card.Content>
         }
         <Card.Title 
@@ -109,8 +112,6 @@ export default class PhotoCarousel extends React.PureComponent {
     if(this.state.data.length == 0)
       return <View />
     
-    console.log("Phot length: " + this.state.data.length);
-
     return (
       <>
         <List.Section title="Photos" />
@@ -152,12 +153,14 @@ const styles = StyleSheet.create({
   mediaCard: {
     flex: 9,
     width: (Dimensions.get("window").width - 32),
-    height: Math.floor(Dimensions.get("window").height * 0.4),
+    minHeight: Math.floor(Dimensions.get("window").height * 0.4),
+    maxHeight: Math.floor(Dimensions.get("window").height * 0.4),
     alignSelf: "center",
     paddingBottom: 0,
   },
   cardTitle: {
     paddingBottom: 0,
     marginBottom: 0,
+    alignSelf: "baseline",
   },
 });

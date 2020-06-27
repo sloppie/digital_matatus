@@ -41,6 +41,7 @@ public class FileManager extends ReactContextBaseJavaModule {
   private final File CACHE_DIR;
   private final File CACHED_PICTURES;
   private final File CACHED_VIDEOS;
+  private final File CACHED_VIDEO_THUMBNAILS;
   private final File CACHED_AUDIOS;
 
   // File operations consatnts
@@ -60,7 +61,10 @@ public class FileManager extends ReactContextBaseJavaModule {
     CACHE_DIR = reactContext.getExternalCacheDir();
     CACHED_PICTURES = new File(CACHE_DIR, "images");
     CACHED_VIDEOS = new File(CACHE_DIR, "videos");
+    CACHED_VIDEO_THUMBNAILS = new File(CACHED_VIDEOS, "thumbnails");
     CACHED_AUDIOS = new File(CACHE_DIR, "audios");
+
+    // create the Folder because i forgot to create it in the First iteration
 
     // create DigitalMatatus folders if they doesn't exist
     setUpFolders();
@@ -231,6 +235,10 @@ public class FileManager extends ReactContextBaseJavaModule {
       } catch(Exception e) {
       }
 
+    } else {
+      RemoteFetchWorkerThread remoteFetchWorkerThread = new RemoteFetchWorkerThread(saveableFile);
+      Thread remoteFetchWorkerThreadThread = new Thread(remoteFetchWorkerThread);
+      remoteFetchWorkerThreadThread.start();
     }
 
     // status of File creation to help know whether to add the Listener
@@ -311,6 +319,40 @@ public class FileManager extends ReactContextBaseJavaModule {
   }
 
   /**
+   * This method is used to fetch the Thumbnails of pre-cached videos and load them across to
+   * the JS bridge. While this may have huge drawbacks on storage, it helps save on downloadable
+   * media as it prevents redownload of media when it is already cached in the device.
+   *
+   * @param micro this is the name string of the cached micro thumbnail
+   * @param mini this is the name of the mini thumbnail
+   * @param full this is the name of the fill screen thumbnail
+   * @param onFind this is the promis that is resolved over the bridge to accesss the results in an
+   *               async manner
+   */
+  @ReactMethod
+  public void getCachedVideoThumbnails(String micro, String mini, String full, Promise onFind) {
+    // this will store all the thumbnails separated '&'
+    String thumbnails = "";
+    byte numberFound = 0;
+
+    for(File child: CACHED_VIDEO_THUMBNAILS.listFiles()) {
+      boolean thumbnailFound = (
+          child.getName().contains(micro) ||
+              child.getName().contains((mini)) ||
+              child.getName().contains(full));
+
+      if(thumbnailFound) {
+        if(numberFound < 2)
+          thumbnails += "file://" + child.getAbsolutePath() + "&";
+        else
+          thumbnails += "file://" + child.getAbsolutePath();
+      }
+    }
+
+    onFind.resolve(thumbnails);
+  }
+
+  /**
    * This method is used to make sure that all the directories needed by the app are in place from
    * the get go.
    * Creates the following folders <ul>
@@ -333,12 +375,17 @@ public class FileManager extends ReactContextBaseJavaModule {
         DIGITAL_MATATUS_VIDEOS.mkdir();
       }
 
+      // force create the VIDEO THUMBNAIL_DIR
+      if(!CACHED_VIDEO_THUMBNAILS.exists())
+        CACHED_VIDEO_THUMBNAILS.mkdir();
+
       // create folders in the Apps externalCacheDir
       if(!CACHED_PICTURES.exists()) {
         // create all cached media folders
         CACHED_PICTURES.mkdir();
         CACHED_AUDIOS.mkdir();
         CACHED_VIDEOS.mkdir();
+        CACHED_VIDEO_THUMBNAILS.mkdir();
       }
 
     } catch(Exception e) {

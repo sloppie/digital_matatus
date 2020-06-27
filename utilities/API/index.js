@@ -145,7 +145,7 @@ export const uploadMediaFile = async (mediaType, mediaUri, updateMedia) => {
 
   // get content type for file:// and content:// URIs
   if(isContentUri) 
-    await FileManager.getContentType(mediaUri); // content:// uri
+    contentType = await FileManager.getContentType(mediaUri); // content:// uri
   else
     contentType = FileManager.getMimeTypeFromExtension(mediaUri); // file:// uri
 

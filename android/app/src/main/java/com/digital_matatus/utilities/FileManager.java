@@ -223,11 +223,20 @@ public class FileManager extends ReactContextBaseJavaModule {
       try {
         url = new URL(mediaUrl); // create the Media URL
 
-        RemoteFetchWorkerThread rFWT = new RemoteFetchWorkerThread(
-            url,
-            reactContext,
-            saveableFile
-        ); // create the underlying thread
+        RemoteFetchWorkerThread rFWT;
+        if(mediaType.compareTo("VIDEO") != 0)
+          rFWT = new RemoteFetchWorkerThread(
+              url,
+              reactContext,
+              saveableFile
+          ); // create the underlying thread
+        else // this will help create the Thumbnails
+          rFWT = new RemoteFetchWorkerThread(
+              url,
+              reactContext,
+              saveableFile,
+              CACHED_VIDEO_THUMBNAILS
+          );
 
         // create the Thread
         Thread rFWTThread = new Thread(rFWT);
@@ -375,9 +384,6 @@ public class FileManager extends ReactContextBaseJavaModule {
         DIGITAL_MATATUS_VIDEOS.mkdir();
       }
 
-      // force create the VIDEO THUMBNAIL_DIR
-      if(!CACHED_VIDEO_THUMBNAILS.exists())
-        CACHED_VIDEO_THUMBNAILS.mkdir();
 
       // create folders in the Apps externalCacheDir
       if(!CACHED_PICTURES.exists()) {

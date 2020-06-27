@@ -91,18 +91,10 @@ export default () => (
       name="Report"
       component={Report}
       options={{
-        // unmountOnBlur: true,
-        drawerIcon: (props) => <ReportIcon {...props} />
-      }}
-    />
-    {/* <AppDrawer.Screen 
-      name="Report"
-      component={ReportV2}
-      options={{
         unmountOnBlur: true,
         drawerIcon: (props) => <ReportIcon {...props} />
       }}
-    /> */}
+    />
     <AppDrawer.Screen 
       name="ViewReports"
       component={ViewReports}

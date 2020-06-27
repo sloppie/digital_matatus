@@ -143,14 +143,6 @@ export default class Report extends React.PureComponent {
     console.log(privateIformation);
   }
 
-  _anonymousSend = () => {
-    console.log("Anonymous send initiated")
-  }
-
-  _publicSend = () => {
-    console.log("User wanted to send publicly");
-  }
-
   _stateChange = ({open}) => this.setState({open})
 
   _initiateSend = () => {
@@ -334,9 +326,9 @@ export default class Report extends React.PureComponent {
       
       if(this.state.response.incidentDescription.location.type == "INSIDE_BUS") {
         AsyncStorage.setItem("reportToUpdate", JSON.stringify(payload.report_id));
-        // this.props.navigation.navigate("SetReminder");
+        this.props.navigation.navigate("SetReminder");
       } else {
-        // REPORT_NAVIGATION_REF.navigate("Home");
+        REPORT_NAVIGATION_REF.navigate("Home");
       }
 
     }

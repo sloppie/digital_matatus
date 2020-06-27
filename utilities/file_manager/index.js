@@ -164,6 +164,7 @@ export const fetchMediaFromUrl = async (mediaUrl, onFetch, onThumbnailFetch=null
    * @param { {uri: String} } e this is the writableMap (mimmicks a JSObject) that is sent over the Bridge 
    */
   const onFileFetch = (e) => {
+    console.log("onFileFetch called");
     let uri = e.uri; // fetch the unique key that helps access the File's URI
 
     // call the passed in callnack and pass the uri as an argument
@@ -188,9 +189,10 @@ export const fetchMediaFromUrl = async (mediaUrl, onFetch, onThumbnailFetch=null
    * }} uris this  is an object uri containing all the thumbnails passed created for the video
    */
   const onThumbnailsCreated = (uris) => {
+    console.log("OnThumbnailsCreated called");
     onThumbnailFetch(uris);
 
-    
+    thumbnailEventListener.remove();
   }
 
   // check if the media file of mediaName is cached in the App's cache directory
@@ -205,7 +207,7 @@ export const fetchMediaFromUrl = async (mediaUrl, onFetch, onThumbnailFetch=null
     onFetch(uri);
 
     // call the FileManager.fetchThumbnails if the mediaType == VIDEO
-    if(mediaType == VIDEO)
+    if(onThumbnailFetch)
       fetchThumbnails(mediaUrl, onThumbnailFetch);
   } else {
     console.log("Media isn't cached... establishing connection");
@@ -233,18 +235,20 @@ export const fetchMediaFromUrl = async (mediaUrl, onFetch, onThumbnailFetch=null
  * @param {(uri:{}) => {}} onFetch this is a callback that has the uris passed to it once the
  *                                      thumbnails are fetched from storage
  */
-export const fetchThumbnails = (mediaUrl, onFetch) => {
+export const fetchThumbnails = async (mediaUrl, onFetch) => {
   let {mediaNameWithoutExtension} = fetchAttributesFromUrl(mediaUrl);
   let thumbnailFileName = {
     micro: `MICRO_${mediaNameWithoutExtension}.jpeg`,
     mini: `MINI_${mediaNameWithoutExtension}.jpeg`,
     full: `FULL_${mediaNameWithoutExtension}.jpeg`
 }
-  let thumbnailsFound = await NativeModules.fetchThumbnails(
+  let thumbnailsFound = await NativeModules.FileManager.getCachedVideoThumbnails(
     thumbnailFileName.micro, // micro thumbnail
     thumbnailFileName.mini, // mini thumbnail name
     thumbnailFileName.full // full thumbnail name
   );
+
+  console.log(thumbnailsFound);
 
   let uris = {};
 
@@ -258,10 +262,12 @@ export const fetchThumbnails = (mediaUrl, onFetch) => {
       uris.micro = uri;
     else if(miniRegExp.test(uri))
       uris.mini = uri;
-    else
+    else if(fullRegExp.test(uri))
       uris.full = uri;
 
   });
+
+  console.log(uris);
 
   // return the URIs
   onFetch(uris);

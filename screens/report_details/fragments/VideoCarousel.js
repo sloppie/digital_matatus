@@ -1,14 +1,16 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { Card, List, IconButton } from 'react-native-paper';
-import { ReportParser, FileManager } from '../../../utilities';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import { ReportParser, FileManager } from '../../../utilities';
 
 
 class VideoCard extends React.PureComponent {
 
   state = {
     thumbnailUri: null,
+    thumbnailUriFetched: false,
     videoUri: null,
   };
 
@@ -16,14 +18,17 @@ class VideoCard extends React.PureComponent {
 
     FileManager.fetchMediaFromUrl(
       this.props.uri, // media url
-      this.onFetchVideo, // successful video fetch
-      this.onFetchThumbnail // successful thumbnail fetch
+      this.onFetchVideo.bind(this), // successful video fetch
+      this.onFetchThumbnail.bind(this) // successful thumbnail fetch
     );
   }
 
   onFetchVideo = (videoUri) => this.setState({videoUri})
 
-  onFetchThumbnail = (uris) => this.setState({thumbnailUri: uris.mini});
+  onFetchThumbnail = (uris) => {
+    this.setState({thumbnailUri: uris.mini, thumbnailUriFetched: true}); 
+    this.forceUpdate()
+  }
 
   _openBottomSheet = () => {
     this.props.openBottomSheet(this.props.uri);
@@ -36,18 +41,18 @@ class VideoCard extends React.PureComponent {
         style={styles.mediaCard}
         onLongPress={this._openBottomSheet}>
         {
-          this.state.mediaUri ?
+          this.state.thumbnailUriFetched &&
           <Card.Cover 
             source={{uri: this.state.thumbnailUri}} 
-            onLoadEnd={() => console.log("Load of image finished from: " + this.state.mediaUri)}
+            onLoadEnd={() => console.log("Load of image finished from: " + this.state.thumbnailUri)}
           />
-          : <Card.Content 
-              style={{
-                height: (Dimensions.get("window").height * 0.4) - 70,
-                backgroundColor: "#141414",
-                alignSelf: "stretch",
-              }}></Card.Content>
         }
+        {!this.state.thumbnailUriFetched && <Card.Content 
+            style={{
+              height: (Dimensions.get("window").height * 0.4) - 70,
+              backgroundColor: "#141414",
+              alignSelf: "stretch",
+            }}></Card.Content>}
         <Card.Title 
           style={styles.cardTitle}
           left={props => <Icon {...props} name="file-video" />}
@@ -73,10 +78,6 @@ export default class VideoCarousel extends React.PureComponent {
     };
   }
 
-  _showReportOptions = () => {
-    console.log("Showing report options");
-  }
-
   _renderItem = ({item}) => (
     <View style={styles.carousel}>
       <View style={styles.iconButtonContainer}>
@@ -87,6 +88,7 @@ export default class VideoCarousel extends React.PureComponent {
       </View>
       <VideoCard 
         uri={item}
+        openBottomSheet={this.props.openBottomSheet}
       />
       <View style={styles.iconButtonContainer}>
         <IconButton 
@@ -98,7 +100,7 @@ export default class VideoCarousel extends React.PureComponent {
     </View>
   );
 
-  _keyExtractor = (item) => item; // since the item is simply a url
+  _keyExtractor = (item) => item; // simply a url (which is unique)
 
   render() {
 
@@ -108,14 +110,14 @@ export default class VideoCarousel extends React.PureComponent {
     return (
       <>
         <List.Section title="Videos" />
-        <FlatList
-          style={styles.flatList}
-          renderItem={this._renderItem}
-          keyExtractor={this._keyExtractor}
-          data={this.state.report.fetchVideos()}
-          pagingEnabled={true}
-          horizontal={true}
-        />
+          <FlatList
+            style={styles.flatList}
+            renderItem={this._renderItem}
+            keyExtractor={this._keyExtractor}
+            data={this.state.report.fetchVideos()}
+            pagingEnabled={true}
+            horizontal={true}
+          />
       </>
     );
   }
@@ -142,12 +144,8 @@ const styles = StyleSheet.create({
     zIndex: 3,
     backgroundColor: "teal",
   },
-  // mediaCard: {
-  //   flex: 9,
-  //   width: (Dimensions.get("window").width - 32),
-  //   height: Math.floor(Dimensions.get("window").height * 0.4),
-  //   alignSelf: "center",
-  // },
+
+  // VideoCard styling
   mediaCard: {
     flex: 9,
     width: (Dimensions.get("window").width - 32),

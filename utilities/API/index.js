@@ -67,7 +67,6 @@ export const resendReport = async () => {
  */
 const uploadMediaFiles = (incident) => {
   let incidentDescription = incident;
-  console.log(incidentDescription.attachedPhotosData[0].uri);
   let newIncidentDescription = {
     date: incidentDescription.date,
     location: incidentDescription.location,
@@ -78,8 +77,6 @@ const uploadMediaFiles = (incident) => {
     attachedVideosData: "video",
     attachedPhotosData: "photo",
   };
-
-  let err = false;
 
   let mediaObj = {
     "attachedAudiosData": incidentDescription.attachedAudiosData,
@@ -94,6 +91,7 @@ const uploadMediaFiles = (incident) => {
     "photo": [],
     "video": [],
   };
+
   const updateMedia = (mediaObjKey, url) => {
     media[mediaObjKey].push(url);
     let allMediaResolved = (
@@ -212,12 +210,13 @@ const fetchMediaFile = (url) => {
  * @param {() => {}} onErr callback to be executed on failure
  */
 export const fileReport = async (report, onSuccess, onErr) => {
-  let incidentDescription = report.incidentDescription;
+  // let incidentDescription = report.incidentDescription;
 
   try {
-    incidentDescription = await uploadMediaFiles(report.incidentDescription);
+    uploadMediaFiles(report.incidentDescription);
   } catch(err) {
     // incidentDescription = {};
+    console.log(err);
   }
 
   let sendableReport = {

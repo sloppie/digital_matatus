@@ -1,13 +1,16 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { Card, List, IconButton, FAB } from 'react-native-paper';
-import { ReportParser, FileManager } from '../../../utilities';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import { ReportParser, FileManager } from '../../../utilities';
+
 
 class MediaCard extends React.PureComponent {
  
   state = {
     mediaUri: null,
+    mediaUriFetched: false,
   };
 
   componentDidMount() {
@@ -15,7 +18,8 @@ class MediaCard extends React.PureComponent {
   }
 
   onFetchPicture = (uri) => {
-    this.setState({mediaUri: uri})
+    console.log("created file: \n" + uri)
+    this.setState({mediaUri: uri, mediaUriFetched: true})
     this.forceUpdate();
   }
 
@@ -30,12 +34,14 @@ class MediaCard extends React.PureComponent {
         style={styles.mediaCard}
         onLongPress={this._openBottomSheet}>
         {
-          this.state.mediaUri ?
+          this.state.mediaUriFetched &&
           <Card.Cover 
             source={{uri: this.state.mediaUri}} 
             onLoadEnd={() => console.log("Load of image finished from: " + this.state.mediaUri)}
           />
-          : <Card.Content 
+        }
+        {
+          !this.state.mediaUriFetched && <Card.Content 
               style={{
                 height: (Dimensions.get("window").height * 0.4) - 70,
                 backgroundColor: "#141414",
@@ -52,6 +58,7 @@ class MediaCard extends React.PureComponent {
   }
 
 }
+
 
 export default class PhotoCarousel extends React.PureComponent {
 
@@ -78,7 +85,6 @@ export default class PhotoCarousel extends React.PureComponent {
           style={styles.carouselButtons} 
           icon="chevron-left" />
       </View>
-      {/* onLongPress={this._showReportOptions} */}
       <MediaCard
         style={styles.mediaCard}
         uri={item}
@@ -86,7 +92,7 @@ export default class PhotoCarousel extends React.PureComponent {
       />
       <View style={styles.iconButtonContainer}>
         <IconButton 
-          disabled={this.state.activeFile !== this.state.data.length - 1} 
+          disabled={this.state.activeFile == this.state.data.length - 1} 
           size={24}
           style={styles.carouselButtons} 
           icon="chevron-right" />
@@ -115,19 +121,20 @@ export default class PhotoCarousel extends React.PureComponent {
     return (
       <>
         <List.Section title="Photos" />
-        <FlatList
-          data={this.state.data}
-          renderItem={this._renderItem}
-          keyExtractor={this._keyExtractor}
-          horizontal={true}
-          pagingEnabled={true}
-          style={styles.flatList}
-        />
+          <FlatList
+            data={this.state.data}
+            renderItem={this._renderItem}
+            keyExtractor={this._keyExtractor}
+            horizontal={true}
+            pagingEnabled={true}
+            style={styles.flatList}
+          />
       </>
     );
   }
 
 }
+
 
 const styles = StyleSheet.create({
   flatList: {
@@ -150,6 +157,8 @@ const styles = StyleSheet.create({
     zIndex: 3,
     backgroundColor: "teal",
   },
+
+  // MediaCard Styling
   mediaCard: {
     flex: 9,
     width: (Dimensions.get("window").width - 32),

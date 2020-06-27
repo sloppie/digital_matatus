@@ -108,7 +108,7 @@ public class RemoteFetchWorkerThread implements Runnable {
   }
 
   private void emitEvent() {
-    String cacheUri = "file://" + saveableFile.getName();
+    String cacheUri = "file://" + saveableFile.getAbsolutePath();
 
     WritableMap params = Arguments.createMap();
     params.putString("uri", cacheUri);

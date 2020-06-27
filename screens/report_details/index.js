@@ -1,6 +1,6 @@
 import React from 'react';
-import { SafeAreaView, View, Text, StyleSheet, Dimensions } from 'react-native';
-import { Card, Button } from 'react-native-paper'; 
+import { SafeAreaView, View, Text, StyleSheet, Dimensions, Image } from 'react-native';
+import { Card, List, Button, Colors } from 'react-native-paper'; 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomSheet from 'reanimated-bottom-sheet';
 
@@ -8,7 +8,7 @@ import BottomSheet from 'reanimated-bottom-sheet';
 
 import Theme from '../../theme';
 import * as Fragments from './fragments';
-import { ReportParser } from '../../utilities';
+import { ReportParser, FileManager } from '../../utilities';
 
 const toggleButtonIcons = Object.freeze({
   photo: "image",
@@ -35,6 +35,7 @@ export default class ReportDetails extends React.PureComponent {
       attachedMedia: [],
       report: new ReportParser(this.props.route.params.report),
       highlightedUrl: null,
+      highlightedUrlThumbnail: null
     };
     console.log(JSON.stringify(this.state.incidentDescription.media, null, 2));
   }
@@ -65,27 +66,55 @@ export default class ReportDetails extends React.PureComponent {
     this.setState({highlightedUrl});
 
     this.bottomSheetRef.current.snapTo(1);
+
+    // image is already cached
+    console.log("Highlighted URL: " + this.state.highlightedUrl)
+    FileManager.fetchMediaFromUrl(this.state.highlightedUrl, this._onBottomSheetImageFetched);
   }
+
+  _onBottomSheetImageFetched = (highlightedUrlThumbnail) => this.setState({highlightedUrlThumbnail});
 
   _renderHeader = () => (
     <Card.Title 
       style={styles.bottomSheetHeader}
       title="Help Report Culprit"
-      right={props => <Icon {...props} name="file-find-outline" />}
+      titleStyle={styles.bottomSheetHeaderTitle}
+      subtitle="Help report culprit you recognised in this media file"
+      subtitleStyle={styles.bottomSheetHeaderSubtitle}
+      right={props => <List.Icon {...props} icon="file-find-outline" color="white" />}
+      rightStyle={styles.bottomSheetHeaderRight}
     />
   );
 
   _renderContent = () => {
     let contentStyle = {
-      height: (Dimensions.get("window").height * 0.5 - 77),
-      backgroundColor: "white",
+      height: (Dimensions.get("window").height * 0.5 - 70),
+      backgroundColor: Theme.PrimaryColor,
     };
+
+    let imageDimensions = Dimensions.get("window").width - 64;
 
     return (
       <View style={contentStyle}>
-        <Text style={{textAlign: "center"}}>{this.state.highlightedUrl}</Text>
+        {
+          this.state.highlightedUrlThumbnail && (
+            <Card.Cover
+              style={styles.bottomSheetImage}
+              width={imageDimensions}
+              height={imageDimensions}
+              source={{
+                uri: this.state.highlightedUrlThumbnail,
+                width: imageDimensions,
+                height: imageDimensions,
+              }}
+            />
+          )
+        }
         <Button 
           style={styles.reportCulpritButton} 
+          color={Colors.red300}
+          mode="outlined"
+          icon="file-find-outline"
           onPress={this._reportCulprit}>
             Report Culprit
         </Button>
@@ -184,9 +213,18 @@ const styles = StyleSheet.create({
 
   // BottomSheet
   bottomSheetHeader: {
-    backgroundColor: "white",
+    backgroundColor: Theme.PrimaryColor,
     borderTopEndRadius: 20,
     borderTopStartRadius: 20,
+  },
+  bottomSheetHeaderTitle: {
+    color: "white",
+  },
+  bottomSheetHeaderSubtitle: {
+    color: "white",
+  },
+  bottomSheetHeaderRight: {
+    color: "white",
   },
 
   // BottomSheetContent
@@ -195,5 +233,11 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width - 64,
     alignSelf: "center",
     bottom: 16,
-  }
+    color: Colors.red400,
+  },
+  bottomSheetImage: {
+    alignSelf: "center",
+    width: (Dimensions.get("window").width - 64),
+    borderRadius: 20,
+  },
 });

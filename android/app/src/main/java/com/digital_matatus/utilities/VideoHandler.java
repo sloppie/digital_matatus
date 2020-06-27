@@ -34,9 +34,10 @@ public class VideoHandler implements  Runnable{
 
   @Override
   public void run() {
-    Bitmap microThumb =  ThumbnailUtils.createVideoThumbnail(THUMB_DIRECTORY.getAbsolutePath(), MediaStore.Images.Thumbnails.MICRO_KIND);
-    Bitmap miniThumb =  ThumbnailUtils.createVideoThumbnail(THUMB_DIRECTORY.getAbsolutePath(), MediaStore.Images.Thumbnails.MICRO_KIND);
-    Bitmap fullScreenThumb =  ThumbnailUtils.createVideoThumbnail(THUMB_DIRECTORY.getAbsolutePath(), MediaStore.Images.Thumbnails.MICRO_KIND);
+    String videoFilePath = videoFile.getAbsolutePath();
+    Bitmap microThumb =  ThumbnailUtils.createVideoThumbnail(videoFilePath, MediaStore.Images.Thumbnails.MICRO_KIND);
+    Bitmap miniThumb =  ThumbnailUtils.createVideoThumbnail(videoFilePath, MediaStore.Images.Thumbnails.MINI_KIND);
+    Bitmap fullScreenThumb =  ThumbnailUtils.createVideoThumbnail(videoFilePath, MediaStore.Images.Thumbnails.FULL_SCREEN_KIND);
 
     try {
       // creates a JPEG file that will house the Bitmap
@@ -52,9 +53,9 @@ public class VideoHandler implements  Runnable{
       FileOutputStream miniThumbFOS = new FileOutputStream(miniThumbnail);
       FileOutputStream fullThumbFOS = new FileOutputStream(fullScreenThumbnail);
 
-      microThumb.compress(Bitmap.CompressFormat.JPEG, 50, microThumbFOS);
-      miniThumb.compress(Bitmap.CompressFormat.JPEG, 50, miniThumbFOS);
-      fullScreenThumb.compress(Bitmap.CompressFormat.JPEG, 50, fullThumbFOS);
+      microThumb.compress(Bitmap.CompressFormat.JPEG, 100, microThumbFOS);
+      miniThumb.compress(Bitmap.CompressFormat.JPEG, 100, miniThumbFOS);
+      fullScreenThumb.compress(Bitmap.CompressFormat.JPEG, 100, fullThumbFOS);
 
       emitEvent(microThumbnail, miniThumbnail, fullScreenThumbnail);
     } catch (Exception e) {
@@ -67,7 +68,7 @@ public class VideoHandler implements  Runnable{
     WritableMap params = Arguments.createMap();
     params.putString("micro", "file://" + micro.getAbsolutePath());
     params.putString("mini", "file://" + mini.getAbsolutePath());
-    params.putString("fullScreen", "file://" + fullScreen.getAbsolutePath());
+    params.putString("full", "file://" + fullScreen.getAbsolutePath());
 
     // emit the File.getName() event to help the unique listener get its unique
     // listener when it's complete moving the data.

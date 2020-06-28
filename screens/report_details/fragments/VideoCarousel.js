@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { Card, List, IconButton } from 'react-native-paper';
+import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { ReportParser, FileManager } from '../../../utilities';
@@ -12,6 +13,8 @@ class VideoCard extends React.PureComponent {
     thumbnailUri: null,
     thumbnailUriFetched: false,
     videoUri: null,
+    // video flags
+    isPlaying: false,
   };
 
   componentDidMount() {
@@ -30,6 +33,20 @@ class VideoCard extends React.PureComponent {
     this.forceUpdate()
   }
 
+  video: Video;
+
+  // video playback options
+  _playVideo = () => {
+    if(!this.state.isPlaying) {
+      this.setState({isPlaying: true});
+
+    }
+  }
+
+  _stopVideo = () => {
+    this.setState({isPlaying: false});
+  }
+
   _openBottomSheet = () => {
     this.props.openBottomSheet(this.props.uri);
   }
@@ -39,12 +56,26 @@ class VideoCard extends React.PureComponent {
     return (
       <Card 
         style={styles.mediaCard}
+        onPress={this._playVideo}
         onLongPress={this._openBottomSheet}>
         {
           this.state.thumbnailUriFetched &&
-          <Card.Cover 
-            source={{uri: this.state.thumbnailUri}} 
-            onLoadEnd={() => console.log("Load of image finished from: " + this.state.thumbnailUri)}
+          /*
+           <Card.Cover 
+             source={{uri: this.state.thumbnailUri}} 
+             onLoadEnd={() => console.log("Load of image finished from: " + this.state.thumbnailUri)}
+           />
+          */
+          <Video 
+            style={{ position: "absolute", top:0, bottom: 0, left: 0, right: 0}}
+            ref={(ref) => this.video = ref}
+            source={{uri: this.state.videoUri}}
+            /* onBuffer={this._onBuffer} */
+            onError={() => console.log("Error playing video")}
+            fullscreenAutorotate={true}
+            paused={!this.state.isPlaying}
+
+            repeat={false}
           />
         }
         {!this.state.thumbnailUriFetched && <Card.Content 

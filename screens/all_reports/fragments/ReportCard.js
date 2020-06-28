@@ -97,7 +97,6 @@ export default class ReportCard extends React.Component {
       <Card
         onPress={this._viewReport}
         style={styles.reportCard}
-        onLayout={showSize}
       >
         <Card.Title 
           title={this.state.report.generateReportTitle()}

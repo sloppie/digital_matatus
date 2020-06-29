@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
-import { Card, List, IconButton, FAB } from 'react-native-paper';
+import { View, StyleSheet, FlatList, Dimensions, ToastAndroid, ActivityIndicator } from 'react-native';
+import { Card, List, IconButton, FAB, TouchableRipple } from 'react-native-paper';
+
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { ReportParser, FileManager } from '../../../utilities';
@@ -23,37 +24,89 @@ class MediaCard extends React.PureComponent {
     this.forceUpdate();
   }
 
+  _viewImage = () => {
+
+    if(this.state.mediaUri !== null)
+      this.props.secondaryNavigation.navigate("MediaView", {
+        uri: this.state.mediaUri,
+        type: "IMAGE",
+        mediaUrl: this.props.uri
+      });
+    else
+      ToastAndroid.show("Image still loading...", ToastAndroid.SHORT);
+
+  }
+
   _openBottomSheet = () => {
-    this.props.openBottomSheet(this.props.uri);
+
+    if(this.state.mediaUri !== null)
+      this.props.openBottomSheet(this.props.uri);
+
+  }
+
+  _openCardOptions = () => {
+
+    if(this.state.mediaUri !== null)
+      this.props.openBottomSheet(this.props.uri);
+
   }
 
   render() { 
 
     return (
-      <Card 
+      <View
+        /* onPress={this._viewImage} */
         style={styles.mediaCard}
-        onLongPress={this._openBottomSheet}>
-        {
-          this.state.mediaUriFetched &&
-          <Card.Cover 
-            source={{uri: this.state.mediaUri}} 
-            onLoadEnd={() => console.log("Load of image finished from: " + this.state.mediaUri)}
-          />
-        }
-        {
-          !this.state.mediaUriFetched && <Card.Content 
-              style={{
-                height: (Dimensions.get("window").height * 0.4) - 70,
-                backgroundColor: "#141414",
-                alignSelf: "stretch",
-              }}></Card.Content>
-        }
-        <Card.Title 
-          style={styles.cardTitle}
-          left={props => <Icon {...props} name="image" />}
-          title="Image"
-          subtitle="Photo taken during the incident"/>
-      </Card>
+        /* onLongPress={this._openBottomSheet} */>
+          <>
+            {
+              this.state.mediaUriFetched && (
+                <TouchableRipple
+                  onPress={this._viewImage}
+                  onLongPress={this._openBottomSheet}
+                >
+                  <Card.Cover 
+                    style={styles.cardCover}
+                    source={{uri: this.state.mediaUri}} 
+                    onLoadEnd={() => console.log("Load of image finished from: " + this.state.mediaUri)}
+                  />
+                </TouchableRipple>
+              )
+            }
+            {
+              !this.state.mediaUriFetched && (
+                <Card.Content 
+                  style={{
+                    height: (Dimensions.get("window").height * 0.4) - 70,
+                    backgroundColor: "#141414",
+                    alignSelf: "stretch",
+                    alignContent: "center",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <ActivityIndicator 
+                    size="small"
+                    animating={true}
+                  />
+                </Card.Content>
+              )
+            }
+            <Card.Title 
+              style={styles.cardTitle}
+              left={props => <Icon {...props} name="image" />}
+              title="Image"
+              subtitle="Photo taken during the incident"
+              right={props => (
+                <Icon 
+                  {...props} 
+                  name="dots-vertical" 
+                  style={styles.cardOptions}
+                  onPress={this._openCardOptions} />
+              )}
+                />
+          </>
+      </View>
     );
   }
 
@@ -89,6 +142,7 @@ export default class PhotoCarousel extends React.PureComponent {
         style={styles.mediaCard}
         uri={item}
         openBottomSheet={this.props.openBottomSheet}
+        secondaryNavigation={this.props.secondaryNavigation}
       />
       <View style={styles.iconButtonContainer}>
         <IconButton 
@@ -166,10 +220,23 @@ const styles = StyleSheet.create({
     maxHeight: Math.floor(Dimensions.get("window").height * 0.4),
     alignSelf: "center",
     paddingBottom: 0,
+    backgroundColor: "white",
+    borderColor: "#999",
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  cardCover: {
+    borderTopEndRadius: 10,
+    borderTopStartRadius: 10,
   },
   cardTitle: {
     paddingBottom: 0,
     marginBottom: 0,
     alignSelf: "baseline",
+    // borderTopColor: "#999",
+    // borderTopWidth: 1,
+  },
+  cardOptions: {
+    marginEnd: 8,
   },
 });

@@ -11,7 +11,8 @@ import ReportDetails from './report_details';
 import ReportCulprit from './report_culprit';
 import NumberPlate from './number_plate';
 import Camera from './camera';
-// import ReportV2 from './report_v2';
+import MediaView from './media_view';
+
 
 export {
   InitialSetup,
@@ -27,5 +28,5 @@ export {
   SetReminder,
   NumberPlate,
   Camera,
-  // ReportV2,
+  MediaView
 };

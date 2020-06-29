@@ -1,11 +1,12 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { AllReports, ReportDetails, ReportCulprit } from '../screens';
-
-import { VIEW_REPORT_NAVIGATION_REF } from './AppDrawer';
+import { AllReports, ReportDetails, ReportCulprit, MediaView } from '../screens';
 import { View } from 'react-native';
+
 import Theme from '../theme';
+import { VIEW_REPORT_NAVIGATION_REF } from './AppDrawer';
+
 
 const Stack = createStackNavigator();
 
@@ -45,6 +46,14 @@ export default () => (
       component={ReportDetails} 
       options={{
         // headerShown: false,
+      }}
+    />
+    <Stack.Screen 
+      name="MediaView"
+      component={MediaView}
+      options={{
+        headerTransparent: true,
+        title: "Preview",
       }}
     />
     <Stack.Screen name="ReportCulprit" component={ReportCulprit} />

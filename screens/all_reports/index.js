@@ -49,11 +49,12 @@ export default class ReportDetails extends React.PureComponent {
   }
 
   _fetchRouteReports = (route_id) => {
-    this.setState({loading: true, active: route_id})
-    API.fetchRouteReports(
-      route_id, // id of the report to be fetched
-      this._setReportsData, // onSuccess
-      this._setErrorLoading, // onFailure
+    this.setState({loading: true, active: route_id});
+
+    API.filterByCategories(
+      {route_id}, 
+      this._setReportsData, 
+      this._setErrorLoading
     );
   }
 
@@ -72,6 +73,7 @@ export default class ReportDetails extends React.PureComponent {
   }
 
   _fetchAllReports = () => {
+
     return new Promise((resolve, reject) => {
       let reports = {};
       let length = 0;

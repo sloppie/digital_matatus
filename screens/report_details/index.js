@@ -68,8 +68,7 @@ export default class ReportDetails extends React.PureComponent {
     this.bottomSheetRef.current.snapTo(1);
 
     // image is already cached
-    console.log("Highlighted URL: " + this.state.highlightedUrl)
-    FileManager.fetchMediaFromUrl(this.state.highlightedUrl, this._onBottomSheetImageFetched);
+    FileManager.fetchMediaFromUrl(highlightedUrl, this._onBottomSheetImageFetched);
   }
 
   _onBottomSheetImageFetched = (highlightedUrlThumbnail) => this.setState({highlightedUrlThumbnail});

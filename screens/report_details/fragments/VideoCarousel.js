@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
-import { Card, List, IconButton } from 'react-native-paper';
-import Video from 'react-native-video';
+import { View, StyleSheet, FlatList, Dimensions, ActivityIndicator } from 'react-native';
+import { Card, List, IconButton, TouchableRipple } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { ReportParser, FileManager } from '../../../utilities';
@@ -10,6 +9,7 @@ import { ReportParser, FileManager } from '../../../utilities';
 class VideoCard extends React.PureComponent {
 
   state = {
+    uri: this.props.uri,
     thumbnailUri: null,
     thumbnailUriFetched: false,
     videoUri: null,
@@ -33,63 +33,83 @@ class VideoCard extends React.PureComponent {
     this.forceUpdate()
   }
 
-  video: Video;
 
   // video playback options
   _playVideo = () => {
-    if(!this.state.isPlaying) {
-      this.setState({isPlaying: true});
 
+    if(this.state.videoUri !== null) {
+
+      this.props.secondaryNavigation.navigate("MediaView", {
+        uri: this.state.videoUri,
+        type: "VIDEO",
+        mediaUrl: this.state.uri,
+      });
     }
   }
 
-  _stopVideo = () => {
-    this.setState({isPlaying: false});
+  _openBottomSheet = () => {
+
+    if(this.state.videoUri !== null)
+      this.props.openBottomSheet(this.state.uri);
+
   }
 
-  _openBottomSheet = () => {
-    this.props.openBottomSheet(this.props.uri);
+  _openCardOptions = () => {
+
+    if(this.state.videoUri !== null)
+      this.props.openBottomSheet(this.state.uri);
   }
 
   render() {
     
     return (
-      <Card 
-        style={styles.mediaCard}
-        onPress={this._playVideo}
-        onLongPress={this._openBottomSheet}>
-        {
-          this.state.thumbnailUriFetched &&
-          /*
-           <Card.Cover 
-             source={{uri: this.state.thumbnailUri}} 
-             onLoadEnd={() => console.log("Load of image finished from: " + this.state.thumbnailUri)}
-           />
-          */
-          <Video 
-            style={{ position: "absolute", top:0, bottom: 0, left: 0, right: 0}}
-            ref={(ref) => this.video = ref}
-            source={{uri: this.state.videoUri}}
-            /* onBuffer={this._onBuffer} */
-            onError={() => console.log("Error playing video")}
-            fullscreenAutorotate={true}
-            paused={!this.state.isPlaying}
-
-            repeat={false}
+      <View
+        style={styles.mediaCard}>
+        <>
+          {
+            this.state.thumbnailUriFetched && (
+              <TouchableRipple
+                onPress={this._playVideo}
+                onLongPress={this._openBottomSheet}
+              >
+                <Card.Cover 
+                  style={styles.cardCover}
+                  source={{uri: this.state.thumbnailUri}} 
+                  onLoadEnd={() => console.log("Load of image finished from: " + this.state.thumbnailUri)}
+                />
+              </TouchableRipple>
+            )
+          }
+          {!this.state.thumbnailUriFetched && <Card.Content 
+              style={{
+                height: (Dimensions.get("window").height * 0.4) - 70,
+                backgroundColor: "#141414",
+                alignSelf: "stretch",
+                alignContent: "center",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                <ActivityIndicator 
+                  size="large"
+                  animating={true}
+                />
+              </Card.Content>}
+          <Card.Title 
+            style={styles.cardTitle}
+            left={props => <Icon {...props} name="file-video" />}
+            title="Video recorded"
+            subtitle="Video recorded during the incident"
+            right={props => (
+              <Icon 
+                {...props}
+                name="dots-vertical"
+                onPress={this._openCardOptions}
+              />
+            )}
+            rightStyle={styles.cardOptions}
           />
-        }
-        {!this.state.thumbnailUriFetched && <Card.Content 
-            style={{
-              height: (Dimensions.get("window").height * 0.4) - 70,
-              backgroundColor: "#141414",
-              alignSelf: "stretch",
-            }}></Card.Content>}
-        <Card.Title 
-          style={styles.cardTitle}
-          left={props => <Icon {...props} name="file-video" />}
-          title="Video recorded"
-          subtitle="Video recorded during the incident"/>
-      </Card>
+        </>
+      </View>
     );
   }
 
@@ -120,6 +140,7 @@ export default class VideoCarousel extends React.PureComponent {
       <VideoCard 
         uri={item}
         openBottomSheet={this.props.openBottomSheet}
+        secondaryNavigation={this.props.secondaryNavigation}
       />
       <View style={styles.iconButtonContainer}>
         <IconButton 
@@ -184,10 +205,21 @@ const styles = StyleSheet.create({
     maxHeight: Math.floor(Dimensions.get("window").height * 0.4),
     alignSelf: "center",
     paddingBottom: 0,
+    borderColor: "#999",
+    borderWidth: 1, 
+    borderRadius: 10,
+    marginBottom: 32,
+  },
+  cardCover: {
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
   },
   cardTitle: {
     paddingBottom: 0,
     marginBottom: 0,
     alignSelf: "baseline",
+  },
+  cardOptions: {
+    marginEnd: 8,
   },
 });

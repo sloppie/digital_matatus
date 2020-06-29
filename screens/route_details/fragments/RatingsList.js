@@ -91,13 +91,22 @@ export default class RatingsList extends React.PureComponent {
   }
 
   _renderItem = ({item}) => {
+
     let incidentDescription = JSON.parse(item.incidentDescription);
 
     const renderFlags = () => {
       let flags = "Flags: ";
-      Object.keys(incidentDescription.harassmentFlags).forEach((flag) => {
+      let harrassmentFlags;
+
+      try {
+        harrassmentFlags = Object.keys(incidentDescription.harassmentFlags);
+      } catch(err) {
+        harrassmentFlags = Object.keys(incidentDescription.flags)
+      }
+
+      harrassmentFlags.forEach((flag) => {
         
-        if(incidentDescription.harassmentFlags[flag].length)
+        // if(incidentDescription.harassmentFlags[flag].length)
           flags += `${flag}, `;
 
       });

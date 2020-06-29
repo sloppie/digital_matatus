@@ -2,18 +2,15 @@ import React from 'react';
 import {
   SafeAreaView,
   View,
-  ToastAndroid,
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import { Searchbar, Surface, TouchableRipple } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import MapView, { PROVIDER_OSMDROID, Marker, OverlayComponent } from 'react-native-maps-osmdroid';
+import { Searchbar } from 'react-native-paper';
+import MapView, { PROVIDER_OSMDROID, Marker } from 'react-native-maps-osmdroid';
 
 const RNShake = require('react-native-shake');
 
 import * as Fragments from './fragments';
-import Theme from '../../theme';
 import { HOME_NAVIGATION_REF } from '../../routes/AppDrawer';
 import AsyncStorage from '@react-native-community/async-storage';
 import { API } from '../../utilities';

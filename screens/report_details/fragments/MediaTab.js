@@ -37,11 +37,12 @@ export default class MediaTab extends React.PureComponent {
             openBottomSheet={this.props.openBottomSheet}
             report={this.props.report}/> 
         : // return AudioCarousel
-          <AudioCarousel
-            key={mediaType}
-            secondaryNavigation={this.props.secondaryNavigation}
-            openBottomSheet={this.props.openBottomSheet}
-            report={this.props.report}/>
+          // <AudioCarousel
+          //   key={mediaType}
+          //   secondaryNavigation={this.props.secondaryNavigation}
+          //   openBottomSheet={this.props.openBottomSheet}
+          //   report={this.props.report}/>
+          null
       ))
   );
 

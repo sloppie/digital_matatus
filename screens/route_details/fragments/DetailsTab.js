@@ -18,6 +18,9 @@ export default class DetailsTab extends React.PureComponent {
     <RatingsList 
       secondaryNavigation={this.props.secondaryNavigation}
       route={this.props.route}
+      reports={this.props.reports}
+      filterReportsByCategories={this.props.filterReportsByCategories}
+      ref={this.props.ratingsListRef}
     />
   );
 
@@ -25,6 +28,8 @@ export default class DetailsTab extends React.PureComponent {
     <LargeRatingsList 
       secondaryNavigation={this.props.secondaryNavigation}
       route={this.props.route}
+      reports={this.props.reports}
+      filterReportsByCategories={this.props.filterReportsByCategories}
     />
   );
 
@@ -52,7 +57,10 @@ export default class DetailsTab extends React.PureComponent {
 
   _renderStats = () => (
     <Stats 
+      ref={this.props.statsRef}
       route={this.props.route}
+      reports={this.props.reports}
+      getParentFilters={this.props.getParentFilters}
     />
   )
 

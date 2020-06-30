@@ -2,6 +2,8 @@ import React from 'react';
 import { ToastAndroid, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { List } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import Filters from './Filters';
 import Theme from '../../../theme';
 import { API } from '../../../utilities';
 
@@ -37,23 +39,23 @@ class Message extends React.Component {
 }
 
 
-export default class RatingsList extends React.PureComponent {
+export default class RatingsList extends React.Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      reports: []
+      reports: [],
     };
 
   }
 
   componentDidMount() {
-    API.fetchReportsByRoute(
-      this.props.route.route_id,
-      this._setReports,
-      this._setReports.bind(this, [])
-    );
+    // API.fetchReportsByRoute(
+    //   this.props.route.route_id,
+    //   this._setReports,
+    //   this._setReports.bind(this, [])
+    // );
   }
 
   _setReports = (reports) => this.setState({reports});
@@ -128,16 +130,17 @@ export default class RatingsList extends React.PureComponent {
 
   render() {
 
-    // const length = Dimensions.get("window").width;
-
     return (
-      <FlatList 
-        data={this.state.reports}
-        renderItem={this._renderItem}
-        keyExtractor={this._keyExtractor}
-        maxToRenderPerBatch={10}
-        getItemLayout={(data, index) => {return {length: 77, offset: (77 * index), index}}}
-      />
+      <>
+        <Filters filterReportsByCategories={this.props.filterReportsByCategories} />
+        <FlatList 
+          data={this.state.reports}
+          renderItem={this._renderItem}
+          keyExtractor={this._keyExtractor}
+          maxToRenderPerBatch={10}
+          getItemLayout={(data, index) => {return {length: 77, offset: (77 * index), index}}}
+        />
+      </>
     );
   }
 

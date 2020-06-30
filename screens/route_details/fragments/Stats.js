@@ -192,14 +192,18 @@ export default class Stats extends React.Component {
   }
 
   componentDidMount = () => {
+    let parentFilters = this.props.getParentFilters();
+
     API.filterByCategories(
-      {route_id: this.props.route.route_id},
+      {route_id: this.props.route.route_id, ...parentFilters},
       this._setTotal,
       this._setTotal.bind(this, [])
     );
 
-    this.fetchFilters();
-    setTimeout(this.fetchFilters, 5000);
+    this.setState({parentFilters});
+
+    // this.fetchFilters();
+    // setTimeout(this.fetchFilters, 5000);
     this._getLocationGraph();
   }
 
@@ -212,8 +216,30 @@ export default class Stats extends React.Component {
     );
   }
 
+  setParentFilters = (parentFilters) => {
+    this.setState({parentFilters})
+
+    this.fetchGraphData(parentFilters);
+  }
+
+  fetchGraphData = (parentFilters) => {
+    this.fetchTotal(parentFilters);
+    this._getLocationGraph(parentFilters);
+  }
+
+  fetchTotal = (parentFilters = null) => {
+
+    let pf = (parentFilters !== null)? parentFilters: this.state.parentFilters;
+
+    API.filterByCategories(
+      {route_id: this.props.route.route_id, ...pf},
+      this._setTotal,
+      this._setTotal.bind(this, [])
+    );
+  }
+
   _setTotal = (total) => {
-    console.log("Setting total to: " + total.length)
+    console.log("Setting total to: " + total.length);
     this.setState({total: total.length});
     this.forceUpdate();
   }
@@ -230,25 +256,34 @@ export default class Stats extends React.Component {
 
   }
 
-  _getLocationGraph = () => {
+  _setIBNumbers = (data) => this.setState({"INSIDE_BUS": data.length});
+
+  _setBTNumbers = (data) => this.setState({"BUS_TERMINAL": data.length});
+
+  _setOBENumbers = (data) => this.setState({"ON_BUS_ENTRANCE": data.length});
+
+  _getLocationGraph = (parentFilters=null) => {
+    let pf = (parentFilters !== null)? parentFilters: this.state.parentFilters;
+
     let route_id = this.props.route.route_id;
-    let insideBus = {route_id, location_type: "INSIDE_BUS"};
-    let onBusTerminal = {route_id, location_type: "BUS_TERMINAL"};
-    let onBusEntrance = {route_id, location_type: "ON_BUS_ENTRANCE"};
+    let insideBus = {route_id, ...pf, location_type: "INSIDE_BUS"};
+    let onBusTerminal = {route_id, ...pf, location_type: "BUS_TERMINAL"};
+    let onBusEntrance = {route_id, ...pf, location_type: "ON_BUS_ENTRANCE"};
 
     setTimeout(
-      API.filterByCategories.bind(this, insideBus, this._setLocationType, this._setLocationType.bind(this, [])),
+      API.filterByCategories.bind(this, insideBus, this._setIBNumbers, this._setIBNumbers.bind(this, [])),
       200
-    )
+    );
+
     setTimeout(
-      API.filterByCategories.bind(this, onBusTerminal, this._setLocationType, this._setLocationType.bind(this, [])),
+      API.filterByCategories.bind(this, onBusTerminal, this._setBTNumbers, this._setBTNumbers.bind(this, [])),
       600,
     );
+
     setTimeout(
-      API.filterByCategories.bind(this, onBusEntrance, this._setLocationType, this._setLocationType.bind(this, [])),
+      API.filterByCategories.bind(this, onBusEntrance, this._setOBENumbers, this._setOBENumbers.bind(this, [])),
       1100
     );
-
 
   }
 
@@ -284,6 +319,7 @@ export default class Stats extends React.Component {
 
   fetchFilters = () => {
     let filters = this.filtersRef.current.getFilters();
+
     API.filterByCategories(
       {report_id: this.props.route.route_id, ...filters},
       (response) => console.log(response.length),
@@ -305,18 +341,12 @@ export default class Stats extends React.Component {
       useShadowColorFromDataset: false // optional
     };
 
-    let slice = [
-      this.state.BUS_TERMINAL,
-      this.state.INSIDE_BUS,
-      this.state.ON_BUS_ENTRANCE
-    ];
-    let renderTotal = () => this.state.total;
 
     return (
 
 
       <ScrollView style={{flex: 1, width: "100%", height: "100%"}}>
-        <Filters ref={this.filtersRef}/>
+        {/* <Filters ref={this.filtersRef}/> */}
         <List.Section 
           title="Graph of incident filtered by location"
         />
@@ -333,10 +363,7 @@ export default class Stats extends React.Component {
             />
           : null
         }
-        {/* <Text>INSIDE_BUS: {this.state.INSIDE_BUS}</Text>
-        <Text>ON_BUS_ENTRANCE: {this.state.ON_BUS_ENTRANCE}</Text>
-        <Text>BUS_TERMINAL: {this.state.BUS_TERMINAL}</Text> */}
-        <Text style={styles.reportedCases}>{`Total reported cased: ${renderTotal()}`}</Text>
+        <Text style={styles.reportedCases}>{this.state.total}</Text>
       </ScrollView>
     );
   }

@@ -14,9 +14,12 @@ import {
   List
 } from 'react-native-paper';
 import MapView, { PROVIDER_OSMDROID, Marker } from 'react-native-maps-osmdroid';
-import Theme from '../../theme';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import Theme from '../../theme';
 import * as Fragments from './fragments';
+
+import { API, ReportParser } from '../../utilities';
 
 // import STOPS from '../../GTFS_FEED/stops/stops.json';
 import SHAPES from '../../GTFS_FEED/shapes/shape.json';
@@ -30,6 +33,7 @@ export default class RouteDetails extends React.PureComponent {
     super(props);
 
     this.state = {
+      route_id: this.props.route.params.route.route_id,
       markers: [],
       region: {
         latitude: -1.28123,
@@ -39,7 +43,10 @@ export default class RouteDetails extends React.PureComponent {
       },
       comprehensive_routes: {stops:[], to: [], from: [] },
       activeTab: 0,
-      routesLoaded: false
+      routesLoaded: false,
+      reports: [],
+      categories: {},
+      statsMounted: false,
     };
 
     this.from = "";
@@ -65,13 +72,44 @@ export default class RouteDetails extends React.PureComponent {
   componentDidMount() {
     this.setBusTerminalMarker(this.props.route.params.trip);
     this.setComprehensiveRoutes();
+
+    this.filterReportsByCategory();
+  }
+  
+  ratingsListRef = React.createRef();
+  statsRef = React.createRef();
+
+  setReports = (reports) => {
+    this.setState({reports});
+    this.ratingsListRef.current._setReports(reports);
+
+  }
+
+  filterReportsByCategory = (categories) => {
+
+    this.setState({categories});
+
+    API.filterByCategories(
+      {route_id: this.state.route_id, ...categories},
+      this.setReports.bind(this),
+      this.setReports.bind(this, [])
+    );
+
+    // send out the new categories to the StatsTab
+    if(this.state.statsMounted)
+      this.statsRef.current.setParentFilters(categories);
+  }
+
+  getParentFilters = () => {
+    this.setState({statsMounted: true});
+
+    return this.state.categories;
   }
 
   setActiveTab = (activeTab) => this.setState({activeTab});
 
   getComprehensiveRoute() {
     return new Promise((resolve, reject) => {
-      console.log("This promise ran")
       let routes;
       try {
         routes = COMPREHENSIVE_ROUTES[this.props.route.params.route.route_id];
@@ -165,6 +203,26 @@ export default class RouteDetails extends React.PureComponent {
     return markers;
   }
 
+  _generateReportLocationMarkers = () => {
+    let markers = [];
+
+    this.state.reports.forEach(report => {
+      let parsedReport = new ReportParser(report);
+
+      markers.push(
+        <Marker 
+          key={report._id}
+          title={report._id}
+          coordinate={parsedReport.incidentDescription.location.coordinates}
+          description={parsedReport.incidentDescription.location.type}
+        />
+      );
+
+    });
+
+    return markers;
+  }
+
   _generateStopsList = (type) => {
     let stops = [];
 
@@ -206,6 +264,11 @@ export default class RouteDetails extends React.PureComponent {
         data={{...this.state.comprehensive_routes}}
         secondaryNavigation={this.props.navigation}
         route={this.props.route.params.route}
+        reports={this.state.reports}
+        filterReportsByCategories={this.filterReportsByCategory}
+        ratingsListRef={this.ratingsListRef}
+        statsRef={this.statsRef}
+        getParentFilters={this.getParentFilters}
       />
     );
 
@@ -233,6 +296,7 @@ export default class RouteDetails extends React.PureComponent {
               style={styles.map}
             >
               {this._generateBusTerminalMarkers()}
+              {(this.state.reports.length > 0) && this._generateReportLocationMarkers()}
             </MapView>
             <Card.Title 
               style={styles.cardTitleContainer}

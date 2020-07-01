@@ -7,6 +7,7 @@ import {
   RouteDetails,
   NumberPlate,
   ReportDetails,
+  MediaView,
   ReportCulprit,
   Camera,
 } from '../screens';
@@ -58,9 +59,18 @@ export default () => (
       }} 
     />
     <Stack.Screen 
+      name="MediaView"
+      component={MediaView}
+      options={{
+        headerTransparent: true,
+        title: "Preview",
+      }}
+    />
+    <Stack.Screen 
       name="ReportCulprit" 
       component={ReportCulprit} 
       options={{
+        headerStyle: {elevation: 1},
       }} 
     />
   </Stack.Navigator>

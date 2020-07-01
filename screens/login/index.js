@@ -22,13 +22,13 @@ export default class Login extends React.PureComponent {
   }
 
   _setUserDetails = (user) => {
-    this.setState({user});
+      this.scrollViewRef.current.scrollTo({
+        x: Dimensions.get("window").width,
+        y: 0,
+        animated: true,
+      });
 
-    this.scrollViewRef.current.scrollTo({
-      x: Dimensions.get("window").width,
-      y: 0,
-      animated: true,
-    });
+    this.setState({user});
   }
 
   _goBack = () => this.scrollViewRef.current.scrollTo({
@@ -40,37 +40,41 @@ export default class Login extends React.PureComponent {
   render() {
 
     return (
-      <SafeAreaView style={styles.screen}>
-        {/* <ImageBackground
-          source={require("../../assets/images/nairobi-transit.jpg")}
-          style={styles.imageBackground}
-        > */}
-          <ScrollView
-            style={styles.screen}
-            ref={this.scrollViewRef}
-            scrollEnabled={false}
-            horizontal={true}
-            pagingEnabled={true}
-            nestedScrollEnabled={true}
-          >
-            <Fragments.LoginScreen
-              _setUserType={this.props._setUserType}
-              _setUserDetails={this._setUserDetails}
-              navigation={this.props.navigation}
-            />
+      // <SafeAreaView style={styles.screen}>
+      //   {/* <ImageBackground
+      //     source={require("../../assets/images/nairobi-transit.jpg")}
+      //     style={styles.imageBackground}
+      //   > */}
+      //     <ScrollView
+      //       style={styles.screen}
+      //       ref={this.scrollViewRef}
+      //       scrollEnabled={false}
+      //       horizontal={true}
+      //       pagingEnabled={true}
+      //       nestedScrollEnabled={true}
+      //     >
+      //       <Fragments.LoginScreen
+      //         _setUserType={this.props._setUserType}
+      //         _setUserDetails={this._setUserDetails}
+      //         navigation={this.props.navigation}
+      //         scrollViewRef={this.scrollViewRef}
+      //       />
 
-            {
-              (this.state.user)
-              ? <Fragments.Confirm 
-                  user={this.state.user}
-                  _goBack={this._goBack}
-                />
-              : null
-            }
+      //       {
+      //         (this.state.user)
+      //         ? <Fragments.Confirm 
+      //             user={this.state.user}
+      //             _goBack={this._goBack}
+      //           />
+      //         : null
+      //       }
 
-          </ScrollView>
-        {/* </ImageBackground> */}
-      </SafeAreaView>
+      //     </ScrollView>
+      //   {/* </ImageBackground> */}
+      // </SafeAreaView>
+      <Fragments.Tab 
+        secondaryNavigation={this.props.navigation}
+      />
     );
   }
 

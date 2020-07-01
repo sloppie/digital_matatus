@@ -19,6 +19,7 @@ import {
   Colors
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import Theme from '../../../theme';
 import { API } from '../../../utilities';
 
@@ -54,8 +55,10 @@ export default class Login extends React.PureComponent {
     // callback to be executed once the User details are loaded successfully
     const onLoginDetailsSuccess = (payload) => {
       payload.email = this.state.email;
-      this.props._setUserDetails(payload);
-      this.setState({ fetching: false });
+      this.setState({ fetching: false }); 
+      // this.props._setUserDetails(payload);
+      this.props.navigation.navigate("Confirm", {user: payload});
+
     }
 
     // callback to be executed is the user details are not loaded

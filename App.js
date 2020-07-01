@@ -14,7 +14,7 @@ class App extends React.Component {
   async componentDidMount() {
     let deviceToken = (await AsyncStorage.getItem("deviceNotificationToken", (err) => console.log(err)));
 
-    if(!deviceToken) {
+    if(deviceToken == null) {
       NotificationsSetup.configure();
     } else {
       // Notifications.postLocalNotification({title: "Test", body: "This us the body"});

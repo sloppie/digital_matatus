@@ -7,18 +7,38 @@ const PushNotification = require('react-native-push-notification');
 export default class NotificationSetup {
 
   static configure() {
+    console.log("Configuring token...");
 
-    Notifications.events().registerRemoteNotificationsRegistered((event) => {
-      console.log("Device Notification token: " + event.deviceToken);
+    // Notifications.events().registerRemoteNotificationsRegistered((event) => {
+    //   console.log("Device Notification token: " + event.deviceToken);
 
-      AsyncStorage.setItem("deviceNotificationToken", JSON.stringify(event.deviceToken));
-    });
+    //   AsyncStorage.setItem("deviceNotificationToken", JSON.stringify(event.deviceToken));
+    // });
 
-    Notifications.events().registerRemoteNotificationsRegistrationFailed((event) => {
-      console.log(event);
-    });
+    // Notifications.events().registerRemoteNotificationsRegistrationFailed((event) => {
+    //   console.log(event);
+    // });
 
-    Notifications.registerRemoteNotifications();
+    // Notifications.registerRemoteNotifications();
+    PushNotification.configure({
+      onRegister: function(token) {
+        console.log("Device token:" + token);
+
+        AsyncStorage.setItem("deviceNotificationToken", JSON.stringify(event.deviceToken));
+      },
+      onNotification: function(notification) {
+        console.log(notification);
+      },
+
+      permissions: {
+        alert: true,
+        badge: true,
+        sound: true,
+      },
+
+      popInitialNotification: true,
+      requestPermissions: true,
+    })
   }
 
   static handleNotification() {

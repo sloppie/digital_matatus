@@ -329,7 +329,7 @@ export const isUser = (email, onSuccess, onErr) => {
 
   console.log('Checking for user...' + email);
 
-  fetch(`http://192.168.43.89:3000/api/user/isUser/${email}`)
+  fetch(`http://192.168.43.98:3000/api/user/isUser/${email}`)
     .then(response => response.json())
     .then(data => {
       console.log(data);
@@ -337,7 +337,7 @@ export const isUser = (email, onSuccess, onErr) => {
       if (data)
         onSuccess(data);
       else
-        onErr("Data not found")
+        onErr("Data not found");
 
     }).catch(err => {
       console.log(err);
@@ -355,7 +355,7 @@ export const isUser = (email, onSuccess, onErr) => {
  */
 export const getLoginDetails = (email, onSuccess, onErr) => {
 
-  fetch(`http://192.168.43.89:3000/api/user/login?email=${email}`)
+  fetch(`http://192.168.43.98:3000/api/user/login?email=${email}`)
     .then(response => response.json())
     .then(data => {
       

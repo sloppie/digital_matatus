@@ -6,6 +6,7 @@ import Permissions from '../../../utilities/permissions';
 import AsyncStorage from '@react-native-community/async-storage';
 import { CONFIG_COMPLETE } from '../../../store';
 import Theme from '../../../theme';
+import NotificationSetup from '../../../utilities/push-notifications';
 
 
 export default class Confirm extends React.PureComponent {
@@ -18,15 +19,17 @@ export default class Confirm extends React.PureComponent {
     };
   }
 
+  _goBack = () => this.props.navigation.navigate("Login")
+
   _renderRoutes = () => {
-    let routes = JSON.parse(this.props.user.favouriteRoutes);
+    let routes = JSON.parse(this.props.route.params.user.favouriteRoutes);
     let routesDetails = require('../../../GTFS_FEED/routes/routes.json');
 
     let routeCards = routes.map(route => {
       let routeDetails = routesDetails[route];
 
       return (
-        <Card style={styles.routeCard}>
+        <Card style={styles.routeCard} key={routeDetails.route_id}>
           <Card.Title 
             left={props => <List.Icon {...props} icon="bus" />}
             title={`Route ${routeDetails.route_short_name}`}
@@ -46,6 +49,11 @@ export default class Confirm extends React.PureComponent {
     let res = await Permissions.requestAllPermissions();
     let deviceToken = await AsyncStorage.getItem("deviceNotificationToken");
 
+    if(!deviceToken)
+      deviceToken= "no_token"
+
+    console.log(typeof deviceToken);
+
     const unpackRoutes = (routes) => {
       let STORED_ROUTES = require('../../../GTFS_FEED/routes/routes.json');
       let favouriteRoutes = routes.map(id => STORED_ROUTES[id]);
@@ -55,7 +63,7 @@ export default class Confirm extends React.PureComponent {
 
     if(deviceToken) {
       console.log(deviceToken);
-      fetch("http://192.168.43.89:3000/api/user/login", 
+      fetch("http://192.168.43.98:3000/api/user/login", 
       {
         method: "PUT",
         headers: {
@@ -63,7 +71,7 @@ export default class Confirm extends React.PureComponent {
           Accept: "application/json"
         },
         body: JSON.stringify({
-          email: this.props.user.email,
+          email: this.props.route.params.user.email,
           deviceToken: deviceToken // the string is stringified a second time when being stored
         })
       }
@@ -93,6 +101,9 @@ export default class Confirm extends React.PureComponent {
       }
 
     }).catch(err => console.log(err));
+    } else {
+      // NotificationSetup.configure();
+      // this._confirm();
     }
 
   }
@@ -105,7 +116,7 @@ export default class Confirm extends React.PureComponent {
           name="chevron-left" 
           size={30} 
           style={styles.appBarIcon} 
-          onPress={this.props._goBack}
+          onPress={this._goBack}
         />
         <Title style={styles.screenLabel}>This you?</Title>
         <ScrollView 

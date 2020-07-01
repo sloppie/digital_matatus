@@ -154,7 +154,7 @@ export default class InitialSetup extends React.Component {
       deviceToken = await AsyncStorage.getItem("deviceNotificationToken")
     }
 
-    fetch("http://192.168.43.89:3000/api/user/new", {
+    fetch("http://192.168.43.98:3000/api/user/new", {
       method: "POST",
       headers: {
         Accept: "application/json",

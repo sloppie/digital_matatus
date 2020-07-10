@@ -75,8 +75,8 @@ export default class Home extends React.Component {
             reportToUpdate = "";
           }
 
-          console.log("reportToUpdate");
-          console.log(reportToUpdate);
+          // console.log("reportToUpdate");
+          // console.log(reportToUpdate);
           if(reportToUpdate !== "" && reportToUpdate !== "FETCH_REPORT_ID" && reportToUpdate !== null) {
             this.props.navigation.navigate("NumberPlate"); // update reports
           }
@@ -95,7 +95,6 @@ export default class Home extends React.Component {
 
   _openDrawer = () => HOME_NAVIGATION_REF.openDrawer();
 
-  // _reportIncident = () => HOME_NAVIGATION_REF.navigate("Report");
   _reportIncident = () => this.props.navigation.navigate("Camera", {type: "camera", source: "Home"});
 
   _handleTextChange = (text) => {

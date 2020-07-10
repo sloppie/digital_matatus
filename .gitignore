@@ -57,3 +57,14 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+#NoteTaker app got here by mistake
+/NoteTaker/*
+
+# new android VSCode and .idea files
+/.vscode/*
+/android/.project
+/android/.settings/
+/android/app/.classpath
+/android/app/.project
+/android/app/.settings/

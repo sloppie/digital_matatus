@@ -69,6 +69,7 @@ export default class DetailsTab extends React.PureComponent {
     return (
       <Tab.Navigator
         lazy={true}
+        backBehavior="initialRoute" /*Prevent weird back behaviour */
       >
         <Tab.Screen 
           name="RatingsList"

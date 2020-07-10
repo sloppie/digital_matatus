@@ -98,7 +98,6 @@ class App extends React.PureComponent {
       return <SplashScreen />
     
     if(!this.state.configComplete) {
-      console.log("Evaluated to true")
       return (
         <ConfigStack />
       )

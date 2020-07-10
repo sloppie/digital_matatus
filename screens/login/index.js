@@ -72,9 +72,9 @@ export default class Login extends React.PureComponent {
       //     </ScrollView>
       //   {/* </ImageBackground> */}
       // </SafeAreaView>
-      <Fragments.Tab 
-        secondaryNavigation={this.props.navigation}
-      />
+        <Fragments.Tab 
+          secondaryNavigation={this.props.navigation}
+        />
     );
   }
 

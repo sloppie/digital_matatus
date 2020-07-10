@@ -16,7 +16,11 @@ import Theme from '../theme';
 const Stack = createStackNavigator();
 
 export default () => (
-  <Stack.Navigator>
+  <Stack.Navigator
+    screenOptions={{
+    }}
+    initialRouteName="Home"
+  >
     <Stack.Screen 
       name="Home" 
       component={Home} 
@@ -28,7 +32,6 @@ export default () => (
       name="Camera" 
       component={Camera} 
       options={{
-        // unmountOnBlur: true,
         headerShown: false,
       }}
     />

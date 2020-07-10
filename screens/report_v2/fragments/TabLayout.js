@@ -55,6 +55,7 @@ export default class TabLayout extends React.PureComponent {
     return (
       <TopTab.Navigator
         tabBar={this._renderTabBar}
+        backBehavior="initialRoute"
       >
         <TopTab.Screen 
           name="IncidentDescription" 

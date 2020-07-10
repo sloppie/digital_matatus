@@ -79,6 +79,7 @@ export default () => (
     initialRouteName="Home"
     minSwipeDistance={30}
     edgeWidth={100}
+    backBehavior="initialRoute"
   >
     <AppDrawer.Screen
       name="Home"

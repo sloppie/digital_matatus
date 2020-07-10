@@ -12,6 +12,7 @@ import ReportCulprit from './report_culprit';
 import NumberPlate from './number_plate';
 import Camera from './camera';
 import MediaView from './media_view';
+import AppIntro from './app_intro';
 
 
 export {
@@ -28,5 +29,6 @@ export {
   SetReminder,
   NumberPlate,
   Camera,
-  MediaView
+  MediaView,
+  AppIntro
 };

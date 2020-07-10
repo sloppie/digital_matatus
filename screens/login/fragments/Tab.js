@@ -24,10 +24,12 @@ export default class Tab extends React.PureComponent {
   );
 
   render() {
+
     return (
      <MaterialTopTabNavigator.Navigator
        tabBar={() => null}
        lazy={true}
+       swipeEnabled={false}
      >
        <MaterialTopTabNavigator.Screen 
          name="Login"

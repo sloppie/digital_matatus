@@ -179,6 +179,7 @@ export default class Camera extends React.PureComponent {
   );
 
   _renderPreview = () => {
+
       return (
         <View style={styles.screen}>
           <Image 
@@ -210,12 +211,13 @@ export default class Camera extends React.PureComponent {
   }
 
   confirmMedia = () => {
-    console.log("Button pressed");
+
     requestAnimationFrame(() => {
       if(this.props.route.params.source === "Report") {
         DeviceEventEmitter.emit("WRITE_SUCCESS", this.state.data, this.state.type);
         this.props.navigation.pop();
       } else {
+        this.props.navigation.pop();
         HOME_NAVIGATION_REF.navigate("Report");
         DeviceEventEmitter.emit("WRITE_SUCCESS", this.state.data, this.state.type);
       }
@@ -333,19 +335,18 @@ const styles = StyleSheet.create({
   },
   controlBar: {
     width: Dimensions.get("window").width,
-    height: Math.floor(Dimensions.get("window").height * 0.3333),
+    height: Math.floor(Dimensions.get("window").height * 0.25),
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
     bottom: 0,
     paddingTop: 8,
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
   confirmBar: {
     width: Dimensions.get("window").width,
     height: Math.floor(Dimensions.get("window").height * 0.25),
-    // position: "absolute",
     bottom: 0,
     paddingTop: 8,
     backgroundColor: "white",

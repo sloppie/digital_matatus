@@ -39,13 +39,15 @@ export default class Camera extends React.PureComponent {
   // camera ref
   camera = null;
 
-  PICTURE_OPTIONS: TakePictureOptions = {
+  /**@type TakePictureOptions */
+  PICTURE_OPTIONS = {
     base64: true,
     quality: 0.5,
     pauseAfterCapture: true,
   };
 
-  VIDEO_OPTIONS: RecordOptions = {
+  /**@type RecordOptions */
+  VIDEO_OPTIONS = {
     quality: RNCamera.Constants.VideoQuality["480p"], // big enough to play
   };
 
@@ -136,9 +138,10 @@ export default class Camera extends React.PureComponent {
 
     <View style={styles.controlBar}>
       <IconButton 
+        style={styles.sideActionButton}
         onPress={this._toggleCamera}
         icon="repeat"
-        size={24}
+        size={32}
       />
       <IconButton
         style={styles.actionButton}
@@ -148,9 +151,10 @@ export default class Camera extends React.PureComponent {
         size={50}
       />
       <IconButton 
+        style={styles.sideActionButton}
         onPress={this._toggleActive.bind(this, false)}
         icon="video-outline"
-        size={24}
+        size={32}
       />
     </View>
   );
@@ -332,6 +336,9 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     marginEnd: 24,
     marginStart: 24,
+  },
+  sideActionButton: {
+    backgroundColor: "white",
   },
   controlBar: {
     width: Dimensions.get("window").width,

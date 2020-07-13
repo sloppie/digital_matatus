@@ -15,8 +15,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 const Stack = createStackNavigator();
 
-// let LoginScreen = null;
-
 isLoggedIn = false;
 
 

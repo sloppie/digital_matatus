@@ -172,12 +172,14 @@ export default class Report extends React.PureComponent {
     let culpritDescriptionQueries = this._verifyCD({...response.culpritDescription});
     let privateIformationQueries = this._verifyPI(response.privateIformation);
     
-    let queries;
+    // incase there are no queries
+    let queries = {};
 
     let has_query =  (incidentDescriptionQueries.length > 0 || culpritDescriptionQueries.length > 0 || privateIformationQueries.length > 0)
 
+    /**@todo rethink this code section 181 -> 189 */
     if(!has_query) {
-      this.setState({queries: {}, verified: true, response});
+      this.setState({queries, verified: true, response});
     } else {
       queries = {};
       queries.incidentDescriptionQueries = incidentDescriptionQueries;

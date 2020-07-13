@@ -55,10 +55,10 @@ export default class RouteCard extends React.PureComponent {
             onPress={this._pinTerminal}
             color={Colors.red900}
           >Pin on Map</Button>
-          <Button
+          {/* <Button
             icon="settings"
             color={Theme.PrimaryColor}
-          >Preference</Button>
+          >Preference</Button> */}
         </Card.Actions>
       </Card>
     );

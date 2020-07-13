@@ -107,16 +107,25 @@ const uploadMediaFiles = (incident) => {
 
   }
 
+  // safety check on whether the user DID attach any media
+  // if not(any media attached), send event "AllMediaResolved" with an empty object
+  if(
+      media["audio"] === 0 &&
+      media["photo"] === 0 &&
+      media["video"] === 0) {
+      newIncidentDescription.media = media;
+      DeviceEventEmitter.emit("AllMediaResolved", JSON.stringify(newIncidentDescription));
+    }
+
   for(let attachedMedia in mediaObj) {
       incidentDescription[attachedMedia]
-        .forEach(async (file) => {
+        .forEach(async (/**@type {{uri: String}}*/file) => {
           uploadMediaFile(mediaType[attachedMedia], file.uri, updateMedia.bind(this));
         });
   }
 
 }
 
-// {POST} api/cdn/upload/:mediaType
 /**
  * This method is used to upload media to the to the server. After the method is finished uploading,
  * the response is populated with a json Object which contains ```js{mediaUrl: String}``` a barebones
@@ -178,28 +187,6 @@ export const uploadMediaFile = async (mediaType, mediaUri, updateMedia) => {
 
   // send the payload
   xhr.send(mediaData);
-}
-
-/**
- * @deprecated
- * Not used since we don't have direct access it would prove cumbersome to try to move the whole 
- * got over the network string over the JSBridge for caching and future use purposes.
- * Instead using `FileManager.fetchFileFromUrl(url)` to help fetch the file and cache it for later use
- * 
- * @param {String} url this is the url that will be concatenated to the DigitalMatatus url to carry out
- *                 the fetch request.
- */
-const fetchMediaFile = (url) => {
-  const splitUrl = url.split("/");
-  const mediaName = splitUrl.pop();
-  const mediaType = splitUrl.pop();
-  const newUrl = `http://192.168.43.98:3000/cdn/fetch/${mediaType}/${mediaName}`;
-  // create the XMLHttp request for the to fetch the file
-
-  // get the data returned in the response
-  xhr.onloadend = (e) => {
-    let data = xhr.respo
-  }
 }
 
 /**

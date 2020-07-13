@@ -32,7 +32,7 @@ export default class AppIntro extends React.PureComponent {
     {
       key: 4,
       title: "Report View for cases per route",
-      description: "View cases from\n your hearted routes\n on the fly",
+      description: "View cases from\n your \u2764 routes\n on the fly",
     },
     {key: 5}
   ];

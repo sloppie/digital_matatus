@@ -73,16 +73,10 @@ export default class IncedentDescription extends React.Component {
       location: null,
       locationSet: false,
       attachedPhotos: [], // stores the URIs for the attached media
-      attachedPhotosData: [],
-      attachedPhotosExtension: [],
       attachedPhotosThumbnails: [],
       attachedVideos: [],
-      attachedVideosData: [],
-      attachedVideosExtension: [],
       attachedVideosThumbnails: [],
       attachedAudios: [],
-      attachedAudiosData: [],
-      attachedAudiosExtension: [],
       uploadCount: 0,
       recordingVisible: false,
       isRecording: false,
@@ -111,9 +105,6 @@ export default class IncedentDescription extends React.Component {
       this.onWriteSuccess.bind(this) // callback on successfull write
     );
 
-    let options = {
-    };
-
     this._handleLocation();
 
   }
@@ -126,7 +117,6 @@ export default class IncedentDescription extends React.Component {
 
   onWriteSuccess(fileLocation, mediaType) {
     let fileUri = `${fileLocation}`;
-    console.log("File uri: " + fileUri);
     this._addMediaFile(fileUri, mediaType);
   }
 
@@ -134,31 +124,23 @@ export default class IncedentDescription extends React.Component {
     console.log("File URI\n" + FileManager.getMimeTypeFromExtension(fileUri));
     if(FileManager.IMAGE === mediaType) {
       let attachedPhotos = [...this.state.attachedPhotos];
-      let attachedPhotosData = [...this.state.attachedPhotosData];
       let attachedPhotosThumbnails = [...this.state.attachedPhotosThumbnails];
-      let attachedPhotosExtension = [...this.state.attachedPhotosExtension];
 
       attachedPhotos.push(fileUri);
-      attachedPhotosData.push(fileUri);
       attachedPhotosThumbnails.push(fileUri);
-      attachedPhotosExtension.push(fileUri);
 
       setTimeout(() => this.setState({
         attachedPhotos,
-        attachedPhotosData,
-        attachedPhotosExtension,
         attachedPhotosThumbnails,
       }), 1000);
 
     } else {
+      /**@type Array<string> */
       let attachedVideos = [...this.state.attachedVideos];
-      let attachedVideosData = [...this.state.attachedVideosData];
+      /**@type Array<string> */
       let attachedVideosThumbnails = [...this.state.attachedVideosThumbnails];
-      let attachedVideosExtension = [...this.state.attachedVideosExtension];
 
       attachedVideos.push(fileUri);
-      attachedVideosData.push(fileUri);
-      attachedVideosExtension.push(fileUri);
 
       if(RNThumbnail == null)
         RNThumbnail = require('react-native-thumbnail').default;
@@ -172,8 +154,6 @@ export default class IncedentDescription extends React.Component {
 
       setTimeout(() => this.setState({
         attachedVideos,
-        attachedVideosData,
-        attachedVideosExtension,
         attachedVideosThumbnails
       }), 1000);
     }
@@ -262,7 +242,7 @@ export default class IncedentDescription extends React.Component {
       return;
 
     ToastAndroid.show("Fetching location", ToastAndroid.SHORT);
-    // REFACTOR!!!! BAD CODE WRITING
+    /** @todo REFACTOR!!!! BAD CODE WRITING */
     if(Permissions.checkGeolocationPermission()) {
       Geolocation.getCurrentPosition(
         position => {
@@ -335,9 +315,6 @@ export default class IncedentDescription extends React.Component {
   // MEDIA SECTION
 
   // handle media
-  /**
-   * @todo create a list view for the audio files also
-   */
   _handleRecording = async () => {
 
     if(this.state.isRecording)
@@ -401,19 +378,11 @@ export default class IncedentDescription extends React.Component {
       return;
     
     let attachedAudios = [...this.state.attachedAudios];
-    let attachedAudiosData = [...this.state.attachedAudiosData];
-    let attachedAudiosExtension = [...this.state.attachedAudiosExtension];
-    attachedAudiosData.push(AUDIO_ATTACHED_DATA.splice(0, 1)[0]);
-    // AUDIO_ATTACHED_DATA.push(""); // creates new string to store a new set of data
-    attachedAudios.push(this.state.audio);
-    attachedAudiosExtension.push("wav");
-
-    // console.log(this.state.audioData);
+    attachedAudios.push(`file://${this.state.audio}`);
 
     this.setState({
       attachedAudios,
-      attachedAudiosData,
-      attachedAudiosExtension,
+
       // RESET THE AUDIO TRACK CHANNEL
       isRecording: false,
       audioRecorded: false,
@@ -500,20 +469,14 @@ export default class IncedentDescription extends React.Component {
 
               let {
                 attachedPhotos, 
-                attachedPhotosData, 
                 attachedPhotosThumbnails, 
-                attachedPhotosExtension
               } = this.state;
-              attachedPhotosExtension.push(this._findFileExtension(response.uri, media_types.photo));
               attachedPhotos.push(response.uri);
-              attachedPhotosData.push(response.data); // stores the responses data
               attachedPhotosThumbnails.push(response.uri);
 
               this.setState({
-                attachedPhotosData: [...attachedPhotosData],
                 attachedPhotos: [...attachedPhotos],
                 attachedPhotosThumbnails: [...attachedPhotosThumbnails],
-                attachedPhotosExtension
               });
 
               DeviceEventEmitter.emit(MEDIA_UPLOADED);
@@ -526,6 +489,7 @@ export default class IncedentDescription extends React.Component {
   }
 
   _handleVideo = () => {
+
     ImagePicker.launchImageLibrary(
       {
         title: "Video Picker",
@@ -547,7 +511,6 @@ export default class IncedentDescription extends React.Component {
              * @todo handle files that do not have a 'path' identifier - they throw erros
              * @solution you could just refuse to show the thumbnail and claim it has a "problem"
              */
-            // console.log(`file metadata: ${JSON.stringify({uri: response.uri, originalUrl: response.origURL, path: response.path, fileName: response.fileName}, null, 2)}`);
             
             if(RNThumbnail == null) // lazy load the module
               RNThumbnail = require("react-native-thumbnail").default;
@@ -556,21 +519,16 @@ export default class IncedentDescription extends React.Component {
 
             let updateState = (path=response.path) => {
               let attachedVideos = [...this.state.attachedVideos];
-              let attachedVideosData = [...this.state.attachedVideosData];
               let attachedVideosThumbnails = [...this.state.attachedVideosThumbnails];
-              let attachedVideosExtension = [...this.state.attachedVideosExtension];
   
               attachedVideos.push(response.uri);
-              attachedVideosData.push(response.data);
               attachedVideosThumbnails.push(path);
-              attachedVideosExtension.push(this._findFileExtension(response.uri, media_types.video));
-  
+
               this.setState({
                 attachedVideos, 
                 attachedVideosThumbnails,
-                attachedVideosData,
-                attachedVideosExtension
               });
+
               DeviceEventEmitter.emit(MEDIA_UPLOADED);
             } 
             
@@ -602,54 +560,37 @@ export default class IncedentDescription extends React.Component {
 
   _removePhotos = (item, removableIndex) => {
     let attachedPhotos = [...this.state.attachedPhotos];
-    let attachedPhotosData = [...this.state.attachedPhotosData];
     let attachedPhotosThumbnails = [...this.state.attachedPhotosThumbnails];
-    let attachedPhotosExtension = [...this.state.attachedPhotosExtension];
 
     // splice the data
     attachedPhotos.splice(removableIndex, 1);
-    attachedPhotosData.splice(removableIndex, 1);
     attachedPhotosThumbnails.splice(removableIndex, 1);
-    attachedPhotosExtension.splice(removableIndex, 1);
 
     this.setState({
       attachedPhotos,
-      attachedPhotosData,
       attachedPhotosThumbnails,
-      attachedPhotosExtension
     });
   }
 
   _removeVideos = (item, removableIndex) => {
     let attachedVideos = [...this.state.attachedVideos];
-    let attachedVideosData = [...this.state.attachedVideosData];
     let attachedVideosThumbnails = [...this.state.attachedVideosThumbnails];
-    let attachedVideosExtension = [...this.state.attachedVideosExtension];
 
     attachedVideos.splice(removableIndex, 1);
-    attachedVideosData.splice(removableIndex, 1);
     attachedVideosThumbnails.splice(removableIndex, 1);
-    attachedVideosExtension.splice(removableIndex, 1);
 
     this.setState({
       attachedVideos,
-      attachedVideosData,
       attachedVideosThumbnails,
-      attachedVideosExtension
     });
   }
 
   _removeAudios = (item, removableIndex) => {
     let attachedAudios = [...this.state.attachedAudios];
     attachedAudios.splice(removableIndex, 1);
-    attachedAudiosData.splice(removableIndex, 1);
-    attachedAudiosExtension.splice(removableIndex, 1);
-    // AUDIO_ATTACHED_DATA.splice(removableIndex, 1);
 
     this.setState({
       attachedAudios,
-      attachedAudiosData,
-      attachedAudiosExtension
     });
 
   }
@@ -705,7 +646,7 @@ export default class IncedentDescription extends React.Component {
         <Surface
           style={styles.recordingTab}
         >
-          <IconButton 
+          {/* <IconButton 
             icon="play" 
             style={styles.recordingButtons} size={30} 
             color={(!this.state.audioRecorded) ? Colors.grey400: Colors.red600}
@@ -717,7 +658,7 @@ export default class IncedentDescription extends React.Component {
             size={30} 
             color={(!this.state.audioRecorded) ? Colors.grey400: Colors.red600}
             onPress={this._pauseAudio}
-          />
+          /> */}
           <IconButton 
             icon="record" 
             style={styles.recordingIcon} 
@@ -750,27 +691,18 @@ export default class IncedentDescription extends React.Component {
     switch(type) {
       case media_types.audio:
         uris = this.state.attachedAudios;
-        extensions = this.state.attachedAudiosExtension;
-        fileData = this.state.attachedAudiosData;
         break;
       case media_types.photo:
         uris = this.state.attachedPhotos;
-        console.log(uris);
-        extensions = this.state.attachedPhotosExtension;
-        fileData = this.state.attachedPhotosData;
         break;
       case media_types.video:
         uris = this.state.attachedVideos;
-        extensions = this.state.attachedVideosExtension;
-        fileData = this.state.attachedVideosData;
         break;
     }
 
-    let fileObjects = fileData.map((data, index) => {
+    let fileObjects = uris.map((uri, index) => {
       return {
-        data,
-        extension: extensions[index],
-        uri: uris[index],
+        uri,
       };
     });
 

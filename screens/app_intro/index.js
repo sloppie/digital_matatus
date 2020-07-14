@@ -1,15 +1,54 @@
 import React from 'react';
-import { SafeAreaView, Text, ImageBackground, Dimensions, StyleSheet, StatusBar } from 'react-native';
+import {
+  SafeAreaView, 
+  Text, 
+  ImageBackground, 
+  Dimensions, 
+  StyleSheet, 
+  StatusBar,
+  DeviceEventEmitter
+} from 'react-native';
 import { Title, Colors } from 'react-native-paper';
 import AppIntroSlider from 'react-native-app-intro-slider';
 
 import * as Fragments from './fragments';
 import Theme from '../../theme';
+import AsyncStorage from '@react-native-community/async-storage';
+import Permissions from '../../utilities/permissions';
+import { CONFIG_COMPLETE } from '../../store';
 
 
 export default class AppIntro extends React.PureComponent {
 
-  _navigateToLogin = () => this.props.navigation.navigate("Login")
+  _navigateToLogin = () => this.props.navigation.navigate("Login");
+
+  _skipSignUp = async () => {
+    // await Permissions.requestAllPermissions();
+    this.props.navigation.navigate("SignUp", {skipSignUp: true});
+
+    // AsyncStorage.multiSet(
+    //   [
+    //     ["favouriteRoutes", JSON.stringify([])],
+    //     // [
+    //     //   "appPermissionsResult", 
+    //     //   JSON.stringify({ // values
+    //     //     "LOCATION": this.state.permissions[0],
+    //     //     "CAMERA": this.state.permissions[1],
+    //     //     "AUDIO": this.state.permissions[2]
+    //     //   }),
+    //     // ],
+    //     ["isConfig", JSON.stringify(true)],
+    //     ["userID", "anonymous@digitalmatatus.com"] // stores user's Hash
+    //   ], 
+    //   (err) => {
+      
+    //     if(err) {
+    //       ToastAndroid.show("Error storing data...", ToastAndroid.SHORT);
+    //     }
+    // });
+
+    // DeviceEventEmitter.emit(CONFIG_COMPLETE);
+  }
 
   /**@type Array<{key: Number, title: String, description: String}> */
   _sliderData = [
@@ -52,8 +91,8 @@ export default class AppIntro extends React.PureComponent {
             style={styles.screen}
             renderItem={this._renderItem}
             data={this._sliderData}
-            doneLabel="Log in"
-            onDone={this._navigateToLogin}
+            doneLabel="Skip Sign Up"
+            onDone={this._skipSignUp}
             dotStyle={styles.dotStyle}
             activeDotStyle={styles.activeDotStyle}
             /* showSkipButton={true} */

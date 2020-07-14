@@ -5,6 +5,12 @@ import Theme from '../../../theme';
 
 export default class LoadingScreen extends React.PureComponent {
 
+  finalise = () => {
+    console.log('Finalising from LoadingScreen');
+    if(this.props.skipSignUp)
+      this.props._finalise();
+  }
+
   render() {
 
     return (

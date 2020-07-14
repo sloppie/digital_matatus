@@ -46,6 +46,7 @@ class App extends React.PureComponent {
       isLoggedIn: true,
       configComplete: true,
     });
+    console.log("CONFIGURATION IS COMPLETE");
     AsyncStorage.setItem("isConfig", JSON.stringify(true));
   }
 

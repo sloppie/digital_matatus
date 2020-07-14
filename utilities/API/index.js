@@ -84,6 +84,8 @@ const uploadMediaFiles = (incident) => {
     "attachedVideosData": incidentDescription.attachedVideosData,
   };
 
+  console.log(JSON.stringify(mediaObj));
+
   // this function is used to update media so as to help know when to disburse the complete event
   
   const media = {
@@ -110,12 +112,14 @@ const uploadMediaFiles = (incident) => {
   // safety check on whether the user DID attach any media
   // if not(any media attached), send event "AllMediaResolved" with an empty object
   if(
-      media["audio"] === 0 &&
-      media["photo"] === 0 &&
-      media["video"] === 0) {
-      newIncidentDescription.media = media;
-      DeviceEventEmitter.emit("AllMediaResolved", JSON.stringify(newIncidentDescription));
-    }
+      mediaObj["attachedAudiosData"].length === 0 &&
+      mediaObj["attachedPhotosData"].length === 0 &&
+      mediaObj["attachedVideosData"].length === 0) {
+    console.log("No media attached");
+    newIncidentDescription.media = media;
+    DeviceEventEmitter.emit("AllMediaResolved", JSON.stringify(newIncidentDescription));
+    return;
+  }
 
   for(let attachedMedia in mediaObj) {
       incidentDescription[attachedMedia]
@@ -199,48 +203,99 @@ export const uploadMediaFile = async (mediaType, mediaUri, updateMedia) => {
 export const fileReport = async (report, onSuccess, onErr) => {
   // let incidentDescription = report.incidentDescription;
 
-  try {
-    uploadMediaFiles(report.incidentDescription);
-  } catch(err) {
-    // incidentDescription = {};
-    console.log(err);
-  }
+  let mediaAttached = 
+    report.incidentDescription.attachedAudiosData.length !== 0 ||
+    report.incidentDescription.attachedPhotosData.length !== 0 ||
+    report.incidentDescription.attachedVideosData.length !== 0;
 
-  let sendableReport = {
-    culpritDescription: report.culpritDescription,
-    privateInformation: report.privateInformation,
-    userID: report.userID,
-  };
-
-// do a garbage collection of eventListeners
-DeviceEventEmitter.removeAllListeners("AllMediaResolved");
-
-DeviceEventEmitter.addListener("AllMediaResolved", (data) => {
-  sendableReport.incidentDescription = JSON.parse(data);
-
-  fetch(
-    "http://192.168.43.98:3000/api/report/new",
-    {
-      method: "POST",
-      body: JSON.stringify(sendableReport),
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json"
-      },
+  if(mediaAttached) {
+    try {
+      uploadMediaFiles(report.incidentDescription);
+    } catch(err) {
+      // incidentDescription = {};
+      console.log(err);
     }
-  ).then(response => response.json()).then(data => {
+  
+    let sendableReport = {
+      culpritDescription: report.culpritDescription,
+      privateInformation: report.privateInformation,
+      userID: report.userID,
+    };
+  
+  // do a garbage collection of eventListeners
+    DeviceEventEmitter.removeAllListeners("AllMediaResolved");
+    
+    DeviceEventEmitter.addListener("AllMediaResolved", (data) => {
+      sendableReport.incidentDescription = JSON.parse(data);
+    
+      fetch(
+        "http://192.168.43.98:3000/api/report/new",
+        {
+          method: "POST",
+          body: JSON.stringify(sendableReport),
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+          },
+        }
+      ).then(response => response.json()).then(data => {
+    
+        if (data)
+          onSuccess(data);
+        else
+          onErr();
+    
+      }).catch(err => {
+        console.log(err);
+        onErr();
+      });
+    
+    });
+  } else {
 
-    if (data)
-      onSuccess(data);
-    else
+    let newIncidentDescription = {
+      date: report.incidentDescription.date,
+      location: report.incidentDescription.location,
+      flags: report.incidentDescription.flags,
+    };
+
+    let sendableReport = {
+      culpritDescription: report.culpritDescription,
+      privateInformation: report.privateInformation,
+      userID: report.userID,
+    };
+
+    newIncidentDescription.media = {
+      "audio": [],
+      "photo": [],
+      "video": [],
+    };
+
+    sendableReport.incidentDescription = newIncidentDescription;
+
+    fetch(
+      "http://192.168.43.98:3000/api/report/new",
+      {
+        method: "POST",
+        body: JSON.stringify(sendableReport),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+      }
+    ).then(response => response.json()).then(data => {
+  
+      if (data)
+        onSuccess(data);
+      else
+        onErr();
+  
+    }).catch(err => {
+      console.log(err);
       onErr();
-
-  }).catch(err => {
-    console.log(err);
-    onErr();
-  });
-
-});
+    });
+  
+  }
 
 
 }

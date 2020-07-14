@@ -17,7 +17,7 @@ export default class FinishScreen extends React.PureComponent {
   _navigateToLogin = () => this.props.navigation.navigate("Login")
 
   /** navigates to the SignUp screen */
-  _navigateToSignUp = () => this.props.navigation.navigate("SignUp")
+  _navigateToSignUp = () => this.props.navigation.navigate("SignUp", {skipSignUp: false});
 
   render() {
 

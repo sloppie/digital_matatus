@@ -32,7 +32,7 @@ export default class InitialSetup extends React.Component {
 
     this.state = {
       activeTabIndex: 0,
-      maxTabs: 5,
+      maxTabs: (this.props.route.params.skipSignUp)? 4: 5,
       nextActive: true,
       backActive: false,
       firstToggle: false,
@@ -45,6 +45,8 @@ export default class InitialSetup extends React.Component {
 
   scrollTo = (index) => {
     let res = true;
+
+    console.log("Active tab index: " + (index + 1));
 
     // This is the scroll indexes
     // 0 - TerminalPreferences Explanation
@@ -74,6 +76,7 @@ export default class InitialSetup extends React.Component {
     }
 
     this.scrollViewContext.current.scrollTo({x: scrollableDistance, y: 0, animated: true});
+
     
     if(index + 1 == this.state.maxTabs) {
       this.setState({
@@ -87,6 +90,11 @@ export default class InitialSetup extends React.Component {
         nextActive: ((index + 1) == 1 && !this.state.firstToggle)? false: true,
         backActive: true
       });
+
+    if(this.props.route.params.skipSignUp && index + 1 == 3) {
+      console.log("Finalising...");
+      this.finalise();
+    }
 
   }
 
@@ -143,45 +151,15 @@ export default class InitialSetup extends React.Component {
    * @param {String} email this will be passed in by the Fragments.SignUpScreen
    */
   finalise = async (email) => {
-    this.scrollTo(4);
-
-    let favourites = [...this.preferencesRef.current.packFavourites()];
-    let deviceToken = await AsyncStorage.getItem("deviceNotificationToken")
-
-    if(!deviceToken) {
-      let NotificationSetup = require('../../utilities/push-notifications').default;
-      NotificationSetup.configure();
-      deviceToken = await AsyncStorage.getItem("deviceNotificationToken")
-    }
-
-    fetch("http://192.168.43.98:3000/api/user/new", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email,
-        favouriteRoutes: favourites.map(route => route.route_id), // map route_ids
-        deviceToken: JSON.parse(deviceToken)
-      })
-    }).then(data => data.json()).then(response => {
-      console.log(response)
-      let state = response;
+    if(this.props.route.params.skipSignUp) {
+      console.log("Skipping sign up");
+      let favourites = [...this.preferencesRef.current.packFavourites()];
 
       AsyncStorage.multiSet(
         [
           ["favouriteRoutes", JSON.stringify(favourites)],
-          [
-            "appPermissionsResult", 
-            JSON.stringify({ // values
-              "LOCATION": this.state.permissions[0],
-              "CAMERA": this.state.permissions[1],
-              "AUDIO": this.state.permissions[2]
-            }),
-          ],
           ["isConfig", JSON.stringify(true)],
-          ["userID", response._id] // stores user's Hash
+          ["userID", "anonymous@digitalmatatus.com"] // stores user's Hash
         ], 
         (err) => {
         
@@ -190,15 +168,68 @@ export default class InitialSetup extends React.Component {
           }
       });
 
-      if(state) { // if set online, set locally also
-        DeviceEventEmitter.emit(CONFIG_COMPLETE);
-      } else {
-        ToastAndroid.show("Error adding user you may already have an account", ToastAndroid.SHORT);
-      }
+      console.log("Emitting config complete");
+      true && DeviceEventEmitter.emit(CONFIG_COMPLETE);
 
-    }).catch(err => {
-      console.log(err)
-    });
+    } else {
+      this.scrollTo(4);
+  
+      let favourites = [...this.preferencesRef.current.packFavourites()];
+      let deviceToken = await AsyncStorage.getItem("deviceNotificationToken")
+  
+      if(!deviceToken) {
+        let NotificationSetup = require('../../utilities/push-notifications').default;
+        NotificationSetup.configure();
+        deviceToken = await AsyncStorage.getItem("deviceNotificationToken")
+      }
+  
+      fetch("http://192.168.43.98:3000/api/user/new", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email,
+          favouriteRoutes: favourites.map(route => route.route_id), // map route_ids
+          deviceToken: JSON.parse(deviceToken)
+        })
+      }).then(data => data.json()).then(response => {
+        console.log(response)
+        let state = response;
+  
+        AsyncStorage.multiSet(
+          [
+            ["favouriteRoutes", JSON.stringify(favourites)],
+            [
+              "appPermissionsResult", 
+              JSON.stringify({ // values
+                "LOCATION": this.state.permissions[0],
+                "CAMERA": this.state.permissions[1],
+                "AUDIO": this.state.permissions[2]
+              }),
+            ],
+            ["isConfig", JSON.stringify(true)],
+            ["userID", response._id] // stores user's Hash
+          ], 
+          (err) => {
+          
+            if(err) {
+              ToastAndroid.show("Error storing data...", ToastAndroid.SHORT);
+            }
+        });
+  
+        if(state) { // if set online, set locally also
+          DeviceEventEmitter.emit(CONFIG_COMPLETE);
+        } else {
+          ToastAndroid.show("Error adding user you may already have an account", ToastAndroid.SHORT);
+        }
+  
+      }).catch(err => {
+        console.log(err)
+      });
+    }
+
 
   }
   
@@ -241,8 +272,11 @@ export default class InitialSetup extends React.Component {
                 "fully :)"
               ]}
             />
-            <Fragments.SignUpScreen _finalise={this.finalise} />
+            {!this.props.route.params.skipSignUp && (
+                <Fragments.SignUpScreen _finalise={this.finalise} />
+            )}
             <Fragments.LoadingScreen 
+              skipSignUp={this.props.route.params.skipSignUp}
               finalise={this.finalise}
             /> 
           </ScrollView>

@@ -141,7 +141,7 @@ export default class ReportCulprit extends React.PureComponent {
       <ScrollView style={styles.screen}>
         <Surface>
           <Icon name="link" style={styles.mediaIcon} size={50} />
-          <Text style={styles.linkText} >{this.props.route.params.highlightedMediaUrl.replace("localhost", "192.168.43.89")}</Text>
+          <Text style={styles.linkText} >{this.props.route.params.highlightedMediaUrl.replace("localhost", "41.89.64.18")}</Text>
         </Surface>
         <Divider />
         <List.Section title="Culprit information"/>

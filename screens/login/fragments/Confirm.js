@@ -63,7 +63,7 @@ export default class Confirm extends React.PureComponent {
 
     if(deviceToken) {
       console.log(deviceToken);
-      fetch("http://192.168.43.98:3000/api/user/login", 
+      fetch("http://41.89.64.18:3000/api/user/login", 
       {
         method: "PUT",
         headers: {

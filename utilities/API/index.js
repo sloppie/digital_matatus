@@ -23,7 +23,7 @@ export const resendReport = async () => {
 
     if(typeof savedReport === "string" && savedReport !== "") {
   
-      fetch("http://192.168.43.98:3000/api/report/new", {
+      fetch("http://41.89.64.18:3000/api/report/new", {
         method: "POST",
         body: JSON.stringify(sendableReport),
         headers: {
@@ -178,7 +178,7 @@ export const uploadMediaFile = async (mediaType, mediaUri, updateMedia) => {
 
   // create the request
   let xhr = new XMLHttpRequest();
-  xhr.open("POST", "http://192.168.43.98:3000/cdn/upload/" + mediaType);
+  xhr.open("POST", "http://41.89.64.18:3000/cdn/upload/" + mediaType);
   xhr.setRequestHeader("Accept", "application/json");
 
   // once the API responds, the xhr.response has a JSON Object which has the media url
@@ -229,7 +229,7 @@ export const fileReport = async (report, onSuccess, onErr) => {
       sendableReport.incidentDescription = JSON.parse(data);
     
       fetch(
-        "http://192.168.43.98:3000/api/report/new",
+        "http://41.89.64.18:3000/api/report/new",
         {
           method: "POST",
           body: JSON.stringify(sendableReport),
@@ -274,7 +274,7 @@ export const fileReport = async (report, onSuccess, onErr) => {
     sendableReport.incidentDescription = newIncidentDescription;
 
     fetch(
-      "http://192.168.43.98:3000/api/report/new",
+      "http://41.89.64.18:3000/api/report/new",
       {
         method: "POST",
         body: JSON.stringify(sendableReport),
@@ -310,7 +310,7 @@ export const fileReport = async (report, onSuccess, onErr) => {
 export const sendCulpritInformation = (report_id, reportData, onSuccess, onErr) => {
 
   fetch(
-    "http://192.168.43.98:3000/api/report/" + report_id + "/add/culpritInformation",
+    "http://41.89.64.18:3000/api/report/" + report_id + "/add/culpritInformation",
     {
       method: "PUT",
       body: JSON.stringify(reportData),
@@ -336,7 +336,7 @@ export const updateMatatuDetails = (report_id, payload, onSuccess, onErr) => {
   console.log("Payload being sent" + payload);
 
   fetch(
-    "http://192.168.43.89:3000/api/report/" + report_id + "/add/matatuDetails",
+    "http://41.89.64.18:3000/api/report/" + report_id + "/add/matatuDetails",
     {
       method: "PUT",
       body: JSON.stringify(payload),
@@ -371,7 +371,7 @@ export const isUser = (email, onSuccess, onErr) => {
 
   console.log('Checking for user...' + email);
 
-  fetch(`http://192.168.43.98:3000/api/user/isUser/${email}`)
+  fetch(`http://41.89.64.18:3000/api/user/isUser/${email}`)
     .then(response => response.json())
     .then(data => {
       console.log(data);
@@ -397,7 +397,7 @@ export const isUser = (email, onSuccess, onErr) => {
  */
 export const getLoginDetails = (email, onSuccess, onErr) => {
 
-  fetch(`http://192.168.43.98:3000/api/user/login?email=${email}`)
+  fetch(`http://41.89.64.18:3000/api/user/login?email=${email}`)
     .then(response => response.json())
     .then(data => {
       
@@ -415,7 +415,7 @@ export const fetchReport = () => {}
 
 export const fetchRouteReports = (route_id, onSuccess, onErr) => {
 
-  fetch(`http://192.168.43.98:3000/api/routes/${route_id}/reports`)
+  fetch(`http://41.89.64.18:3000/api/routes/${route_id}/reports`)
     .then(response => response.json())
     .then(data => {
 
@@ -471,7 +471,7 @@ export const filterByCategories = (filterObject, onSuccess, onErr) => {
     return values;
   }
 
-  fetch(`http://192.168.43.98:3000/api/report/find${generateCategories()}${generateCategoryValues()}`)
+  fetch(`http://41.89.64.18:3000/api/report/find${generateCategories()}${generateCategoryValues()}`)
     .then(response => response.json())
     .then(data => {
  
@@ -491,7 +491,7 @@ export const filterByCategories = (filterObject, onSuccess, onErr) => {
 export const fetchReportsByRoute = (route_id, onSuccess, onErr) => {
 
   fetch(
-    "http://192.168.43.98:3000/api/report/find?categories=route_id&route_id=" + route_id
+    "http://41.89.64.18:3000/api/report/find?categories=route_id&route_id=" + route_id
   ).then(response => response.json()).then(data => {
     
     if(data)
@@ -545,7 +545,7 @@ export const queryReports = (categories, valuesObj, onSuccess, onErr) => {
   }
 
   fetch(
-    `http://192.168.43.98:3000/api/reports/find?${unpackCategories()}${unpackCategoryValues()}`
+    `http://41.89.64.18:3000/api/reports/find?${unpackCategories()}${unpackCategoryValues()}`
   ).then(response => response.json())
     .then(data => {
 

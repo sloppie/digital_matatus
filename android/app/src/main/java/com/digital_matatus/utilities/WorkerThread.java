@@ -2,7 +2,6 @@ package com.digital_matatus.utilities;
 
 import android.content.ContentResolver;
 import android.net.Uri;
-import android.os.Environment;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 
@@ -35,7 +34,7 @@ public class WorkerThread implements Runnable {
         contentResolver = reactContext.getContentResolver();
 
         // initialise folders
-        PICTURES = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        PICTURES = new File(reactContext.getExternalFilesDir(null), "Pictures");
         DIGITAL_MATATUS_FOLDER = new File(PICTURES, "DigitalMatatus");
         DIGITAL_MATATUS_IMAGES = new File(DIGITAL_MATATUS_FOLDER, "images");
         DIGITAL_MATATUS_VIDEOS = new File(DIGITAL_MATATUS_FOLDER, "videos");

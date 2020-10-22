@@ -1,21 +1,12 @@
 import React from 'react';
 import { 
-  StyleSheet, 
   ToastAndroid, 
   Dimensions, 
-  View,
   DeviceEventEmitter, 
 } from 'react-native';
-
-import { 
-  FAB, 
-  Divider, 
-  Snackbar 
-} from 'react-native-paper';
-
-import Theme from '../../theme';
 import AsyncStorage from '@react-native-community/async-storage';
-import { API, FileManager } from '../../utilities';
+
+import { API } from '../../utilities';
 
 import * as Fragments from './fragments';
 
@@ -74,7 +65,7 @@ export default class Report extends React.PureComponent {
     this._launchCamera(type);
   }
 
-  _launchCamera = (type) => {
+  _launchCamera = (type) => { 
     this.props.navigation.navigate("Camera", {
       source: "Report", // helps know which screen the camera has been launched from.
       type // helps know whether to launch the video or photo camera.
@@ -175,9 +166,11 @@ export default class Report extends React.PureComponent {
     // incase there are no queries
     let queries = {};
 
-    let has_query =  (incidentDescriptionQueries.length > 0 || culpritDescriptionQueries.length > 0 || privateIformationQueries.length > 0)
+    let has_query =  (
+        incidentDescriptionQueries.length > 0 || 
+        culpritDescriptionQueries.length > 0 || 
+        privateIformationQueries.length > 0);
 
-    /**@todo rethink this code section 181 -> 189 */
     if(!has_query) {
       this.setState({queries, verified: true, response});
     } else {

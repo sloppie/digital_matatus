@@ -228,15 +228,13 @@ public class FileManager extends ReactContextBaseJavaModule {
           rFWT = new RemoteFetchWorkerThread(
               url,
               reactContext,
-              saveableFile
-          ); // create the underlying thread
+              saveableFile); // create the underlying thread
         else // this will help create the Thumbnails
           rFWT = new RemoteFetchWorkerThread(
               url,
               reactContext,
               saveableFile,
-              CACHED_VIDEO_THUMBNAILS
-          );
+              CACHED_VIDEO_THUMBNAILS);
 
         // create the Thread
         Thread rFWTThread = new Thread(rFWT);

@@ -24,14 +24,13 @@ import AudioRecord from 'react-native-audio-record';
 import ImagePicker from 'react-native-image-picker';
 import Permissions from '../../../utilities/permissions';
 import { APP_STORE } from '../../..';
-import { MEDIA_DELETED, MEDIA_UPLOADED, DESCRIPTION_LOADED } from '../../../store';
+import { MEDIA_UPLOADED, DESCRIPTION_LOADED } from '../../../store';
 import Theme from '../../../theme';
 import { FileManager } from '../../../utilities';
 
 let HarassmentDescription = null;
 let RNThumbnail = null; // resuce the amount of modules loaded at start
 let Thumbnails = null;
-let RecordingTab = null;
 
 
 const media_types = {
@@ -56,7 +55,6 @@ AudioRecord.on("data", (data) => {
 });
 
 export default class IncedentDescription extends React.Component {
-
 
   constructor(props) {
     super(props);
@@ -203,7 +201,7 @@ export default class IncedentDescription extends React.Component {
             category="Verbal" 
             key={index.toString()}
           />
-        )
+        );
         
       if(flag == "Non-verbal")
         return (

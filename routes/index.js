@@ -88,13 +88,13 @@ class App extends React.PureComponent {
       <LoginScreen 
         _setUserType={this._setUserType}
       />
-    );
+    ); 
   }
 
   render() {
 
-    if(this.state.isLoading)
-      return <SplashScreen />
+    // if(this.state.isLoading)
+    //   return <SplashScreen />
     
     if(!this.state.configComplete) {
       return (

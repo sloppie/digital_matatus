@@ -2,7 +2,10 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 // screens
-import { LoginScreen, InitialSetup, AppIntro } from '../screens';
+// import { LoginScreen, InitialSetup, AppIntro } from '../screens';
+import LoginScreen from '../screens/login';
+import InitialSetup from '../screens/initial_setup';
+import AppIntro from '../screens/app_intro'; 
 
 const Stack = createStackNavigator();
 

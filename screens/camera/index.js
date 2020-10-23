@@ -15,6 +15,7 @@ import { RNCamera, TakePictureOptions, RecordOptions } from 'react-native-camera
 import { FileManager } from '../../utilities';
 import { HOME_NAVIGATION_REF } from '../../routes/AppDrawer';
 
+console.log("Camera is being loaded");
 
 export default class Camera extends React.PureComponent {
 

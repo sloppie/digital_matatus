@@ -4,7 +4,9 @@ import {
   SafeAreaView,
   View,
   Text,
-  StyleSheet
+  StyleSheet,
+  NativeModules,
+  ToastAndroid
 } from 'react-native';
 
 import Theme from '../../theme';
@@ -17,6 +19,13 @@ export default class SplashScreen extends React.PureComponent {
     this.state = {
       navigate: false
     };
+  }
+  
+  componentDidMount() {
+    console.log("SplashScreen Mounted");
+    let bool = NativeModules.RenderSynchronizer.switchContentView();
+    console.log(bool);
+    ToastAndroid.show("SplashScreen rendered", ToastAndroid.SHORT);
   }
 
 

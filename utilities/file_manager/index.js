@@ -2,14 +2,14 @@ import { NativeModules, NativeEventEmitter } from 'react-native';
 
 /************************************************ CONSTANTS **************************************/
 
-const ERR_FINDING_TYPE = NativeModules.FileManager.ERR_FINDING_TYPE;
-const IMAGE = NativeModules.FileManager.IMAGE;
-const VIDEO = NativeModules.FileManager.VIDEO;
-const AUDIO = NativeModules.FileManager.AUDIO;
-const WRITE_ERR = NativeModules.FileManager.WRITE_ERR;
-const WRITE_SUCCESS = NativeModules.FileManager.WRITE_SUCCESS;
-const READ_ERR = NativeModules.FileManager.READ_ERR;
-const READ_SUCCESS = NativeModules.FileManager.READ_SUCCESS;
+const ERR_FINDING_TYPE = () => NativeModules.FileManager.ERR_FINDING_TYPE;
+const IMAGE = () => NativeModules.FileManager.IMAGE;
+const VIDEO = () => NativeModules.FileManager.VIDEO;
+const AUDIO = () => NativeModules.FileManager.AUDIO;
+const WRITE_ERR = () => NativeModules.FileManager.WRITE_ERR;
+const WRITE_SUCCESS = () => NativeModules.FileManager.WRITE_SUCCESS;
+const READ_ERR = () => NativeModules.FileManager.READ_ERR;
+const READ_SUCCESS = () => NativeModules.FileManager.READ_SUCCESS;
 
 /************************************************ METHODS ****************************************/
 

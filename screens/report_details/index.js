@@ -10,6 +10,8 @@ import Theme from '../../theme';
 import * as Fragments from './fragments';
 import { ReportParser, FileManager } from '../../utilities';
 
+console.log("ReportDetails is being loaded");
+
 const toggleButtonIcons = Object.freeze({
   photo: "image",
   video: "video",
@@ -23,6 +25,8 @@ export default class ReportDetails extends React.PureComponent {
 
   constructor(props) {
     super(props);
+
+    console.log("Report Details is trying to render");
 
     let {culpritDescription} = this.props.route.params.report
     let {incidentDescription} = this.props.route.params.report

@@ -18,6 +18,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { API } from '../../utilities';
 
 
+console.log("ReportCulprit is being loaded");
 
 export default class ReportCulprit extends React.PureComponent {
 

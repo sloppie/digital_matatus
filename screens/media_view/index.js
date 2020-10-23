@@ -3,6 +3,8 @@ import {} from 'react-native';
 import {} from 'react-native-paper';
 import * as Fragments from './fragments';
 
+console.log("MediaView is being loaded");
+
 export default class MediaView extends React.PureComponent {
 
   render() {

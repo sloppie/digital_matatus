@@ -7,6 +7,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { HOME_NAVIGATION_REF, REPORT_NAVIGATION_REF } from '../../routes/AppDrawer';
 
 
+console.log("NumberPlate is being loaded");
+
 export default class NumberPlateReminder extends React.PureComponent {
 
   constructor(props) {

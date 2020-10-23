@@ -1,13 +1,10 @@
 import React from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   View,
-  Text,
   StyleSheet,
   Dimensions,
   StatusBar,
-  FlatList
 } from 'react-native';
 import {
   Card,
@@ -19,13 +16,17 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Theme from '../../theme';
 import * as Fragments from './fragments';
 
-import { API, ReportParser } from '../../utilities';
+// import { API, ReportParser } from '../../utilities';
+import * as API from '../../utilities/API';
+import ReportParser from '../../utilities/report_parser';
 
 // import STOPS from '../../GTFS_FEED/stops/stops.json';
 import SHAPES from '../../GTFS_FEED/shapes/shape.json';
 
 const STOPS = require('../../GTFS_FEED/stops/stops.json')
 const COMPREHENSIVE_ROUTES = require('../../GTFS_FEED/comprehensive_routes/comprehensive_routes.json');
+
+console.log("RoutetDetails is being loaded");
 
 export default class RouteDetails extends React.PureComponent {
 

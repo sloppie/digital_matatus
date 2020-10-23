@@ -3,13 +3,17 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import HomeStack from './HomeStack';
-import ReportStack from './ReportStack';
-import ReportViewStack from './ReportViewStack';
+// import ReportStack from './ReportStack';
+// import ReportViewStack from './ReportViewStack';
 
+// inline requires
+// let HomeStack = null;
+let ReportStack = null;
+let ReportViewStack = null;
 
 // home icon
 function HomeIcon({ focused, color, size}) {
-
+ 
   return (
     <Icon 
       name={focused?"home": "home-outline"}
@@ -45,12 +49,18 @@ function ViewReportsIcon({ focused, color, size}) {
 // SCREENS START HERE
 function Home(props) {
   HOME_NAVIGATION_REF = props.navigation;
+  if(HomeStack === null)
+    HomeStack = require('./HomeStack').default;
+
 
   return <HomeStack />
 }
 
 function Report(props) {
   REPORT_NAVIGATION_REF = props.navigation;
+
+  if(ReportStack === null)
+    ReportStack = require('./ReportStack').default;
 
   return <ReportStack />
 }
@@ -63,6 +73,9 @@ function ReportV2(props) {
 
 function ViewReports(props) {
   VIEW_REPORT_NAVIGATION_REF = props.navigation;
+
+  if(ReportViewStack === null)
+    ReportViewStack = require('./ReportViewStack').default;
 
   return <ReportViewStack />
 }

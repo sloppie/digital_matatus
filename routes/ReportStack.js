@@ -1,18 +1,24 @@
 import React from 'react'; 
 import { View, DeviceEventEmitter } from 'react-native'; 
 import { createStackNavigator } from '@react-navigation/stack';
-import { 
-  Report, 
-  CategoryDefinition, 
-  SetReminder, 
-  NumberPlate, 
-  Camera 
-} from './../screens';
+// import { 
+//   Report, 
+//   CategoryDefinition, 
+//   SetReminder, 
+//   NumberPlate, 
+//   Camera 
+// } from './../screens';
+
+import Report from '../screens/report_v2';
+import CategoryDefinition from '../screens/harrasment_def';
+import SetReminder from '../screens/set_reminder';
+import NumberPlate from '../screens/number_plate';
+import Camera from '../screens/camera';
+
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 import { REPORT_NAVIGATION_REF } from './AppDrawer';
-import Theme from '../theme';
 
 function LeftIcon(props) {
 

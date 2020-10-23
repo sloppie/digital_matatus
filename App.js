@@ -1,13 +1,12 @@
 import 'react-native-gesture-handler'
 import React from 'react';
 
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native';
 
 import SplashScreen from './routes';
 import AsyncStorage from '@react-native-community/async-storage';
 import NotificationsSetup from './utilities/push-notifications';
 // import { Notifications } from 'react-native-notifications';
-
 
 class App extends React.Component {
 

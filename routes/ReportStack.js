@@ -1,24 +1,60 @@
 import React from 'react'; 
 import { View, DeviceEventEmitter } from 'react-native'; 
 import { createStackNavigator } from '@react-navigation/stack';
-// import { 
-//   Report, 
-//   CategoryDefinition, 
-//   SetReminder, 
-//   NumberPlate, 
-//   Camera 
-// } from './../screens';
-
-import Report from '../screens/report_v2';
-import CategoryDefinition from '../screens/harrasment_def';
-import SetReminder from '../screens/set_reminder';
-import NumberPlate from '../screens/number_plate';
-import Camera from '../screens/camera';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-
 import { REPORT_NAVIGATION_REF } from './AppDrawer';
+
+import ReportScreen from '../screens/report_v2';
+
+
+let CategoryDefinitionScreen = null;
+let SetReminderScreen = null;
+let NumberPlateScreen = null;
+let CameraScreen = null;
+
+// import async
+const importScreens = async () => new Promise((resolve, reject)=> {
+    CameraScreen = require('../screens/camera').default;
+    CategoryDefinitionScreen = require('../screens/harrasment_def').default;
+
+    resolve(true);
+  });
+
+function Report(props) {
+  importScreens();
+  
+  return <ReportScreen {...props} />
+}
+
+function CategoryDefinition(props) {
+  if(CategoryDefinitionScreen === null)
+    CategoryDefinitionScreen = require('../screens/harrasment_def').default;
+
+  return <CategoryDefinitionScreen {...props} />
+}
+
+function SetReminder(props) {
+  if(SetReminderScreen === null)
+    SetReminderScreen = require('../screens/set_reminder').default;
+
+  return <SetReminderScreen {...props} />;
+}
+
+function NumberPlate(props) {
+  if(NumberPlateScreen === null)
+    NumberPlateScreen = require('../screens/number_plate').default;
+  
+  return <NumberPlateScreen {...props} />;
+}
+
+function Camera(props) {
+  if(CameraScreen === null)
+    CameraScreen = require('../screens/camera').default;
+  
+  return <CameraScreen {...props} />;
+}
 
 function LeftIcon(props) {
 

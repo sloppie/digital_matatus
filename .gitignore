@@ -68,3 +68,6 @@ buck-out/
 /android/app/.classpath
 /android/app/.project
 /android/app/.settings/
+
+# hprof extension
+*.hprof

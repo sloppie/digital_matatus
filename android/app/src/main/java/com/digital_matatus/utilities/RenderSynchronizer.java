@@ -1,12 +1,10 @@
 package com.digital_matatus.utilities;
 
-import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.digital_matatus.MainActivity;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -28,20 +26,24 @@ public class RenderSynchronizer extends ReactContextBaseJavaModule {
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public boolean switchContentView() {
-        ContentViewHandler contentViewHandler = (ContentViewHandler) (reactContext.getCurrentActivity());
+        ContentViewHandler contentViewHandler = (ContentViewHandler) reactContext.getCurrentActivity();
         String message = (contentViewHandler != null) ? "ContentViewHandler is Live"
                 : "ContentViewHandler is null";
         Log.d(reactContext.getPackageName() + ".RenderSynchronizer", message);
+        boolean status = true;
+
         try {
             assert contentViewHandler != null;
             contentViewHandler.replaceContentView();
 
             Toast.makeText(reactContext, "setView ran", Toast.LENGTH_SHORT).show();
+            status = false;
         } catch (Exception e) {
             Log.d(reactContext.getPackageName() + ".RenderSynchronizer", e.getMessage());
             Toast.makeText( reactContext, "Unable to setView", Toast.LENGTH_SHORT).show();
+            status = true;
         }
 
-        return true;
+        return status;
     }
 }

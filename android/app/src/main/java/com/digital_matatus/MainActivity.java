@@ -109,6 +109,5 @@ public class MainActivity extends AppCompatActivity
     });
 
     Log.d(getPackageName() + ".RenderSynchronizer", "Render is waay live");
-//    recreate();
   }
 }

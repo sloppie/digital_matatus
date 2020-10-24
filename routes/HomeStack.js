@@ -30,6 +30,7 @@ const importScreens = () => new Promise((resolve, reject) => {
   resolve(true);
 });
 
+
 function Home(props) {
   importScreens();
 
@@ -43,39 +44,39 @@ function RouteDetails(props) {
   return <RouteDetailsScreen {...props} />
 }
 
-function NumberPlate() {
+function NumberPlate(props) {
   if(NumberPlateScreen === null)
     NumberPlateScreen = require('../screens/number_plate').default;
 
-  return <NumberPlateScreen />
+  return <NumberPlateScreen {...props} />
 }
 
-function ReportDetails() {
+function ReportDetails(props) {
   if(ReportDetailsScreen === null)
     ReportDetailsScreen = require('../screens/report_details').default;
 
-  return <ReportDetailsScreen />;
+  return <ReportDetailsScreen {...props} />;
 }
 
-function MediaView() {
+function MediaView(props) {
   if(MediaViewScreeen === null)
     MediaViewScreeen = require('../screens/media_view').default;
   
-  return <MediaViewScreeen />;
+  return <MediaViewScreeen {...props} />;
 }
 
-function ReportCulprit() {
+function ReportCulprit(props) {
   if(ReportCulpritScreen === null)
     ReportCulpritScreen = require('../screens/report_culprit').default;
 
-  return <ReportCulpritScreen />;
+  return <ReportCulpritScreen {...props} />;
 }
 
-function Camera() {
+function Camera(props) {
   if(CameraScreen === null)
     CameraScreen = require('../screens/camera').default;
   
-  return <CameraScreen />;
+  return <CameraScreen {...props} />;
 }
 
 export default () => (

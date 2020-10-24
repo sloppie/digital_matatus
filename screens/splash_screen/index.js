@@ -9,6 +9,8 @@ import {
   ToastAndroid
 } from 'react-native';
 
+import { ActivityIndicator } from 'react-native-paper';
+
 import Theme from '../../theme';
 
 export default class SplashScreen extends React.PureComponent {
@@ -24,8 +26,13 @@ export default class SplashScreen extends React.PureComponent {
   componentDidMount() {
     console.log("SplashScreen Mounted");
     let bool = NativeModules.RenderSynchronizer.switchContentView();
-    console.log(bool);
-    ToastAndroid.show("SplashScreen rendered", ToastAndroid.SHORT);
+
+    if(!bool)
+      setTimeout(() => {
+        NativeModules.RenderSynchronizer.switchContentView();
+      }, 500); // this indicates that there is a problem in ownership of the UIThread
+
+    // ToastAndroid.show("SplashScreen rendered", ToastAndroid.SHORT);
   }
 
 
@@ -35,12 +42,17 @@ export default class SplashScreen extends React.PureComponent {
       <>
         <StatusBar />
         <SafeAreaView style={styles.screen}>
-          <View style={styles.brandContainer}>
+          {/* <View style={styles.brandContainer}>
             <Text>
               <Text style={[styles.brandText, styles.brandTextLight]}>digital </Text>
               <Text style={[styles.brandText, styles.brandTextBold]}>matatus</Text>
             </Text>
-          </View>
+          </View> */}
+          <ActivityIndicator 
+            animating={true}
+            size="large"
+            color={Theme.PrimaryColor}
+          />
         </SafeAreaView>
       </>
     );
@@ -52,7 +64,8 @@ const styles = StyleSheet.create({
   screen: {
     height: "100%",
     justifyContent: "center",
-    backgroundColor: Theme.PrimaryColor
+    // backgroundColor: Theme.PrimaryColor,
+    alignItems: "center",
   },
   brandContainer: {
     flexDirection: "row",

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import HomeStack from './HomeStack';
+import { useEffect } from 'react';
 // import ReportStack from './ReportStack';
 // import ReportViewStack from './ReportViewStack';
 
@@ -87,38 +88,47 @@ let VIEW_REPORT_NAVIGATION_REF;
 
 const AppDrawer = createDrawerNavigator();
 
-export default () => (
-  <AppDrawer.Navigator
-    initialRouteName="Home"
-    minSwipeDistance={30}
-    edgeWidth={100}
-    backBehavior="initialRoute"
-  >
-    <AppDrawer.Screen
-      name="Home"
-      component={Home}
-      options={{
-        drawerIcon: (props) => <HomeIcon {...props} />
-      }}
-    />
-    <AppDrawer.Screen 
-      name="Report"
-      component={Report}
-      options={{
-        unmountOnBlur: true,
-        drawerIcon: (props) => <ReportIcon {...props} />
-      }}
-    />
-    <AppDrawer.Screen 
-      name="ViewReports"
-      component={ViewReports}
-      options={{
-        drawerIcon: (props) => <ViewReportsIcon {...props} />
-      }}
-    />
-  </AppDrawer.Navigator>
-);
+export default () => {
 
+  let [initRender, setInitRender] = useState(true);
+
+  useEffect(() => {
+    setInitRender(false);
+  }, []);
+
+  return (
+    <AppDrawer.Navigator
+      initialRouteName="Home"
+      minSwipeDistance={30}
+      edgeWidth={100}
+      backBehavior="initialRoute"
+      drawerStyle={(initRender)? {width: null}: null}
+    >
+      <AppDrawer.Screen
+        name="Home"
+        component={Home}
+        options={{
+          drawerIcon: (props) => <HomeIcon {...props} />
+        }}
+      />
+      <AppDrawer.Screen 
+        name="Report"
+        component={Report}
+        options={{
+          unmountOnBlur: true,
+          drawerIcon: (props) => <ReportIcon {...props} />
+        }}
+      />
+      <AppDrawer.Screen 
+        name="ViewReports"
+        component={ViewReports}
+        options={{
+          drawerIcon: (props) => <ViewReportsIcon {...props} />
+        }}
+      />
+    </AppDrawer.Navigator>
+  );
+}
 export {
   HOME_NAVIGATION_REF,
   VIEW_REPORT_NAVIGATION_REF,

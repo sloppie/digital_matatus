@@ -26,7 +26,7 @@ import Permissions from '../../../utilities/permissions';
 import { APP_STORE } from '../../..';
 import { MEDIA_UPLOADED, DESCRIPTION_LOADED } from '../../../store';
 import Theme from '../../../theme';
-import { FileManager } from '../../../utilities';
+import * as FileManager from '../../../utilities/file_manager';
 
 let HarassmentDescription = null;
 let RNThumbnail = null; // resuce the amount of modules loaded at start
@@ -99,7 +99,7 @@ export default class IncedentDescription extends React.Component {
     this.descriptionLoaded = APP_STORE.subscribe(DESCRIPTION_LOADED, this.setDescriptionLoad.bind(this, true));
     // this.writeSuccess = APP_STORE.subscribe(FileManager.WRITE_SUCCESS, this.onWriteSuccess);
     this.cameraPayloadSubscription = DeviceEventEmitter.addListener(
-      FileManager.WRITE_SUCCESS, // WRITE SUCCESS Event
+      FileManager.WRITE_SUCCESS(), // WRITE SUCCESS Event
       this.onWriteSuccess.bind(this) // callback on successfull write
     );
 
@@ -120,7 +120,7 @@ export default class IncedentDescription extends React.Component {
 
   _addMediaFile = async (fileUri, mediaType) => {
     console.log("File URI\n" + FileManager.getMimeTypeFromExtension(fileUri));
-    if(FileManager.IMAGE === mediaType) {
+    if(FileManager.IMAGE() === mediaType) {
       let attachedPhotos = [...this.state.attachedPhotos];
       let attachedPhotosThumbnails = [...this.state.attachedPhotosThumbnails];
 

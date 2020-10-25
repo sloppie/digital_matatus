@@ -1,9 +1,12 @@
 package com.digital_matatus;
 
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+// import android.util.Log;
 import android.view.KeyEvent;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.digital_matatus.utilities.ContentViewHandler;
@@ -11,12 +14,15 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 
 public class MainActivity extends AppCompatActivity
-        implements DefaultHardwareBackBtnHandler, ContentViewHandler {
+        implements DefaultHardwareBackBtnHandler, PermissionAwareActivity, ContentViewHandler {
 
   protected ReactRootView mReactRootView;
   protected ReactInstanceManager mReactInstanceManager;
+  protected  PermissionListener permissionListener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,7 @@ public class MainActivity extends AppCompatActivity
     if (mReactInstanceManager != null) {
       mReactInstanceManager.onHostDestroy(this);
     }
+
     if (mReactRootView != null) {
       mReactRootView.unmountReactApplication();
     }
@@ -98,6 +105,20 @@ public class MainActivity extends AppCompatActivity
       }
     });
 
-    Log.d(getPackageName() + ".RenderSynchronizer", "Render is waay live");
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.M)
+  @Override
+  public void requestPermissions(
+          String[] permissions, int requestCode, PermissionListener listener) {
+    super.requestPermissions(permissions, requestCode);
+    permissionListener = listener;
+  }
+
+  @Override
+  public void onRequestPermissionsResult(
+          int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    permissionListener = null;
   }
 }

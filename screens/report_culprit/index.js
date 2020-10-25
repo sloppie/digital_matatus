@@ -1,5 +1,7 @@
 import React from 'react';
-import { ScrollView, SafeAreaView, Dimensions, StyleSheet, Alert, ToastAndroid } from 'react-native';
+import { 
+  ScrollView, SafeAreaView, Dimensions, StyleSheet, Alert, ToastAndroid
+} from 'react-native';
 import { 
   TextInput, 
   Divider, 
@@ -9,10 +11,14 @@ import {
   Text,
   Caption 
 } from 'react-native-paper';
-import { API } from '../../utilities';
+
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import { API } from '../../utilities';
+
+
+console.log("ReportCulprit is being loaded");
 
 export default class ReportCulprit extends React.PureComponent {
 

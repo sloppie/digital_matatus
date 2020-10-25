@@ -18,6 +18,7 @@ import Store, {
 } from './store';
 // import NotificationSetup from './utilities/push-notifications';
 
+
 const eventArr = [];
 
 // initialise events
@@ -31,11 +32,6 @@ eventArr.push(new Event(REPORT_FILED));
 
 // create the store
 const APP_STORE = new Store(eventArr);
-
-// create NotificationToken to ease its fetching process
-// NotificationSetup.configure();
-
-// NotificationSetup.getNotificationId();
 
 AppRegistry.registerComponent(appName, () => App);
 

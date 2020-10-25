@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import HomeStack from './HomeStack';
-import ReportStack from './ReportStack';
-import ReportViewStack from './ReportViewStack';
+import { useEffect } from 'react';
+// import ReportStack from './ReportStack';
+// import ReportViewStack from './ReportViewStack';
 
+// inline requires
+// let HomeStack = null;
+let ReportStack = null;
+let ReportViewStack = null;
 
 // home icon
 function HomeIcon({ focused, color, size}) {
-
+ 
   return (
     <Icon 
       name={focused?"home": "home-outline"}
@@ -45,12 +50,18 @@ function ViewReportsIcon({ focused, color, size}) {
 // SCREENS START HERE
 function Home(props) {
   HOME_NAVIGATION_REF = props.navigation;
+  if(HomeStack === null)
+    HomeStack = require('./HomeStack').default;
+
 
   return <HomeStack />
 }
 
 function Report(props) {
   REPORT_NAVIGATION_REF = props.navigation;
+
+  if(ReportStack === null)
+    ReportStack = require('./ReportStack').default;
 
   return <ReportStack />
 }
@@ -64,6 +75,9 @@ function ReportV2(props) {
 function ViewReports(props) {
   VIEW_REPORT_NAVIGATION_REF = props.navigation;
 
+  if(ReportViewStack === null)
+    ReportViewStack = require('./ReportViewStack').default;
+
   return <ReportViewStack />
 }
 
@@ -74,38 +88,47 @@ let VIEW_REPORT_NAVIGATION_REF;
 
 const AppDrawer = createDrawerNavigator();
 
-export default () => (
-  <AppDrawer.Navigator
-    initialRouteName="Home"
-    minSwipeDistance={30}
-    edgeWidth={100}
-    backBehavior="initialRoute"
-  >
-    <AppDrawer.Screen
-      name="Home"
-      component={Home}
-      options={{
-        drawerIcon: (props) => <HomeIcon {...props} />
-      }}
-    />
-    <AppDrawer.Screen 
-      name="Report"
-      component={Report}
-      options={{
-        unmountOnBlur: true,
-        drawerIcon: (props) => <ReportIcon {...props} />
-      }}
-    />
-    <AppDrawer.Screen 
-      name="ViewReports"
-      component={ViewReports}
-      options={{
-        drawerIcon: (props) => <ViewReportsIcon {...props} />
-      }}
-    />
-  </AppDrawer.Navigator>
-);
+export default () => {
 
+  let [initRender, setInitRender] = useState(true);
+
+  useEffect(() => {
+    setInitRender(false);
+  }, []);
+
+  return (
+    <AppDrawer.Navigator
+      initialRouteName="Home"
+      minSwipeDistance={30}
+      edgeWidth={100}
+      backBehavior="initialRoute"
+      drawerStyle={(initRender)? {width: null}: null}
+    >
+      <AppDrawer.Screen
+        name="Home"
+        component={Home}
+        options={{
+          drawerIcon: (props) => <HomeIcon {...props} />
+        }}
+      />
+      <AppDrawer.Screen 
+        name="Report"
+        component={Report}
+        options={{
+          unmountOnBlur: true,
+          drawerIcon: (props) => <ReportIcon {...props} />
+        }}
+      />
+      <AppDrawer.Screen 
+        name="ViewReports"
+        component={ViewReports}
+        options={{
+          drawerIcon: (props) => <ViewReportsIcon {...props} />
+        }}
+      />
+    </AppDrawer.Navigator>
+  );
+}
 export {
   HOME_NAVIGATION_REF,
   VIEW_REPORT_NAVIGATION_REF,

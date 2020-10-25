@@ -23,7 +23,7 @@ export default class RouteCard extends React.PureComponent {
   _pinTerminal = () => {
     this.props.setBusTerminalMarker(this.props.trip);
   }
-
+ 
   _expandCard = () => {
     this.props.navigation.navigate(
       "RouteDetails", // screen name

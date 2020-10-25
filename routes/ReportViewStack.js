@@ -1,8 +1,12 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { AllReports, ReportDetails, ReportCulprit, MediaView } from '../screens';
-import { View } from 'react-native';
+// import { AllReports, ReportDetails, ReportCulprit, MediaView } from '../screens';
+
+import AllReports from '../screens/all_reports';
+import ReportDetails from '../screens/report_details';
+import ReportCulprit from '../screens/report_culprit';
+import MediaView from '../screens/media_view';
 
 import Theme from '../theme';
 import { VIEW_REPORT_NAVIGATION_REF } from './AppDrawer';

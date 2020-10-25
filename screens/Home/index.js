@@ -13,7 +13,8 @@ const RNShake = require('react-native-shake');
 import * as Fragments from './fragments';
 import { HOME_NAVIGATION_REF } from '../../routes/AppDrawer';
 import AsyncStorage from '@react-native-community/async-storage';
-import { API } from '../../utilities';
+import * as API from '../../utilities/API';
+
 
 let GTFSSearch = null;
 let TRIPS = null;
@@ -40,6 +41,8 @@ export default class Home extends React.Component {
   }
 
   async componentDidMount() {
+
+    console.log("Home Component has mounted");
 
     AsyncStorage.multiGet(
       ["reportSaved", "reportToUpdate"],

@@ -1,10 +1,9 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
 
-import { SplashScreen, LoginScreen } from '../screens';
+// import LoginScreen from '../screens/login';
 // import HomeStack from './HomeStack';
 import AppDrawer from './AppDrawer';
-import ConfigStack from './ConfigStack';
+import SplashScreen from '../screens/splash_screen';
 
 // store and events from store
 import { APP_STORE } from '..';
@@ -13,9 +12,13 @@ import { CONFIG_COMPLETE } from '../store';
 // storage
 import AsyncStorage from '@react-native-community/async-storage';
 
-const Stack = createStackNavigator();
+// inline requires
+let ConfigStack = null;
+let LoginScreen = null;
 
 isLoggedIn = false;
+
+let state = {isLoading: true, configComplete: false};
 
 
 class App extends React.PureComponent {
@@ -24,9 +27,9 @@ class App extends React.PureComponent {
     super(props);
 
     this.state = {
-      isLoading: true, // init splash screen
-      isLoggedIn: true, // irrelevant
-      configComplete: false, // checks whether the user has stored configs
+      // isLoggedIn: true, // irrelevant
+      isLoading: true,
+      configComplete: false,
       authProccessRan: false, // this is a primitive way of ensuring the auth proc doesnt run twice
       isNewUser: false, // if so pushes to Welcom Screen
       isLegacyUser: false // if so pushes to the Login screen
@@ -34,9 +37,9 @@ class App extends React.PureComponent {
 
   }
 
-  componentDidMount() {
-    this.auth();
+ async componentDidMount() {
     this.componentID = APP_STORE.subscribe(CONFIG_COMPLETE, this.setConfig);
+    this.auth();
   }
 
   _setUserType = (type) => (type == "NEW")? this.setState({isNewUser: true}): this.setState({isLegacyUser: true});
@@ -82,13 +85,22 @@ class App extends React.PureComponent {
   _renderLogin = () => {
 
     if(LoginScreen == null)
-      LoginScreen = require('../screens').LoginScreen;
+      LoginScreen = require('../screens/login').LoginScreen;
     
     return (
       <LoginScreen 
         _setUserType={this._setUserType}
       />
-    );
+    ); 
+  }
+
+  _renderConfigStack = () => {
+    console.log("Rendering config stack");
+
+    if(ConfigStack === null)
+      ConfigStack = require('./ConfigStack').default;
+
+    return <ConfigStack />
   }
 
   render() {
@@ -97,9 +109,7 @@ class App extends React.PureComponent {
       return <SplashScreen />
     
     if(!this.state.configComplete) {
-      return (
-        <ConfigStack />
-      )
+      return this._renderConfigStack();
     }
 
 
@@ -114,4 +124,4 @@ class App extends React.PureComponent {
 
 }
 
-export default App;
+export default App; 

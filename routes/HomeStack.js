@@ -3,12 +3,6 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import HomeScreen from '../screens/Home';
-// import RouteDetails from '../screens/route_details';
-// import NumberPlate from '../screens/number_plate';
-// import ReportDetails from '../screens/report_details';
-// import MediaView from '../screens/media_view';
-// import ReportCulprit from '../screens/report_culprit';
-// import Camera from '../screens/camera';
 
 import Theme from '../theme';
 
@@ -25,8 +19,12 @@ const Stack = createStackNavigator();
 // these are the two most likely screens thus we eagerly load them in the background
 // after the HomeScreen starts loading
 const importScreens = () => new Promise((resolve, reject) => {
-  CameraScreen = require('../screens/camera').default;
-  RouteDetailsScreen = require('../screens/route_details').default;
+  // bottlenecked the imports as they are somehow "instantaneous"
+  setTimeout(() => {
+    CameraScreen = require('../screens/camera').default;
+    RouteDetailsScreen = require('../screens/route_details').default;
+  }, 500)
+
   resolve(true);
 });
 

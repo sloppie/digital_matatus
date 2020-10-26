@@ -18,8 +18,6 @@ let LoginScreen = null;
 
 isLoggedIn = false;
 
-let state = {isLoading: true, configComplete: false};
-
 
 class App extends React.PureComponent {
 
@@ -27,7 +25,6 @@ class App extends React.PureComponent {
     super(props);
 
     this.state = {
-      // isLoggedIn: true, // irrelevant
       isLoading: true,
       configComplete: false,
       authProccessRan: false, // this is a primitive way of ensuring the auth proc doesnt run twice
@@ -37,7 +34,7 @@ class App extends React.PureComponent {
 
   }
 
- async componentDidMount() {
+  componentDidMount() {
     this.componentID = APP_STORE.subscribe(CONFIG_COMPLETE, this.setConfig);
     this.auth();
   }

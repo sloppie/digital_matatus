@@ -43,6 +43,7 @@ export default class Home extends React.Component {
   async componentDidMount() {
 
     console.log("Home Component has mounted");
+    // NativeModules.RenderSynchronizer.switchContentView();
 
     AsyncStorage.multiGet(
       ["reportSaved", "reportToUpdate"],
@@ -78,8 +79,6 @@ export default class Home extends React.Component {
             reportToUpdate = "";
           }
 
-          // console.log("reportToUpdate");
-          // console.log(reportToUpdate);
           if(reportToUpdate !== "" && reportToUpdate !== "FETCH_REPORT_ID" && reportToUpdate !== null) {
             this.props.navigation.navigate("NumberPlate"); // update reports
           }

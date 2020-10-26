@@ -1,17 +1,12 @@
 import React from 'react';
 import {
-  StatusBar,
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  NativeModules,
-  ToastAndroid
+  StatusBar, SafeAreaView, StyleSheet, NativeModules,
 } from 'react-native';
 
 import { ActivityIndicator } from 'react-native-paper';
 
 import Theme from '../../theme';
+
 
 export default class SplashScreen extends React.PureComponent {
 
@@ -22,17 +17,26 @@ export default class SplashScreen extends React.PureComponent {
       navigate: false
     };
   }
-  
+
   componentDidMount() {
-    console.log("SplashScreen Mounted");
     let bool = NativeModules.RenderSynchronizer.switchContentView();
 
     if(!bool)
       setTimeout(() => {
+        console.log("Second try to set screen");
         NativeModules.RenderSynchronizer.switchContentView();
       }, 500); // this indicates that there is a problem in ownership of the UIThread
 
-    // ToastAndroid.show("SplashScreen rendered", ToastAndroid.SHORT);
+  }
+
+  componentDidUpdate() {
+    let isConfig = this.context;
+
+    if(isConfig === states.CONFIGURED)
+      this.props.navigation.navigate("AppDrawer");
+    else if(isConfig === states.PENDING)
+      this.props.navigation.navigate("ConfigStack");
+
   }
 
 
@@ -53,12 +57,23 @@ export default class SplashScreen extends React.PureComponent {
             size="large"
             color={Theme.PrimaryColor}
           />
+          {/* <Configured.Consumer>
+            {value => (
+              <LoadingIndicator 
+                navigation={this.props.navigation}
+                isConfig={value}
+              />
+              
+            )}
+          </Configured.Consumer> */}
         </SafeAreaView>
       </>
     );
   }
 
 }
+
+
 
 const styles = StyleSheet.create({
   screen: {

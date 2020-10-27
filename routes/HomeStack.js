@@ -23,7 +23,7 @@ const importScreens = () => new Promise((resolve, reject) => {
   setTimeout(() => {
     CameraScreen = require('../screens/camera').default;
     RouteDetailsScreen = require('../screens/route_details').default;
-  }, 500)
+  }, 1000);
 
   resolve(true);
 });

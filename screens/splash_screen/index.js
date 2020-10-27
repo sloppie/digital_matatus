@@ -1,11 +1,14 @@
 import React from 'react';
 import {
-  StatusBar, SafeAreaView, StyleSheet, NativeModules,
+  View, StatusBar, SafeAreaView, StyleSheet, NativeModules, Dimensions,
 } from 'react-native';
 
 import { ActivityIndicator } from 'react-native-paper';
 
 import Theme from '../../theme';
+import MockRouteCard from './fragments/MockRouteCard';
+
+import MockSearchBar from './fragments/MockSearchBar';
 
 
 export default class SplashScreen extends React.PureComponent {
@@ -46,26 +49,16 @@ export default class SplashScreen extends React.PureComponent {
       <>
         <StatusBar />
         <SafeAreaView style={styles.screen}>
-          {/* <View style={styles.brandContainer}>
-            <Text>
-              <Text style={[styles.brandText, styles.brandTextLight]}>digital </Text>
-              <Text style={[styles.brandText, styles.brandTextBold]}>matatus</Text>
-            </Text>
-          </View> */}
-          <ActivityIndicator 
-            animating={true}
-            size="large"
-            color={Theme.PrimaryColor}
-          />
-          {/* <Configured.Consumer>
-            {value => (
-              <LoadingIndicator 
-                navigation={this.props.navigation}
-                isConfig={value}
-              />
-              
-            )}
-          </Configured.Consumer> */}
+          <MockSearchBar headerHeight={this.props.headerHeight} />
+          <View style={{height: "100%", width: Dimensions.get("window").width, justifyContent: "center"}}>
+            <ActivityIndicator 
+              animating={true}
+              size="large"
+              color={Theme.PrimaryColor}
+              style={{}}
+            />
+          </View>
+          <MockRouteCard />
         </SafeAreaView>
       </>
     );
@@ -78,8 +71,8 @@ export default class SplashScreen extends React.PureComponent {
 const styles = StyleSheet.create({
   screen: {
     height: "100%",
-    justifyContent: "center",
-    // backgroundColor: Theme.PrimaryColor,
+    // justifyContent: "center",
+    backgroundColor: "#f2f2f2",
     alignItems: "center",
   },
   brandContainer: {

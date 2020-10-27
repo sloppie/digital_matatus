@@ -101,9 +101,10 @@ class App extends React.PureComponent {
   }
 
   render() {
+    const headerHeight = 56;
 
     if(this.state.isLoading)
-      return <SplashScreen />
+      return <SplashScreen headerHeight={headerHeight} />
     
     if(!this.state.configComplete) {
       return this._renderConfigStack();

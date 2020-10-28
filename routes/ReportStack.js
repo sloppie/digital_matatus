@@ -14,20 +14,33 @@ let SetReminderScreen = null;
 let NumberPlateScreen = null;
 let CameraScreen = null;
 
-// import async
+
+/**
+ * This function runs after the initial import of the `Report` screen. This is however
+ * bottlenecked by 1 second to allow for the `Home` screen to finish working on the JS thread.
+ * This uses promises to run the promises asynchronously.
+ * 
+ * @returns {Promise<boolean>} returns a boolean about the state of the importing
+ */
 const importScreens = async () => new Promise((resolve, reject)=> {
-    CameraScreen = require('../screens/camera').default;
-    CategoryDefinitionScreen = require('../screens/harrasment_def').default;
+    setTimeout(() => {
+      CameraScreen = require('../screens/camera').default;
+      CategoryDefinitionScreen = require('../screens/harrasment_def').default;
+    }, 1000);
 
     resolve(true);
-  });
+});
 
+
+/**@returns {Report} */
 function Report(props) {
   importScreens();
   
   return <ReportScreen {...props} />
 }
 
+
+/**@returns {Report} */
 function CategoryDefinition(props) {
   if(CategoryDefinitionScreen === null)
     CategoryDefinitionScreen = require('../screens/harrasment_def').default;
@@ -35,6 +48,8 @@ function CategoryDefinition(props) {
   return <CategoryDefinitionScreen {...props} />
 }
 
+
+/**@returns {Report} */
 function SetReminder(props) {
   if(SetReminderScreen === null)
     SetReminderScreen = require('../screens/set_reminder').default;
@@ -42,6 +57,8 @@ function SetReminder(props) {
   return <SetReminderScreen {...props} />;
 }
 
+
+/**@returns {Report} */
 function NumberPlate(props) {
   if(NumberPlateScreen === null)
     NumberPlateScreen = require('../screens/number_plate').default;
@@ -49,6 +66,8 @@ function NumberPlate(props) {
   return <NumberPlateScreen {...props} />;
 }
 
+
+/**@returns {Report} */
 function Camera(props) {
   if(CameraScreen === null)
     CameraScreen = require('../screens/camera').default;
@@ -56,6 +75,8 @@ function Camera(props) {
   return <CameraScreen {...props} />;
 }
 
+
+/**@returns {Report} */
 function LeftIcon(props) {
 
   return (
@@ -69,11 +90,24 @@ function LeftIcon(props) {
   );
 }
 
-// We'll probably have to use events for the onPress on the Icons
-// The icons will emit an event when fired and the camera will respond
-// causing to either fire a video recording, or a picture capture
+/**
+ * @todo We'll probably have to use events for the onPress on the Icons
+ * The icons will emit an event when fired and the camera will respond
+ * causing to either fire a video recording, or a picture capture
+ * 
+ * @returns {JSX.Element} the `Icons` for the Right side of the Report screen
+ */
 function RightIcons() {
-  // FIRE_UP_CAMERA payload tells whether it'll be video or picture
+
+  /**
+   * Fires up the camera of the type declared in the param. This is done using emittion
+   * of event wich forces the camera to be fired up in the `Report` screen
+   * 
+   * @param {"camera" | "video"} type this is the type of the camera thath wil be fired up,
+   *                                  this is either firing up the camera for `video` or for `photo`
+   * 
+   * @returns {void}
+   */
   const launchCamera = (type) => {
     DeviceEventEmitter.emit("LAUNCH_CAMERA", type);
   }

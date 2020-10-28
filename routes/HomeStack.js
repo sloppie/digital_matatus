@@ -7,17 +7,33 @@ import HomeScreen from '../screens/Home';
 import Theme from '../theme';
 
 // inline requires
+/**@type {RouteDetails} */
 let RouteDetailsScreen = null;
+
+/**@type {NumberPlate}*/ 
 let NumberPlateScreen = null;
+
+/**@type {ReportDetails}*/
 let ReportDetailsScreen = null;
+
+/**@type {MediaView}*/
 let MediaViewScreeen = null;
+
+/**@type {ReportCulprit} */
 let ReportCulpritScreen = null;
+
+/**@type {Camera} */
 let CameraScreen = null;
 
 const Stack = createStackNavigator();
 
-// these are the two most likely screens thus we eagerly load them in the background
-// after the HomeScreen starts loading
+/**
+ * This function runs after the initial import of the `Home` screen. This is however
+ * bottlenecked by 1 second to allow for the Home screen to finish working on the JS thread.
+ * This uses promises to run the promises asynchronously.
+ * 
+ * @returns {Promise<boolean>} returns a boolean about the state of the importing
+ */
 const importScreens = () => new Promise((resolve, reject) => {
   // bottlenecked the imports as they are somehow "instantaneous"
   setTimeout(() => {

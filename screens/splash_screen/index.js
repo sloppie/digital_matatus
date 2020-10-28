@@ -10,19 +10,31 @@ import MockRouteCard from './fragments/MockRouteCard';
 
 import MockSearchBar from './fragments/MockSearchBar';
 
+/**
+ * @type {{CONFIGURED: string, PENDING: string, LOADING: string}}
+ */
+const states = Object.freeze({
+  "CONFIGURED": "CONFIGURED",
+  "PENDING": "PENDING",
+  "LOADING": "LOADING"
+});
+
 
 export default class SplashScreen extends React.PureComponent {
 
   constructor(props) {
     super(props);
 
+    /**
+     * @type {{navigate: boolean}}
+     */
     this.state = {
       navigate: false
     };
   }
 
   componentDidMount() {
-    let bool = NativeModules.RenderSynchronizer.switchContentView();
+    /**@type boolean*/let bool = NativeModules.RenderSynchronizer.switchContentView();
 
     if(!bool)
       setTimeout(() => {
@@ -33,6 +45,7 @@ export default class SplashScreen extends React.PureComponent {
   }
 
   componentDidUpdate() {
+    /**@type {React.Context<"CONFIGURED" | "PENDING" | "LOADING">} */
     let isConfig = this.context;
 
     if(isConfig === states.CONFIGURED)

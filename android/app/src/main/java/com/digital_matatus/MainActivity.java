@@ -2,7 +2,6 @@ package com.digital_matatus;
 
 import android.os.Build;
 import android.os.Bundle;
-// import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;

@@ -8,15 +8,15 @@ import {
 } from 'react-native';
 
 import { 
-  Surface, 
-  Card, 
-  Divider, 
-  IconButton, 
-  Colors, 
-  RadioButton, 
-  List, 
-  Caption, 
-  FAB 
+  Surface,
+  Card,
+  Divider,
+  IconButton,
+  Colors,
+  RadioButton,
+  List,
+  Caption,
+  FAB,
 } from 'react-native-paper';
 
 import Geolocation from '@react-native-community/geolocation';

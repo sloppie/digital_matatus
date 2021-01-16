@@ -1,6 +1,6 @@
 import React from 'react';
-import { ScrollView, View, Dimensions, StyleSheet } from 'react-native';
-import { Card, TextInput, RadioButton, List, Divider, Colors } from 'react-native-paper';
+import { ScrollView, View, Dimensions, StyleSheet, Text } from 'react-native';
+import { Card, TextInput, RadioButton, List, Divider, Colors, Caption } from 'react-native-paper';
 import Theme from '../../../theme';
 
 let GTFSSearch = null;
@@ -83,7 +83,7 @@ export default class CulpritDescription extends React.Component {
     for(let i=0; i< target; i++) {
       routes.push(
         <List.Item 
-          left={props => <List.Icon {...props} icon="bus" />}
+          left={props => <List.Icon {...props} icon="bus" color="purple" style={styles.routeSuggestionsLeft} />}
           title={results[i].data.route_short_name}
           description={results[i].data.route_long_name}
           key={i.toString()}
@@ -130,27 +130,34 @@ export default class CulpritDescription extends React.Component {
         {/**
          * This part will be used to check for the location type
          */}
-        <Card.Title 
-          title="Culprit Description"
+        {/* <Card.Title 
+          title="Perpetrator Description"
           titleStyle={styles.title}
           subtitle="(This section can be skipped over)Please enter a small description of the culprit"
           subtitleNumberOfLines={3}
-        />
+        /> */}
+        <View style={styles.marginStart}>
+          <Text style={styles.screenTitle}>Perpetrator Description</Text>
+          <Caption style={{marginEnd: 16,}}>
+            (This section can be skipped over)Please enter a small description of the culprit
+          </Caption>
+        </View>
         <Divider />
         <Card.Title 
           title={this.state.location}
           subtitle={`incident happened in ${this.state.location}`}
         />
         {
-          (this.state.location != LOCATIONS.INSIDE_BUS)
-          ? (
+          (this.state.location != LOCATIONS.INSIDE_BUS) && (
             <List.Item 
               title="All saccos culpable" 
               description="Incident did not happen inside any one specific bus" 
-              left={props => <RadioButton value="All" status="checked" />}
+              left={props => <RadioButton value="All" status="checked" color="purple" />}
             />
           )
-          : (
+        }
+        {
+          this.state.location === LOCATIONS.INSIDE_BUS && (
             <TextInput
               value={this.state.saccoName}
               style={styles.textInput}
@@ -163,8 +170,8 @@ export default class CulpritDescription extends React.Component {
         }
         <Divider />
         {
-          (this.state.routeDetails == null)
-          ? <TextInput
+          (this.state.routeDetails == null) && (
+            <TextInput
               value={this.state.routeName}
               style={styles.textInput}
               placeholder="Enter the route no, or a destination you are familiar with on the route"
@@ -174,7 +181,10 @@ export default class CulpritDescription extends React.Component {
               label="Route Name"
             theme={{colors: {primary:Theme.PrimaryColor, accent: Colors.red200, text: Colors.red200}}}
             />
-          : <List.Section
+          )
+        }
+        {
+          this.state.routeDetails && <List.Section
               title="Route of incident"
             >
               <List.Item 
@@ -184,7 +194,7 @@ export default class CulpritDescription extends React.Component {
               />
             </List.Section>
         }
-        {(this.state.routeSearchFocused)? this._renderRouteSuggestions(): null}
+        {(this.state.routeSearchFocused) && this._renderRouteSuggestions()}
         <Divider />
         <RadioButton.Group
           onValueChange={this._setCulpritType}
@@ -194,25 +204,25 @@ export default class CulpritDescription extends React.Component {
             title="Perpetrator description"
           >
             <List.Item 
-              left={props => <RadioButton value="Driver" onPress={this._setCulpritType}/>}
+              left={props => <RadioButton {...props} color="purple" value="Driver" onPress={this._setCulpritType}/>}
               title="Driver"
               description="Action was carried out by a matatu driver"
               onPress={this._setCulpritType.bind(this, "Driver")}
             />
             <List.Item 
-              left={props => <RadioButton value="Conductor" onPress={this._setCulpritType}/>}
+              left={props => <RadioButton {...props} color="purple" value="Conductor" onPress={this._setCulpritType}/>}
               title="Conductor"
               description="Action was carried out by a matatu conductor"
               onPress={this._setCulpritType.bind(this, "Conductor")}
             />
             <List.Item 
-              left={props => <RadioButton value="Route handler" onPress={this._setCulpritType}/>}
+              left={props => <RadioButton {...props} color="purple" value="Route handler" onPress={this._setCulpritType}/>}
               title="Route Handler"
               description="Action was carried out by a matatu driver"
               onPress={this._setCulpritType.bind(this, "Route handler")}
             />
             <List.Item 
-              left={props => <RadioButton value="other" onPress={this._setCulpritType}/>}
+              left={props => <RadioButton {...props} color="purple" value="other" onPress={this._setCulpritType}/>}
               title="other"
               description="Action was carried out by another party not explicitly described above"
               onPress={this._setCulpritType.bind(this, "other")}
@@ -238,6 +248,11 @@ const styles = StyleSheet.create({
   descriprionContainer: {
     width: Dimensions.get("window").width,
   },
+  marginStart: {marginStart: 16,},
+  screenTitle: {
+    fontSize: 40,
+    fontFamily: Theme.OpenSansBold,
+  },
   title: {},
   textInput: {
     width: (Dimensions.get("window").width - 32),
@@ -247,5 +262,10 @@ const styles = StyleSheet.create({
   suggestionContainer: {
     alignSelf: "center",
     width: (Dimensions.get("window").width - 32),
+  },
+  routeSuggestionsLeft: {
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: "purple",
   },
 });

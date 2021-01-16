@@ -10,6 +10,7 @@ import {
   List,
   Divider,
 } from 'react-native-paper';
+import Theme from '../../../theme';
 
 
 export default class VerbalHarassment extends React.PureComponent {
@@ -18,8 +19,9 @@ export default class VerbalHarassment extends React.PureComponent {
 
     return (
       <ScrollView style={styles.screen}>
-        <Headline style={styles.headline}>Verbal Harassment</Headline>
+        <Text style={styles.headline}>Verbal Harassment</Text>
         <Subheading style={styles.subtitle}>Definition and Examples</Subheading>
+        <Divider />
         <Title style={styles.title}>Definition</Title>
         <Text style={styles.text}>
           Verbal harassment is unwelcome behaviour of a sexual nature (often carried out using sound, i.e voice) that leaves
@@ -78,6 +80,8 @@ const styles = StyleSheet.create({
   headline: {
     marginStart: 16,
     paddingBottom: 4,
+    fontSize: 48,
+    fontFamily: Theme.OpenSansBold,
   },
   subtitle: {
     marginStart: 16,

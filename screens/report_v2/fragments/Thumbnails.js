@@ -1,7 +1,8 @@
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
-import { Card, TouchableRipple, Colors, List } from 'react-native-paper';
+import { Image, StyleSheet, Dimensions } from 'react-native';
+import { Card, Colors, List } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 
 class Item extends React.PureComponent {
 
@@ -10,28 +11,33 @@ class Item extends React.PureComponent {
   render() {
 
     return (
-      <Card.Title 
-        left={props => (
-          (this.props.type === "audio")? <Icon {...props} name="record-rec" color={Colors.red500} size={30} />
-          :(this.props.thumbnailUri != null)
-          ? <Image  source={{width: 30, height: 30, scale: 0.5, uri: this.props.thumbnailUri}}/>
-          : <Icon {...props} name="file-video" size={30}/>
-        )
-        }
-        title={`${this.props.type}_${this.props.index + 1}`}
-        right={props => (
-          // <TouchableRipple
-          //   onPress={this.removeMedia}
-          // >
-            <Icon 
-              {...props}
-              name="trash-can"
-              onPress={this.removeMedia}
-              style={styles.trashCanIcon}
-            />
-          /* </TouchableRipple> */
-        )}
-      />
+      <Card
+        style={styles.itemContainer}
+      >
+        <Card.Title
+          left={props => (
+            (this.props.type === "audio")? 
+              <Icon {...props} name="record-rec" color={Colors.red500} size={30} />
+            :(this.props.thumbnailUri != null)
+            ? <Image style={{alignSelf: "center"}} source={{width: 40, height: 40, scale: 0.5, uri: this.props.thumbnailUri,}}/>
+            : <Icon {...props} name="file-video" size={30}/>
+          )
+          }
+          title={`${this.props.type} evidence ${this.props.index + 1}`}
+          subtitle="This media file will be sent attached to the report"
+          subtitleNumberOfLines={2}
+          right={props => (
+              <Icon 
+                {...props}
+                name="cancel"
+                onPress={this.removeMedia}
+                style={styles.trashCanIcon}
+                size={24}
+                color="red"
+              />
+          )}
+        />
+      </Card>
     );
   }
 
@@ -67,6 +73,14 @@ export default class Thumbnails extends React.PureComponent {
 
 const styles = StyleSheet.create({
   trashCanIcon: {
-    padding: 16
+    marginEnd: 16,
+    alignSelf: "center",
+  },
+  itemContainer: {
+    width: (Dimensions.get("window").width - 32),
+    alignSelf: "center",
+    borderRadius: 4,
+    elevation: 1,
+    marginBottom: 8,
   },
 });

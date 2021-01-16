@@ -15,6 +15,7 @@ export default () => (
       headerTintColor: "white",
       headerStyle: {
         backgroundColor: "#444",
+        elevation: 1,
       },
     }}
   >

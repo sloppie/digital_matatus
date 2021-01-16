@@ -6,6 +6,7 @@ import Chips from './Chips';
 import IncidentDescription from './IncedentDescription';
 import CulpritDescription from './CulpritDescription';
 import PrivateInformation from './PrivateInformation';
+import { ScrollView } from 'react-native';
 
 const TopTab = createMaterialTopTabNavigator();
 
@@ -19,17 +20,26 @@ export default class TabLayout extends React.PureComponent {
   _renderHarassmentDescriptionTab = (props) => (
     <>
       <Chips 
-        flags={this.props.lastFlags} 
-        toggleFlag={this.props._toggleFlag}
-        secondaryNavigation={this.props.secondaryNavigation}
-      />
-      <IncidentDescription
         {...props}
-        ref={this.props.incidentDescriptionRef}
-        culpritDescriptionRef={this.props.culpritDescriptionRef}
+        ref={this.props.discriminationDescriptionRef}
+        flags={this.props.lastFlags} 
+        updateCurrentSetFlags={this.props.updateCurrentSetFlags}
+        toggleFlag={this.props._toggleFlag}
+        setDiscriminationCategory={this.props.setDiscriminationCategory}
         secondaryNavigation={this.props.secondaryNavigation}
       />
     </>
+  );
+
+  _renderMediaAttachmentTab = (props) => (
+      <IncidentDescription
+        {...props}
+        ref={this.props.incidentDescriptionRef}
+        updateCurrentSetFlags={this.props.updateCurrentSetFlags}
+        culpritDescriptionRef={this.props.culpritDescriptionRef}
+        getDiscriminationCategory={this.props.getDiscriminationCategory}
+        secondaryNavigation={this.props.secondaryNavigation}
+      />
   );
 
   _renderCulpritDescriptionTab = (props) => (
@@ -60,6 +70,10 @@ export default class TabLayout extends React.PureComponent {
         <TopTab.Screen 
           name="IncidentDescription" 
           component={this._renderHarassmentDescriptionTab}
+        />
+        <TopTab.Screen 
+          name="MediaAttachment" 
+          component={this._renderMediaAttachmentTab}
         />
         <TopTab.Screen 
           name="CulpritDescription" 

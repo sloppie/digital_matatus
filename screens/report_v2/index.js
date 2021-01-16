@@ -11,7 +11,11 @@ import { API } from '../../utilities';
 
 import * as Fragments from './fragments';
 
+import Flag from './fragments/utilities/flag-context';
+import discriminationFlags from './fragments/utilities/category-flags';
+
 let REPORT_NAVIGATION_REF = null;
+
 
 export default class Report extends React.PureComponent {
 
@@ -25,6 +29,7 @@ export default class Report extends React.PureComponent {
 
   // REFS CREATED
   parentScrollViewRef =React.createRef(); // Parent ScrollView Ref
+  discriminationDescriptionRef = React.createRef(); // HD ref
   incidentDescriptionRef = React.createRef(); // incident description ref
   culpritDescriptionRef = React.createRef(); // access to CulpritDescription methods
   privateInformationRef = React.createRef();
@@ -34,6 +39,7 @@ export default class Report extends React.PureComponent {
 
     this.state = {
       open: false,
+      discriminationCategory: "",
       flags: [
         {
           "Verbal": false,
@@ -41,6 +47,11 @@ export default class Report extends React.PureComponent {
           "Physical": false,
         }
       ],
+      setFlags: {
+        "Verbal": [],
+        "Non-verbal": [],
+        "Physical": [],
+      },
       fabGroupVisible: true, // this is used to toggle visiblity when the TextInputs are active
       culpritDescription: {},
       incedentDescription: {},
@@ -120,6 +131,40 @@ export default class Report extends React.PureComponent {
     this.incidentDescriptionRef.current._turnFlag(flagName, newFlag[flagName]);
   }
 
+  // this is used to set the discrimination category that the user felt was carried out on them
+  _setDiscriminationCategory = (discriminationCategory) => {
+    let DC = null;
+    if (discriminationCategory === "Sexual Discrimination & Harrasment") {
+      DC = discriminationFlags.SD;
+    } else if (discriminationCategory == "Discrimination on Physical Disability") {
+      DC = discriminationFlags.PD;
+    } else {
+      DC= discriminationFlags.RD;
+    }
+    const setFlags = {
+      "Verbal": DC.Verbal.map(val => false),
+      "Non-verbal": DC["Non-verbal"].map(val => false),
+      "Physical": DC.Physical.map(val => false),
+    }
+    this.setState({
+      discriminationCategory,
+      setFlags,
+    });
+
+    this.forceUpdate();
+  }
+
+  _updateCurrentSetFlags = (category, index) => {
+    const {setFlags} = this.state;
+
+    setFlags[category][index] = !setFlags[category][index];
+
+    this.setState({setFlags});
+    this.forceUpdate();
+  }
+  
+  _getDiscrimiationCategory = () => this.state.discriminationCategory;
+
   // INCEDENT DESCRIPTION DETAILS
   _setDescription = (incedentDescrition) => {
     console.log(incedentDescrition);
@@ -152,12 +197,20 @@ export default class Report extends React.PureComponent {
   _getInformation = () => {
 
     this.setState({verifying: true});
+
+    const incidentDescription = {
+      ...this.discriminationDescriptionRef.current._getInformation(),
+      ...this.incidentDescriptionRef.current._getInformation(),
+    };
+
     let response = {
-      incidentDescription: this.incidentDescriptionRef.current._getInformation(),
+      incidentDescription,
       culpritDescription: this.culpritDescriptionRef.current._getInformation(),
       privateIformation: this.privateInformationRef.current._getInformation(),
       userID: this.state.userID
     };
+
+    console.log(JSON.stringify(response.incidentDescription, null, 2));
 
     // verify data
     let incidentDescriptionQueries = this._verifyID({...response.incidentDescription});
@@ -355,16 +408,22 @@ export default class Report extends React.PureComponent {
     let lastFlags = this.state.flags[this.state.flags.length - 1];
 
     return (
-      <Fragments.TabLayout 
-        lastFlags={lastFlags}
-        _toggleFlag={this._toggleFlag}
-        secondaryNavigation={this.props.navigation}
-        incidentDescriptionRef={this.incidentDescriptionRef}
-        culpritDescriptionRef={this.culpritDescriptionRef}
-        privateInformationRef={this.privateInformationRef}
-        _getInformation={this._getInformation}
-        _sendVerifiedData={this._sendVerifiedData}
-      />
+      <Flag.Provider value={this.state.setFlags}>
+        <Fragments.TabLayout 
+          lastFlags={lastFlags}
+          _toggleFlag={this._toggleFlag}
+          setDiscriminationCategory={this._setDiscriminationCategory}
+          getDiscriminationCategory={this._getDiscrimiationCategory}
+          updateCurrentSetFlags={this._updateCurrentSetFlags}
+          secondaryNavigation={this.props.navigation}
+          discriminationDescriptionRef={this.discriminationDescriptionRef}
+          incidentDescriptionRef={this.incidentDescriptionRef}
+          culpritDescriptionRef={this.culpritDescriptionRef}
+          privateInformationRef={this.privateInformationRef}
+          _getInformation={this._getInformation}
+          _sendVerifiedData={this._sendVerifiedData}
+        />
+      </Flag.Provider>
     );
   }
 

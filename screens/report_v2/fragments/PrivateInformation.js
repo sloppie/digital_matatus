@@ -1,10 +1,14 @@
 import React from 'react';
-import { View, Dimensions, StyleSheet, ToastAndroid } from 'react-native';
-import { Switch, Card, Colors, Caption, FAB, Title, Headline, Surface, Button, List, Divider } from 'react-native-paper';
+import {View, Dimensions, StyleSheet} from 'react-native';
+import {
+  Switch, Card, Colors, Caption, FAB, Title, Headline, Button, List, Divider,
+  TouchableRipple,
+} from 'react-native-paper';
 import BottomSheet from 'reanimated-bottom-sheet';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Theme from '../../../theme';
+
 
 let TextInput = null;
 
@@ -104,7 +108,7 @@ export default class PrivateInformation extends React.PureComponent {
   }
 
   _MBSheetOpenStart = () => {
-    this.setState({activeSnap: 1});
+    this.setState({activeSnap: 1, bottomSheetVisible: true});
   }
 
   _BSLayout = ({nativeEvent}) => {
@@ -121,7 +125,7 @@ export default class PrivateInformation extends React.PureComponent {
           onPress={this._viewAllQueries}>
             Expand
         </Button>
-        {
+        {/* {
           !this.state.submitDisabled?
             <Button 
               style={{}} 
@@ -131,7 +135,18 @@ export default class PrivateInformation extends React.PureComponent {
                 Submit
             </Button>
           : null
-        }
+        } */}
+      <View style={styles.bottomSheetHeaderFull}>
+        <Title style={{textAlign: "center", flex: 5}}>Submit Report</Title>
+        <Button 
+          style={styles.headerButton} 
+          mode="contained"
+          disabled={this.state.submitDisabled}
+          onPress={this._submit}>
+            Submit
+        </Button>
+        <Divider />
+      </View>
       </View>
     :
       <View style={styles.bottomSheetHeaderFull}>
@@ -177,7 +192,7 @@ export default class PrivateInformation extends React.PureComponent {
       
       if(this.state.queries[query].length) {
         return (
-          <>
+          <View key={`${queryTitles[query]}_warnings`}>
             <List.Section
               title={`${queryTitles[query]} warnings`}
             />
@@ -190,7 +205,7 @@ export default class PrivateInformation extends React.PureComponent {
                 key={`query${index.toString()}`}
               />
             ))}
-          </>
+          </View>
         );
       } else {
         return null;
@@ -214,18 +229,32 @@ export default class PrivateInformation extends React.PureComponent {
   }
 
   _renderContent = () => (
-    (this.state.activeSnap < 2)?
-    <View 
-      style={styles.bottomSheetContent}
-    >
-      <Headline style={styles.bottomSheetTitle}>Pending Issues</Headline>
-      {this._renderQueryBadges()}
-    </View>
-    : 
-    <View style={styles.bottomSheetContentFull}>
-      {this._renderAllQueries()}
+    <View>
+      {
+        (this.state.activeSnap < 2) && (
+          <View 
+            style={styles.bottomSheetContent}
+          >
+            <Headline style={styles.bottomSheetTitle}>Pending Issues</Headline>
+            {this._renderQueryBadges()}
+          </View>
+        )
+
+      }
+      {
+        this.state.activeSnap === 2 && (
+          <View style={styles.bottomSheetContentFull}>
+            {this._renderAllQueries()}
+          </View>
+        )
+      }
     </View>
   );
+
+  _collapseOverlay = () => {
+    this.bottomSheetRef.current.snapTo(0);
+    this.setState({bottomSheetVisible: false});
+  }
 
   _getInformation = () => {
     
@@ -253,9 +282,9 @@ export default class PrivateInformation extends React.PureComponent {
     // the block below makes it easier to render if there are no impending queries
     let submitDisabled = Object.keys(response.queries).some(query => response.queries[query].some(alerts => alerts.priority));
     if(response.has_query)
-      this.setState({submitDisabled, queries: response.queries});
+      this.setState({bottomSheetVisible: true, submitDisabled, queries: response.queries});
     else
-      this.setState({submitDisabled: false});
+      this.setState({bottomSheetVisible: true, submitDisabled: false});
 
     this.bottomSheetRef.current.snapTo(1);
   }
@@ -275,12 +304,18 @@ export default class PrivateInformation extends React.PureComponent {
             title="Private Information"
             titleStyle={(this.state.collapse)? styles.disabledTitle: styles.activeTitle}
             subtitle="This is turned off by default to mantain anonimity"
-            right={props => <Switch {...props} value={!this.state.collapse} onValueChange={this._togglePrivateInformation}/>}
+            right={props => (
+              <Switch
+                {...props}
+                value={!this.state.collapse}
+                onValueChange={this._togglePrivateInformation}
+              />
+            )}
           />
-          {(this.state.collapse)? null: this._renderTextInputs()}
+          {(!this.state.collapse) && this._renderTextInputs()}
           {
-            (this.state.collapse)
-            ? <View style={styles.incognitoContainer}>
+            (this.state.collapse) && (
+              <View style={styles.incognitoContainer}>
                 <Icon name="incognito" style={styles.incognitoIcon} size={100} />
                 <Caption style={styles.incognitoCaption}>
                   Your information will not be shared in the report filed
@@ -289,7 +324,7 @@ export default class PrivateInformation extends React.PureComponent {
                   To share your information, please turn on the switch at the top
                 </Caption>
               </View>
-            : null 
+            )
           }
         </View>
         <FAB 
@@ -301,10 +336,19 @@ export default class PrivateInformation extends React.PureComponent {
         />
           {/* Verify Information
         </Button> */}
+        {this.state.bottomSheetVisible && (
+              <TouchableRipple
+                style={styles.overlay}
+                onPress={this._collapseOverlay}
+                rippleColor="#00000000">
+                <View></View>
+              </TouchableRipple>
+        )}
         <BottomSheet 
           ref={this.bottomSheetRef}
           snapPoints={[0, "50%", "90%"]}
           initialSnap={0}
+          onCloseEnd={() => this.setState(({bottomSheetVisible: false}))}
           renderHeader={this._renderHeader}
           renderContent={this._renderContent}
           style={styles.bottomSheet}
@@ -321,6 +365,13 @@ export default class PrivateInformation extends React.PureComponent {
 const styles = StyleSheet.create({
   container: {
     minHeight: "50%"
+  },
+  overlay: {
+    // position: "absolute",
+    ...StyleSheet.absoluteFill,
+    height: Dimensions.get("window").height,
+    width: Dimensions.get("window").width,
+    backgroundColor: "#00000080",
   },
   textInput: {
     width: (Dimensions.get("window").width - 32),
@@ -362,7 +413,8 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     alignSelf: "stretch",
     flex: 1,
-    height: Dimensions.get("window").height
+    height: Dimensions.get("window").height,
+    position: "absolute",
   },
   bottomSheetHeader: {
     backgroundColor: "white",

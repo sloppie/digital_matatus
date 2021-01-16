@@ -141,7 +141,7 @@ export default () => (
     screenOptions={{
       headerTintColor: "white",
       headerStyle: {
-        backgroundColor: "#444",
+        backgroundColor: "purple",
       },
     }}
   >

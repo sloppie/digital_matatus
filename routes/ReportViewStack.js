@@ -8,7 +8,6 @@ import ReportDetails from '../screens/report_details';
 import ReportCulprit from '../screens/report_culprit';
 import MediaView from '../screens/media_view';
 
-import Theme from '../theme';
 import { VIEW_REPORT_NAVIGATION_REF } from './AppDrawer';
 
 
@@ -22,8 +21,8 @@ export default () => (
     screenOptions={{
       headerTintColor: "#fff",
       headerStyle: {
-        backgroundColor: Theme.PrimaryColor,
-        elevation: 0,
+        backgroundColor: "purple",
+        elevation: 1,
       },
     }}
   >

@@ -1,10 +1,12 @@
 package com.digital_matatus;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -119,5 +121,13 @@ public class MainActivity extends AppCompatActivity
           int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     permissionListener = null;
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (mReactInstanceManager != null) {
+      mReactInstanceManager.onActivityResult(this, requestCode, resultCode, data);
+    }
   }
 }

@@ -102,7 +102,8 @@ export default () => {
       minSwipeDistance={30}
       edgeWidth={100}
       backBehavior="initialRoute"
-      drawerStyle={(initRender)? {width: null}: null}
+      drawerStyle={[{backgroundColor: "#a143a1"}, (initRender)? {width: null}: null]}
+      drawerContentOptions={{activeBackgroundColor: "white", inactiveTintColor: "white"}}
     >
       <AppDrawer.Screen
         name="Home"

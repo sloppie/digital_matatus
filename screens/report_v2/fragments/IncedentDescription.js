@@ -1,5 +1,6 @@
 import React from 'react';
 import { 
+  Text,
   ScrollView, 
   Dimensions, 
   StyleSheet, 
@@ -21,14 +22,13 @@ import {
 
 import Geolocation from '@react-native-community/geolocation';
 import AudioRecord from 'react-native-audio-record';
-import ImagePicker from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import Permissions from '../../../utilities/permissions';
 import { APP_STORE } from '../../..';
 import { MEDIA_UPLOADED, DESCRIPTION_LOADED } from '../../../store';
 import Theme from '../../../theme';
 import * as FileManager from '../../../utilities/file_manager';
 
-let HarassmentDescription = null;
 let RNThumbnail = null; // resuce the amount of modules loaded at start
 let Thumbnails = null;
 
@@ -62,6 +62,7 @@ export default class IncedentDescription extends React.Component {
     this.state = {
       date: new Date().getTime(),
       description: "",
+      discriminationCategory: "",
       verbalHarassmentFlags: [],
       "Verbal": false,
       "Non-verbal": false,
@@ -89,9 +90,9 @@ export default class IncedentDescription extends React.Component {
     this.descriptions = [];
 
     // These refs are used to set the verbal harassment flags set by the user
-    this.VHFlag = React.createRef();
-    this.NVHFlag = React.createRef();
-    this.PHFlag = React.createRef();
+    // this.VHFlag = React.createRef();
+    // this.NVHFlag = React.createRef();
+    // this.PHFlag = React.createRef();
   }
 
   componentDidMount() {
@@ -161,7 +162,7 @@ export default class IncedentDescription extends React.Component {
   onMediaUpload = () => this.setState({uploadCount: (this.state.uploadCount + 1)});
 
   // this is used by the parent Component to turn the flags either on or off
-  _turnFlag = (flag, value) => {
+  _turnFlag = (flag, value, discriminationCategory) => {
     let flags = {
       "Verbal": this.state.Verbal,
       "Non-verbal": this.state["Non-verbal"],
@@ -178,54 +179,10 @@ export default class IncedentDescription extends React.Component {
 
     }
 
-    this.setState({[flag]: value, on});
+    this.setState({[flag]: value, on, discriminationCategory});
   }
 
   setDescriptionLoad = (descriptionLoaded) => this.setState({descriptionLoaded});
-
-  _generateFlags = () => {
-
-    if(HarassmentDescription === null)
-      HarassmentDescription = require("./HarassmentDescription").default;
-    
-    if(!this.state.on.length)
-      return [];
-    
-    
-    let descriptions = this.state.on.map((flag, index) => {
-
-      if(flag == "Verbal")
-        return (
-          <HarassmentDescription 
-            ref={this.VHFlag} 
-            category="Verbal" 
-            key={index.toString()}
-          />
-        );
-        
-      if(flag == "Non-verbal")
-        return (
-          <HarassmentDescription 
-            ref={this.NVHFlag} 
-            category="Non-verbal" 
-            key={index.toString()}
-          />
-        );
-  
-      if(flag == "Physical")
-        return (
-          <HarassmentDescription 
-            ref={this.PHFlag} 
-            category="Physical" 
-            key={index.toString()}
-          />
-        );
-
-    });
-
-
-    return descriptions;
-  }
 
   _handleDescription = (description) => this.setState({description});
 
@@ -418,13 +375,12 @@ export default class IncedentDescription extends React.Component {
       }
 
     }
-    
-    // console.log(extension)
 
     return extension;
   }
 
   _handleMedia = async (type) => {
+    console.log("Handling " + type + " Picker");
     const renderToast = () => ToastAndroid.show(`Loading ${type} library`, ToastAndroid.LONG);
 
     let granted = await Permissions.checkReadExternalStoragePermission();
@@ -446,22 +402,27 @@ export default class IncedentDescription extends React.Component {
   }
 
   _handlePhoto = () => {
-      ImagePicker.launchImageLibrary(
+    console.log("_handlePhoto method called");
+      launchImageLibrary(
         {
-          title: "Image Picker",
+          mediaType: "photo",
           quality: 1.0,
           storageOptions: {
             skipBackup: true
           },
+          maxWidth: 1000,
+          maxHeight: 1000,
+          includeBase64: false,
         },
         (response) => {
+          console.log("Did respond")
           
           if(response.didCancel) {
-            // console.log("User cancelled");
+            console.log("User cancelled");
           } else if(response.error) {
-            // console.log("An error occured");
+            console.log("An error occured");
           } else {
-            // console.log(response.uri);
+            console.log(response.uri);
             
             if(this.state.attachedPhotos.indexOf(response.uri) == -1) { // only adds the uri of it predetermines that it wasnt added
 
@@ -477,6 +438,7 @@ export default class IncedentDescription extends React.Component {
                 attachedPhotosThumbnails: [...attachedPhotosThumbnails],
               });
 
+              console.log(JSON.stringify(this.state.attachedPhotos, null, 2))
               DeviceEventEmitter.emit(MEDIA_UPLOADED);
             }
 
@@ -488,7 +450,7 @@ export default class IncedentDescription extends React.Component {
 
   _handleVideo = () => {
 
-    ImagePicker.launchImageLibrary(
+    launchImageLibrary(
       {
         title: "Video Picker",
         mediaType: "video",
@@ -627,14 +589,6 @@ export default class IncedentDescription extends React.Component {
   }
 
   // DATA COLLECTIONS
-  _getSetFlags = () => {
-    let categories = {};
-    categories["Verbal"] = this.VHFlag.current._returnSetFlags();
-    categories["Non-verbal"] = this.NVHFlag.current._returnSetFlags();
-    categories["Physical"] = this.PHFlag.current._returnSetFlags();
-
-    return categories;
-  }
 
   // inactive Renders
   _renderRecordingTab = () => {
@@ -708,8 +662,7 @@ export default class IncedentDescription extends React.Component {
   }
 
   _getInformation = () => {
-    let {date, location, Verbal, Physical} = this.state;
-    let nonVerbal = this.state["Non-verbal"];
+    let {date, location} = this.state;
     
     let response = {
       date,
@@ -717,18 +670,8 @@ export default class IncedentDescription extends React.Component {
       attachedAudiosData: this.createFileObjects(media_types.audio), // attach the data itself instead of the file
       attachedPhotosData: this.createFileObjects(media_types.photo),
       attachedVideosData: this.createFileObjects(media_types.video),
-      flags: {}
+      // flags: {}
     };
-
-    if(Verbal) {
-      response.flags["Verbal"] = this.VHFlag.current._returnSetFlags();
-    }
-
-    if(nonVerbal)
-      response.flags["Non-verbal"] = this.NVHFlag.current._returnSetFlags();
-    
-    if(Physical)
-      response.flags["Physical"] = this.PHFlag.current._returnSetFlags();
     
     return response;
   }
@@ -742,19 +685,19 @@ export default class IncedentDescription extends React.Component {
       <List.Item 
         title="Bus Terminal"
         description="This happened on the matatu stage as you were about to pick up a bus"
-        right={props => <RadioButton {...props} value="BUS_TERMINAL" />}
+        right={props => <RadioButton {...props} color="purple" value="BUS_TERMINAL" />}
         onPress={this._setLocationType.bind(this, "BUS_TERMINAL")}
       />
       <List.Item 
         title="As you entered the bus"
         description="The matatu operator may have bloked your entrance as you were trying to enter the bus"
-        right={props => <RadioButton {...props} value="ON_BUS_ENTRANCE" />}
+        right={props => <RadioButton {...props} color="purple" value="ON_BUS_ENTRANCE" />}
         onPress={this._setLocationType.bind(this, "ON_BUS_ENTRANCE")}
       />
       <List.Item 
         title="Inside The Vehicle"
         description="This incident happened inside the bus"
-        right={props => <RadioButton {...props} value="INSIDE_BUS" />}
+        right={props => <RadioButton {...props} color="purple" value="INSIDE_BUS" />}
         onPress={this._setLocationType.bind(this, "INSIDE_BUS")}
       />
       <Divider />
@@ -791,39 +734,44 @@ export default class IncedentDescription extends React.Component {
 
   render() {
 
-    let renderedDescriptions = this._generateFlags();
-
     return (
       <>
         <ScrollView 
           style={styles.container}
         >
+          <Text style={styles.screenTitle}>Attach Media</Text>
+            <Caption style={styles.screenCaption}>
+              In this section, you will attach all available media you have pertaining to the incident
+            </Caption>
           <Card
+            style={styles.timestampCard}
             theme={Theme.AppTheme}
           >
           <Card.Title 
-            left={props => <List.Icon {...props} icon="calendar-clock" />}
+            left={props => <List.Icon {...props} style={styles.timestampCardTitleLeft} icon="calendar-clock" />}
             title={new Date(this.state.date).toDateString()} 
+            titleStyle={styles.timestampCardTitle}
             subtitle="Timestamp added to the report"
           />
           </Card>
-          <Divider />
-          {renderedDescriptions}
-          <Divider />
-          {this.state.locationSet ? this._renderLocationRadio(): null}
+          {/* <Divider /> */}
+          {this.state.locationSet && this._renderLocationRadio()}
           {this._renderThumbnails(media_types.photo)}
           <Divider />
           {this._renderThumbnails(media_types.video)}
           <Divider />
           {this._renderThumbnails(media_types.audio)}
         </ScrollView>
-        {(this.state.recordingVisible)? this._renderRecordingTab(): null}
+        {(this.state.recordingVisible) && this._renderRecordingTab()}
         <FAB.Group
           onStateChange={this._toggleFABState.bind(this, !this.state.attachOpen)}
           onPress={this._toggleFABState.bind(this, !this.state.attachOpen)}
           open={this.state.attachOpen}
           icon="paperclip"
           actions={this.actions}
+          color="white"
+          fabStyle={{backgroundColor: "orange"}}
+          style={styles.fabGroup}
         />
       </>
     );
@@ -835,6 +783,33 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     flex: 1,
+    // backgroundColor: "white",
+  },
+  screenTitle: {
+    fontSize: 48,
+    fontFamily: Theme.OpenSansBold,
+    marginStart: 16,
+  },
+  screenCaption: {
+    marginStart: 16,
+    marginBottom: 8,
+  },
+  timestampCard: {
+    width: (Dimensions.get("window").width - 32),
+    backgroundColor: "pink",
+    alignSelf: "center",
+    color: "purple",
+    borderRadius: 4,
+  },
+  timestampCardTitle: {
+    color: "purple",
+  },
+  timestampCardTitleLeft: {
+    color: "purple",
+    backgroundColor: "white",
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: "purple",
   },
   textInput: {
     width: (Dimensions.get("window").width - 32),
@@ -874,5 +849,9 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     textAlignVertical: "center",
     fontWeight: "700"
+  },
+  fabGroup: {
+    position: "absolute",
+    // marginBottom: 16,
   },
 });

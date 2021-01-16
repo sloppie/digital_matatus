@@ -67,10 +67,10 @@ export default class Camera extends React.PureComponent {
   _toggleActive = (active) => this.setState({active});
 
   _setPhoto = (data) => {
-    console.log(data.uri)
+    console.log("Photo uri: " + data.uri)
     this.setState({data: data.uri});
     setTimeout(() => {
-      FileManager.copyMediaFile(data.uri, FileManager.IMAGE);
+      FileManager.copyMediaFile(data.uri, FileManager.IMAGE());
     }, 1000);
     // this.forceUpdate();
   }
@@ -79,7 +79,7 @@ export default class Camera extends React.PureComponent {
     console.log(`Video Thumbnail: ${result.path}`);
     this.setState({videoThumbnail: result.path});
     setTimeout(() => {
-      FileManager.copyMediaFile(this.state.data, FileManager.VIDEO);
+      FileManager.copyMediaFile(this.state.data, FileManager.VIDEO());
     }, 500);
   }
 
@@ -96,7 +96,7 @@ export default class Camera extends React.PureComponent {
   }
 
   takePicture = () => {
-    this.setState({pictureTaken: true, type: FileManager.IMAGE});
+    this.setState({pictureTaken: true, type: FileManager.IMAGE()});
 
       this.camera.takePictureAsync(this.PICTURE_OPTIONS).then(this._setPhoto).catch(err => {
         this.setState({pictureTaken: true});
@@ -114,8 +114,8 @@ export default class Camera extends React.PureComponent {
    */
   getFileLocation = (status, fileLocation) => {
     
-    if(status === FileManager.WRITE_SUCCESS) {
-      console.log(FileManager.WRITE_SUCCESS);
+    if(status === FileManager.WRITE_SUCCESS()) {
+      console.log(FileManager.WRITE_SUCCESS());
       console.log(fileLocation);
       // emit the Event and and send the fileLocation to the Listeners
     } else {
@@ -125,7 +125,7 @@ export default class Camera extends React.PureComponent {
   }
 
   takeVideo = async () => {
-    this.setState({isRecording: true, type: FileManager.VIDEO});
+    this.setState({isRecording: true, type: FileManager.VIDEO()});
     this.camera.recordAsync(this.VIDEO_OPTIONS).then(this._setVideo).catch(err => {
       console.log("Unable to record video");
     })
@@ -190,7 +190,7 @@ export default class Camera extends React.PureComponent {
           <Image 
             source={{
               uri: (
-                (this.state.type == FileManager.IMAGE)? 
+                (this.state.type == FileManager.IMAGE())? 
                   this.state.data
                 : this.state.videoThumbnail
               ), 

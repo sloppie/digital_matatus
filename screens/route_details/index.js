@@ -280,8 +280,8 @@ export default class RouteDetails extends React.PureComponent {
     return (
       <>
         <StatusBar 
-          backgroundColor="transparent" 
-          barStyle="dark-content" 
+          backgroundColor="purple" 
+          barStyle="light-content"
         />
         <SafeAreaView style={styles.screen}>
           <Card style={styles.card}>

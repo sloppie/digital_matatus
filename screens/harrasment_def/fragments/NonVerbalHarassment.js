@@ -5,20 +5,42 @@ import {
   Subheading,
   Title,
   Text,
-  Caption,
   Card,
-  List,
   Divider,
 } from 'react-native-paper';
+import Theme from '../../../theme';
+
+import categoryFlags from './utilities/non-verbal-discrimination';
 
 
 export default class VerbalHarassment extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    let DC = null;
+
+    let discriminationCategory = this.props.category;
+
+    if (discriminationCategory === "Sexual Discrimination & Harrasment") {
+      DC = categoryFlags.SD
+    } else if (discriminationCategory === "Discrimination based on tribe/race") {
+      DC = categoryFlags.RD;
+    } else {
+      DC = categoryFlags.PD;
+    }
+
+    this.DC = DC;
+
+    this.state = {
+      category: this.props.category,
+    };
+  }
 
   render() {
 
     return (
       <ScrollView style={styles.screen}> 
-        <Headline style={styles.headline}>Non Verbal Harassment</Headline>
+        <Text style={styles.headline}>Non Verbal Discrimination</Text>
         <Subheading style={styles.subtitle}>Definition and Examples</Subheading>
         <Title style={styles.title}>Definition</Title>
         <Text style={styles.text}>
@@ -26,43 +48,18 @@ export default class VerbalHarassment extends React.PureComponent {
         </Text>
         <Divider style={styles.divider} />
         <Title style={styles.title}>Examples</Title>
-        <Card.Title 
-          style={styles.card}
-          titleStyle={styles.titleStyle}
-          title={"\"Sizing\""}
-          subtitleNumberOfLines={5}
-          subtitle={"This includes looking at someone for a long perios as they walk by trying to size the person. (kuona kama\"Utawezana\""}
-        />
-        <Card.Title 
-          style={styles.card}
-          title="Staring"
-          subtitleNumberOfLines={5}
-          subtitle="Inappropriately looking at someone for an extended period of time with no intention of sparking conversation. Just looking and making them uneasy"
-        />
-        <Card.Title 
-          style={styles.card}
-          title="Blocking someone's path"
-          subtitleNumberOfLines={5}
-          subtitle="Blocking someon's path as they attempt to access an entrance just to make a sexual advance on them or make a sexual retort. (this is especially common in public transport)"
-        />
-        <Card.Title 
-          style={styles.card}
-          title="Following a person"
-          subtitleNumberOfLines={5}
-          subtitle="Following a person for no reason which doubles as an invasion of privacy and also an unwelcome act of making someon uneasy"
-        />
-        <Card.Title 
-          style={styles.card}
-          title="Displaying sexually suggestive visuals"
-          subtitleNumberOfLines={5}
-          subtitle="This includes any hand or body movement that may be considered to be sexually loaded, thus making the user uncomfortable"
-        />
-        <Card.Title 
-          style={styles.card}
-          title="Making sexually suggestive gestures towards a person"
-          subtitleNumberOfLines={5}
-          subtitle="This is making gestures that may be termed to be of sexual nature or mimicking a sexual act"
-        />
+        {
+          this.DC.map((example, i) => (
+            <Card.Title 
+              style={styles.card}
+              titleStyle={styles.titleStyle}
+              title={example.title}
+              subtitleNumberOfLines={5}
+              subtitle={example.description}
+              key={i.toString()}
+            />
+          ))
+        }
         <View style={styles.footer} />
       </ScrollView>
     );
@@ -77,6 +74,8 @@ const styles = StyleSheet.create({
   headline: {
     marginStart: 16,
     paddingBottom: 4,
+    fontFamily: Theme.OpenSansBold,
+    fontSize: 32,
   },
   subtitle: {
     marginStart: 16,

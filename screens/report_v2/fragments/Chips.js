@@ -54,7 +54,9 @@ export default class Chips extends React.PureComponent {
 
   _allDefinitions = () => {
     requestAnimationFrame(() => {
-      this.props.secondaryNavigation.navigate("CategoryDefinition", {category: "all"})
+      this.props.secondaryNavigation.navigate(
+        "CategoryDefinition",
+        {category: this.state.selectedCategory});
     });
   }
 
@@ -67,7 +69,7 @@ export default class Chips extends React.PureComponent {
           style={styles.chip}
           selected={this.state[chipName]}
           onPress={this._toggleChip.bind(this, chipName)}
-          onLongPress={this._findDefinition.bind(this, chipName)}
+          // onLongPress={this._findDefinition.bind(this, chipName)}
           key={chipName}
           // selectedColor="purple"
           selectedColor="purple"

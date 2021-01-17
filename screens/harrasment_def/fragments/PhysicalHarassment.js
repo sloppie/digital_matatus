@@ -5,20 +5,42 @@ import {
   Subheading,
   Title,
   Text,
-  Caption,
   Card,
-  List,
   Divider,
 } from 'react-native-paper';
+import Theme from '../../../theme';
+
+import categoryFlags from './utilities/physical-discrimination';
 
 
 export default class VerbalHarassment extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    let DC = null;
+
+    let discriminationCategory = this.props.category;
+
+    if (discriminationCategory === "Sexual Discrimination & Harrasment") {
+      DC = categoryFlags.SD
+    } else if (discriminationCategory === "Discrimination based on tribe/race") {
+      DC = categoryFlags.RD;
+    } else {
+      DC = categoryFlags.PD;
+    }
+
+    this.DC = DC;
+
+    this.state = {
+      category: this.props.category,
+    };
+  }
 
   render() {
 
     return (
       <ScrollView style={styles.screen}>
-        <Headline style={styles.headline}>Physical Harassment</Headline>
+        <Text style={styles.headline}>Physical Discrimination</Text>
         <Subheading style={styles.subtitle}>Definition and Examples</Subheading>
         <Title style={styles.title}>Definition</Title>
         <Text style={styles.text}>
@@ -26,31 +48,18 @@ export default class VerbalHarassment extends React.PureComponent {
         </Text>
         <Divider style={styles.divider} />
         <Title style={styles.title}>Examples</Title>
-        <Card.Title 
-          style={styles.card}
-          titleStyle={styles.titleStyle}
-          title="Massage"
-          subtitleNumberOfLines={5}
-          subtitle="Giving a massage to someone (possibly around the neck or shoulders) that result ot that person feeling uneasy as this act was unwelcome."
-        />
-        <Card.Title 
-          style={styles.card}
-          title="Touching a person"
-          subtitleNumberOfLines={5}
-          subtitle="Touching a person's hair, clothing and/or body to initate sexual advancements which are unwelcome."
-        />
-        <Card.Title 
-          style={styles.card}
-          title="Intimate actions"
-          subtitleNumberOfLines={5}
-          subtitle="This includes acts of affection such as hugging, kissing and/or stroking someone to advance unwelcome affection that makes the person feel uneeasy."
-        />
-        <Card.Title 
-          style={styles.card}
-          title="Forcing Oneself on another"
-          subtitleNumberOfLines={5}
-          subtitle="This includes actions such as touching a person, rubbing sexually against them (this may include rubbing your genitals on them) and standing too close wile trying to rub against them thus makig them uneasy"
-        />
+        {
+          this.DC.map((example, i) => (
+            <Card.Title 
+              style={styles.card}
+              titleStyle={styles.titleStyle}
+              title={example.title}
+              subtitleNumberOfLines={5}
+              subtitle={example.description}
+              key={i.toString()}
+            />
+          ))
+        }
         <View style={styles.footer} />
       </ScrollView>
     );
@@ -65,6 +74,8 @@ const styles = StyleSheet.create({
   headline: {
     marginStart: 16,
     paddingBottom: 4,
+    fontSize: 32,
+    fontFamily: Theme.OpenSansBold,
   },
   subtitle: {
     marginStart: 16,

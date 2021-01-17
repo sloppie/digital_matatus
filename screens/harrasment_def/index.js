@@ -57,15 +57,18 @@ export default class CategoryDefinition extends React.PureComponent {
   }
 
   _renderAll = () => {
+    const category = this.props.route.params.category;
     
     return [
-      <Fragments.VerbalHarassment key="v" />,
-      <Fragments.NonVerbalHarassment key="nv" />,
-      <Fragments.PhysicalHarassment key="p" />
+      <Fragments.VerbalHarassment key="v" category={category} />,
+      <Fragments.NonVerbalHarassment key="nv" category={category} />,
+      <Fragments.PhysicalHarassment key="p" category={category} />
     ]
   }
 
   render() {
+
+    console.log("Rendering more info");
 
     return (
       <ScrollView 
@@ -75,9 +78,7 @@ export default class CategoryDefinition extends React.PureComponent {
         pagingEnabled={true}
       >
         {
-          (this.props.route.params.category != "all")
-          ? this._renderCategory(this.props.route.params.category)
-          : this._renderAll()
+          this._renderAll()
         }
       </ScrollView>
     );

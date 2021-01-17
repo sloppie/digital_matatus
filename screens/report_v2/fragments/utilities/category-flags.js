@@ -20,7 +20,7 @@ module.exports = {
     "Following a person",
     "Displaying sexually suggestive visuals",
     "Making sexually suggestive gestures towards a person using hands or through body movements",
-    "Making sexually suggestive actioins towards a person such as: winking, blowing kisses and/or licking lips at the sight of a person"
+    "Making sexually suggestive actions towards a person such as: winking, blowing kisses and/or licking lips at the sight of a person"
   ],
   "Physical": [
     "Giving a massage around the neck or shoulders",
@@ -33,35 +33,37 @@ module.exports = {
   PD: {
     "Verbal": [
       "Referring to someone using derogatory terms. such as \"Kilema\"",
-      "This is another Physical Discrimination (Verbal) example",
-      "This is yet another Physical Discrimination (Verbal) example",
+      "Making remarks about a physically handicapped person's physical appearance",
+      "Making unwelcome and unconfortable inquiries about a person's physical appearance",
+      "Telling unwelcome jokes at the expense of someone who is physically handicapped",
     ],
     "Non-verbal": [
-      "This is a Physical Discrimination (Non-verbal) example",
-      "This is another Physical Discrimination (Non-verbal) example",
-      "This is yet another Physical Discrimination (Non-Verbal) example",
+      "Imitating a physically handicapped person's situation",
+      "Denial of service in a public service vehicle because of a person's physical appearance",
+      "Making gestures or actions to mimmick how a physically handicapped person acts",
     ],
     "Physical": [
-      "This is a Physical Discrimination (Physical) example",
-      "This is another Physical Discrimination (Physical) example",
-      "This is yet another Physical Discrimination (Physical) example",
+      "Touching a person's body parts that are affected by physical disability",
+      "Physically barring a person from a service, because of their physical nature",
+      "Assaulting a person because of their physical disability",
     ],
   },
   RD: {
     "Verbal": [
-      "This is a Racial Discrimination (Verbal) example",
-      "This is another Racial Discrimination (Verbal) example",
-      "This is yet another Racial Discrimination (Verbal) example",
+      "Making unwelcome inquiries about a person's race and/or tribe",
+      "Making jokes about a person based on their race and/or tribe",
+      "Mocking how a person talks and/or acts associating it to a tribe and/or race",
+      "Calling a person rude and offensive slurs based on their race and/or tribe",
     ],
     "Non-verbal": [
-      "This is a Racial Discrimination (Non-verbal) example",
-      "This is another Racial Discrimination (Non-verbal) example",
-      "This is yet another Racial Discrimination (Non-verbal) example",
+      "Denial of service in public transport because of someone's race and/or tribe",
+      "Offering of different services because of a person's ribe and/or race",
+      "Making facial expressions and actions to mimick someone's tribe and or race",
     ],
     "Physical": [
-      "This is a Racial Discrimination (Physical) example",
-      "This is another Racial Discrimination (Physical) example",
-      "This is yet another Racial Discrimination (Physical) example",
+      "Unwelcome touching of items or clothing affiliated to a person's heritage and tradition",
+      "Physically barring a person from a public transport service because of their race and/or tribe",
+      "Assaulting a person because of their tribe and/or race",
     ],
   },
 };

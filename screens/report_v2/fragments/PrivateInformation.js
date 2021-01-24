@@ -14,7 +14,7 @@ let TextInput = null;
 
 const queryTitles = Object.freeze({
   incidentDescriptionQueries: "Incident Description",
-  culpritDescriptionQueries: "Culprit Description",
+  culpritDescriptionQueries: "Perpetrator Description",
   privateInformationQueries: "Private Information"
 });
 
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     zIndex: 0,
     alignSelf: "center",
     width: Dimensions.get("window").width - 64,
-    backgroundColor: Theme.PrimaryColor,
+    backgroundColor: "orange",
     // marginTop: 8,
   },
   bottomSheet: {

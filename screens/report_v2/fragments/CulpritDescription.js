@@ -83,7 +83,7 @@ export default class CulpritDescription extends React.Component {
     for(let i=0; i< target; i++) {
       routes.push(
         <List.Item 
-          left={props => <List.Icon {...props} icon="bus" color="purple" style={styles.routeSuggestionsLeft} />}
+          left={props => <List.Icon {...props} icon="bus" color="black" style={styles.routeSuggestionsLeft} />}
           title={results[i].data.route_short_name}
           description={results[i].data.route_long_name}
           key={i.toString()}
@@ -188,9 +188,17 @@ export default class CulpritDescription extends React.Component {
               title="Route of incident"
             >
               <List.Item 
-                left={props => <List.Icon {...props} icon="bus" />}
+                left={props => (
+                  <List.Icon 
+                    {...props}
+                    icon="bus"
+                    color="black"
+                    style={styles.routeDetailsCardLeft} />
+                )}
                 title={this.state.routeDetails.route_short_name}
+                titleStyle={styles.routeDetailsCardTitle}
                 description={this.state.routeDetails.route_long_name}
+                style={styles.routeDetailsCard}
               />
             </List.Section>
         }
@@ -210,7 +218,7 @@ export default class CulpritDescription extends React.Component {
               onPress={this._setCulpritType.bind(this, "Driver")}
             />
             <List.Item 
-              left={props => <RadioButton {...props} color="purple" value="Conductor" onPress={this._setCulpritType}/>}
+              left={props => <RadioButton {...props} value="Conductor" onPress={this._setCulpritType}/>}
               title="Conductor"
               description="Action was carried out by a matatu conductor"
               onPress={this._setCulpritType.bind(this, "Conductor")}
@@ -223,9 +231,9 @@ export default class CulpritDescription extends React.Component {
             />
             <List.Item 
               left={props => <RadioButton {...props} color="purple" value="other" onPress={this._setCulpritType}/>}
-              title="pedestrian"
+              title="Pedestrian"
               description="Action was carried out by a pedestrian"
-              onPress={this._setCulpritType.bind(this, "pedestrian")}
+              onPress={this._setCulpritType.bind(this, "Pedestrian")}
             />
             <List.Item 
               left={props => <RadioButton {...props} color="purple" value="other" onPress={this._setCulpritType}/>}
@@ -264,6 +272,22 @@ const styles = StyleSheet.create({
     width: (Dimensions.get("window").width - 32),
     alignSelf: "center",
     marginBottom: 8,
+  },
+  routeDetailsCard: {
+    backgroundColor: "pink",
+    elevation: 2,
+    width: (Dimensions.get("window").width - 32),
+    alignSelf: "center",
+    borderRadius: 8,
+  },
+  routeDetailsCardLeft: {
+    borderWidth: 2,
+    borderColor: "purple",
+    borderRadius: 24,
+    backgroundColor: "white",
+  },
+  routeDetailsCardTitle: {
+    color: "purple",
   },
   suggestionContainer: {
     alignSelf: "center",

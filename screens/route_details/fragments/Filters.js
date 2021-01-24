@@ -188,6 +188,7 @@ export default class Filters extends React.PureComponent {
           </Chip> */}
           <Chip 
             selected={this.state.filterByAll} 
+            selectedColor="purple"
             style={styles.filterCategoryChip} 
             onPress={this.filterBy.bind(this, "All")}
             mode="outlined">
@@ -195,6 +196,7 @@ export default class Filters extends React.PureComponent {
           </Chip>
           <Chip 
             selected={this.state.filterBy7} 
+            selectedColor="purple"
             style={styles.filterCategoryChip} 
             onPress={this.filterBy.bind(this, "7")}
             mode="outlined">
@@ -202,6 +204,7 @@ export default class Filters extends React.PureComponent {
           </Chip>
           <Chip 
             selected={this.state.filterBy14} 
+            selectedColor="purple"
             style={styles.filterCategoryChip} 
             onPress={this.filterBy.bind(this, "14")}
             mode="outlined">
@@ -210,6 +213,7 @@ export default class Filters extends React.PureComponent {
           <Chip 
             /* onLayout={(e) => console.log(e.nativeEvent)} */
             selected={this.state.filterBy30} 
+            selectedColor="purple"
             style={styles.filterCategoryChip} 
             onPress={this.filterBy.bind(this, "30")}
             mode="outlined">
@@ -251,6 +255,7 @@ const styles = StyleSheet.create({
   filterCategoryChip: {
     marginEnd: 4,
     height: 33,
+    backgroundColor: "pink",
   },
   dateContainer: {
   },

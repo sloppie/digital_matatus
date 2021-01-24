@@ -769,7 +769,7 @@ export default class IncedentDescription extends React.Component {
           open={this.state.attachOpen}
           icon="paperclip"
           actions={this.actions}
-          color="white"
+          color="#707070"
           fabStyle={{backgroundColor: "orange"}}
           style={styles.fabGroup}
         />

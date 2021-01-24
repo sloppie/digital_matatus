@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
-import { Card, Button, Colors } from 'react-native-paper';
+import { Card, List, Button, Colors } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Theme from '../../../theme';
@@ -42,7 +42,7 @@ export default class RouteCard extends React.PureComponent {
         onPress={this._expandCard} 
       >
         <Card.Title 
-          left={props => <Icon {...props} name="bus" color={Theme.PrimaryColor} />}
+          left={props => <List.Icon {...props} icon="bus" color={Theme.PrimaryColor} style={styles.cardLeft} />}
           title={`Route: ${this.props.route.route_short_name}`} 
           titleStyle={styles.cardTitle}
           subtitle={this.props.route.route_long_name} subtitleNumberOfLines={2}
@@ -75,9 +75,15 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginBottom: 16,
   },
+  cardLeft: {
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: "purple",
+    marginStart: 0,
+  },
   cardTitle: {
     fontFamily: Theme.OpenSansBold,
-    color: Theme.PrimaryColor,
+    color: "purple",
   },
   rightIcon: {
     color: Colors.red500,

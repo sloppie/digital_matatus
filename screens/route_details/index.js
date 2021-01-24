@@ -301,7 +301,7 @@ export default class RouteDetails extends React.PureComponent {
             </MapView>
             <Card.Title 
               style={styles.cardTitleContainer}
-              left={props => <Icon {...props} name="bus"/>}
+              left={props => <List.Icon {...props} icon="bus" style={styles.cardLeft}/>}
               title={`Route ${this.props.route.params.route.route_short_name}`}
               titleStyle={styles.cardTitle}
               subtitle={this.props.route.params.route.route_long_name}
@@ -331,8 +331,15 @@ const styles = StyleSheet.create({
   cardTitleContainer: {
     backgroundColor: "white",
   },
+  cardLeft: {
+    borderWidth: 2,
+    borderColor: "purple",
+    alignSelf: "center",
+    borderRadius: 32,
+  },
   cardTitle: {
-    fontFamily: Theme.OpenSansBold
+    fontFamily: Theme.OpenSansBold,
+    color: "purple",
   },
   map: {
     height: "75%"

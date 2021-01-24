@@ -222,6 +222,7 @@ export default class Home extends React.Component {
             placeholder="Search for route"
             onChangeText={this._handleTextChange}
             icon="menu"
+            iconColor="purple"
             onIconPress={this._openDrawer}
           />
           {(this.state.results !== []) ? this._renderSearchResults(): null}

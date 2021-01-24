@@ -35,6 +35,7 @@ export default class RouteOptionsSlider extends React.Component {
         key={index.toString()}
         style={styles.chip}
         mode="outlined"
+        selectedColor="purple"
       >
         {`Route ${route.route_short_name}`}
       </Chip>
@@ -58,15 +59,18 @@ export default class RouteOptionsSlider extends React.Component {
 
 const styles = StyleSheet.create({
   optionSlider: {
-    minHeight: 50,
-    maxHeight: 50,
-    padding: 4,
+    minHeight: 48,
+    maxHeight: 48,
+    paddingTop: 8,
     paddingBottom: 8,
+    paddingStart: 8,
+    // paddingBottom: 8,
   },
   chip: {
-    padding: 4,
-    marginEnd: 4,
-    marginStart: 4
+    // padding: 4,
+    marginEnd: 8,
+    // marginStart: 4
+    backgroundColor: "pink",
   },
   divider: {
     color: "white",

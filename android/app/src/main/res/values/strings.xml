@@ -12,4 +12,6 @@
     <string name="digital_matatus">DigitalMatatus</string>
     <string name="digital">digital</string>
     <string name="matatus">matatus</string>
+    <string name="supported_by">Supported By </string>
+    <string name="cotswold">COTSWOLD</string>
 </resources>

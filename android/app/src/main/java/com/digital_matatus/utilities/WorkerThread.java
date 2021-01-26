@@ -2,6 +2,7 @@ package com.digital_matatus.utilities;
 
 import android.content.ContentResolver;
 import android.net.Uri;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 
@@ -81,6 +82,7 @@ public class WorkerThread implements Runnable {
             }
 
         } catch (Exception e) {
+            Log.d("com.digital_matatus.RFT", e.toString());
         }
     }
 

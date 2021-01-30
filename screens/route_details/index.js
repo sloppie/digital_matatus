@@ -280,7 +280,6 @@ export default class RouteDetails extends React.PureComponent {
     return (
       <>
         <StatusBar 
-          backgroundColor="purple" 
           barStyle="light-content"
         />
         <SafeAreaView style={styles.screen}>
@@ -307,7 +306,7 @@ export default class RouteDetails extends React.PureComponent {
               subtitle={this.props.route.params.route.route_long_name}
             />
           </Card>
-          {(this.state.routesLoaded)?this._renderListView(): <View />}
+          {(this.state.routesLoaded)&& this._renderListView()}
         </SafeAreaView>
       </>
     );

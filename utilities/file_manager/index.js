@@ -82,16 +82,16 @@ export const fetchAttributesFromUrl = (mediaUrl) => {
    * These are the only types that can be referenced by the NativeModules APIs
    */
   const convertedTypes = {
-    "photo": IMAGE,
-    "video": VIDEO,
-    "audio": AUDIO
+    "photo": IMAGE(),
+    "video": VIDEO(),
+    "audio": AUDIO()
   };
 
   let splitUrl = mediaUrl.split("/");
   let mediaName = splitUrl.pop(); // the last element is the Media name
   let type = splitUrl.pop(); // get the type from the relative url
   let mediaType = convertedTypes[type];
-  let absoluteUrl = `http://192.168.43.98:3000/cdn/fetch/${type}/${mediaName}`;
+  let absoluteUrl = `http://192.168.43.196:3000/cdn/fetch/${type}/${mediaName}`;
   let extension;
   let mediaNameWithoutExtension;
   try {
@@ -213,7 +213,7 @@ export const fetchMediaFromUrl = async (mediaUrl, onFetch, onThumbnailFetch=null
     eventListener = eventEmitter.addListener(mediaName, onFileFetch);
 
     // if mediaType == VIDEO, listen for the thumbnail creation completion
-    if(mediaType == VIDEO)
+    if(mediaType == VIDEO())
       thumbnailEventListener = eventEmitter.addListener(`${mediaName}_thumbnails`, onThumbnailsCreated);
 
   }

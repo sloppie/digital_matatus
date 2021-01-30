@@ -224,10 +224,10 @@ export default class CulpritDescription extends React.Component {
               onPress={this._setCulpritType.bind(this, "Conductor")}
             />
             <List.Item 
-              left={props => <RadioButton {...props} color="purple" value="Route handler" onPress={this._setCulpritType}/>}
-              title="Route Handler"
-              description="Action was carried out by a matatu driver"
-              onPress={this._setCulpritType.bind(this, "Route handler")}
+              left={props => <RadioButton {...props} color="purple" value="Stage handler" onPress={this._setCulpritType}/>}
+              title="Stage Handler"
+              description="Action was carried out by the stage handler"
+              onPress={this._setCulpritType.bind(this, "Stage handler")}
             />
             <List.Item 
               left={props => <RadioButton {...props} color="purple" value="Pedestrian" onPress={this._setCulpritType}/>}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Dimensions, Image } from 'react-native';
-import { Card, List, Button, Colors } from 'react-native-paper'; 
+import { Card, List, Button, Colors, TouchableRipple } from 'react-native-paper'; 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomSheet from 'reanimated-bottom-sheet';
 
@@ -39,7 +39,8 @@ export default class ReportDetails extends React.PureComponent {
       attachedMedia: [],
       report: new ReportParser(this.props.route.params.report),
       highlightedUrl: null,
-      highlightedUrlThumbnail: null
+      highlightedUrlThumbnail: null,
+      bottomSheetOpen: false,
     };
     console.log(JSON.stringify(this.state.incidentDescription.media, null, 2));
   }
@@ -56,6 +57,7 @@ export default class ReportDetails extends React.PureComponent {
   _setMediaVisible = (mediaVisible) => this.setState({mediaVisible});
 
   _reportCulprit = () => {
+    this.setState({bottomSheetOpen: false});
     this.bottomSheetRef.current.snapTo(0);
 
     this.props.navigation.navigate("ReportCulprit", {
@@ -66,8 +68,13 @@ export default class ReportDetails extends React.PureComponent {
 
   bottomSheetRef: React.RefObject<BottomSheet> = React.createRef();
 
+  _collapseOverlay = () => {
+    this.setState({bottomSheetOpen:  false});
+    this.bottomSheetRef.current.snapTo(0);
+  }
+
   _openBottomSheet = (highlightedUrl) => {
-    this.setState({highlightedUrl});
+    this.setState({highlightedUrl, bottomSheetOpen: true});
 
     this.bottomSheetRef.current.snapTo(1);
 
@@ -156,12 +163,21 @@ export default class ReportDetails extends React.PureComponent {
       <SafeAreaView 
         style={styles.screen}
       >
+        { (this.state.report.hasMedia()) && this._renderTabLayout() }
+        { !this.state.report.hasMedia() && this._renderReportDetailsTab() }
         {
-          (this.state.report.hasMedia()) ? this._renderTabLayout(): this._renderReportDetailsTab()
+          this.state.bottomSheetOpen && (
+            <TouchableRipple
+              style={styles.overlay}
+              rippleColor="#00000000"
+              onPress={this._collapseOverlay}>
+              <View></View>
+            </TouchableRipple>
+          )
         }
         <BottomSheet 
           ref={this.bottomSheetRef}
-          snapPoints={[0, "50%"]}
+          snapPoints={[0, "50%"]} 
           initialSnap={0}
           renderContent={this._renderContent}
           renderHeader={this._renderHeader}
@@ -214,11 +230,19 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 
+  overlay: {
+    // position: "absolute",
+    ...StyleSheet.absoluteFill,
+    height: Dimensions.get("window").height,
+    width: Dimensions.get("window").width,
+    backgroundColor: "#00000080",
+  },
+
   // BottomSheet
   bottomSheetHeader: {
     backgroundColor: Theme.PrimaryColor,
-    borderTopEndRadius: 20,
-    borderTopStartRadius: 20,
+    borderTopEndRadius: 16,
+    borderTopStartRadius: 16,
   },
   bottomSheetHeaderTitle: {
     color: "white",

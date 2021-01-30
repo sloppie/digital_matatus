@@ -42,6 +42,8 @@ export default class ReportCard extends React.Component {
     <Chip 
       key={flag}
       style={styles.chip} 
+      selectedColor="purple"
+      mode="outlined"
       icon="flag-triangle" >
         {flag}
     </Chip>
@@ -99,6 +101,7 @@ export default class ReportCard extends React.Component {
         style={styles.reportCard}
       >
         <Card.Title 
+          style={{marginTop: 0, paddingTop: 0,}}
           title={this.state.report.generateReportTitle()}
           titleStyle={styles.cardTitle}
           subtitle={`Reported on: ${this.state.report.date}`}
@@ -112,9 +115,9 @@ export default class ReportCard extends React.Component {
           {/* <View style={styles.attachedMedia}>
             {this._renderMediaIcons()}
           </View> */}
-          <Caption>Report ID: {this.state.report._id}</Caption>
         </Card.Content>
         {/* <Divider style={styles.divider} /> */}
+        <Caption style={{marginStart: 16, marginBottom: 8}}>ID: {this.state.report._id}</Caption>
       </Card>
     );
   }
@@ -127,13 +130,12 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginBottom: 8,
     // backgroundColor: "#444",
-    borderBottomWidth: 1,
-    borderColor: "#999",
-    borderStyle: "dotted",
   },
   cardTitle: {
     // color: "white",
-    fontFamily: Theme.OpenSansBold
+    fontFamily: Theme.OpenSansBold,
+    margin: 0,
+    padding: 0,
   },
   subtitle: {
     // color: "white",

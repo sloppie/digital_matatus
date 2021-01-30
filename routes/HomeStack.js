@@ -96,6 +96,10 @@ function Camera(props) {
 export default () => (
   <Stack.Navigator
     screenOptions={{
+      headerStyle: {
+        backgroundColor: "purple",
+      },
+      headerTintColor: "white",
     }}
     initialRouteName="Home"
   >
@@ -134,7 +138,8 @@ export default () => (
       options={{
         // headerShown: false,
         headerStyle: {
-          backgroundColor: Theme.PrimaryColor,
+          backgroundColor: "purple",
+          elevation: 0,
         },
         headerTintColor: "white",
       }} 
@@ -144,14 +149,18 @@ export default () => (
       component={MediaView}
       options={{
         headerTransparent: true,
-        title: "Preview",
+        title: "",
+        headerTintColor: "white"
       }}
     />
     <Stack.Screen 
       name="ReportCulprit" 
       component={ReportCulprit} 
       options={{
-        headerStyle: {elevation: 1},
+        headerStyle: {
+          elevation: 1,
+          backgroundColor: "purple",
+        },
       }} 
     />
   </Stack.Navigator>

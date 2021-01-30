@@ -44,9 +44,9 @@ export default class Report extends React.PureComponent {
       <Tab.Navigator
         tabBarOptions={{
           style: {
-            backgroundColor: Theme.PrimaryColor,
+            backgroundColor: "purple",
           },
-          activeTintColor: "white"
+          activeTintColor: "white",
         }}
         swipeEnabled={false}
         screenOptions={{
@@ -62,9 +62,7 @@ export default class Report extends React.PureComponent {
         <Tab.Screen 
           name="MediaTab"
           component={this._renderMediaDetails} 
-          options={{
-            tabBarIcon: <ReportTabIcon />,
-          }}
+          options={{tabBarIcon: MediaTabIcon,}}
         />
       </Tab.Navigator>
     );    

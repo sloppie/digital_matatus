@@ -25,7 +25,7 @@ class Message extends React.Component {
     return (
       <>
         <List.Item 
-          left={props => <Icon {...props} name="file" size={30} style={styles.avatarIcon}/>}
+          left={props => <Icon {...props} name="file" color="purple" size={30} style={styles.avatarIcon}/>}
           title={this.props.messageTitle}
           titleStyle={styles.titleStyle}
           description={this.props.comment}
@@ -50,47 +50,7 @@ export default class RatingsList extends React.Component {
 
   }
 
-  componentDidMount() {
-    // API.fetchReportsByRoute(
-    //   this.props.route.route_id,
-    //   this._setReports,
-    //   this._setReports.bind(this, [])
-    // );
-  }
-
   _setReports = (reports) => this.setState({reports});
-
-  _renderComments = () => {
-    let comments = [];
-
-    let messages = [
-      "I am generally happy with you",
-      "This is a simple I am angry message",
-      "This is a simple you dont know what i am saying message",
-      "Do you four even",
-      "New Five, Who dis?",
-    ];
-
-    let titles = [
-      "Happy Message",
-      "Neutral Message",
-      "IDK Message",
-      "Message Four",
-      "Five Message",
-    ];
-
-    for(let i=0; i<5; i++) {
-      comments.push(
-        <Message 
-          messageTitle={titles[i]}
-          comment={messages[i]}
-          key={`${i}`}
-        />
-      );
-    }
-
-    return comments;
-  }
 
   _renderItem = ({item}) => {
 

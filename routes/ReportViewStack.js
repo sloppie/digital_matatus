@@ -22,7 +22,7 @@ export default () => (
       headerTintColor: "#fff",
       headerStyle: {
         backgroundColor: "purple",
-        elevation: 1,
+        elevation: 0,
       },
     }}
   >
@@ -56,7 +56,7 @@ export default () => (
       component={MediaView}
       options={{
         headerTransparent: true,
-        title: "Preview",
+        title: "",
       }}
     />
     <Stack.Screen name="ReportCulprit" component={ReportCulprit} />

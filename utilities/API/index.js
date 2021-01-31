@@ -364,8 +364,8 @@ export const updateMatatuDetails = (report_id, payload, onSuccess, onErr) => {
  * interfaces with the servers isUser API to provide a response and execute a callback on completion
  * 
  * @param {string} email email to be crosschecked in the database
- * @param {(userDetails:String) => {}} onSuccess callback to be executed onSuccess, takes in a payload that is sent back
- * @param {(reason:String) => {}} onErr callback to be executed if an error occurs, reason is passed in
+ * @param {(userDetails:String) => void} onSuccess callback to be executed onSuccess, takes in a payload that is sent back
+ * @param {(reason:String) => void} onErr callback to be executed if an error occurs, reason is passed in
  */
 export const isUser = (email, onSuccess, onErr) => {
 

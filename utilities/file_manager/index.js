@@ -91,7 +91,7 @@ export const fetchAttributesFromUrl = (mediaUrl) => {
   let mediaName = splitUrl.pop(); // the last element is the Media name
   let type = splitUrl.pop(); // get the type from the relative url
   let mediaType = convertedTypes[type];
-  let absoluteUrl = `http://192.168.43.196:3000/cdn/fetch/${type}/${mediaName}`;
+  let absoluteUrl = `http://41.89.64.18:3000/cdn/fetch/${type}/${mediaName}`;
   let extension;
   let mediaNameWithoutExtension;
   try {

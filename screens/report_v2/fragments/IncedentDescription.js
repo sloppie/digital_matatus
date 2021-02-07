@@ -201,10 +201,14 @@ export default class IncedentDescription extends React.Component {
     if(Permissions.checkGeolocationPermission()) {
       Geolocation.getCurrentPosition(
         position => {
-          if (position["coords"] == undefined)
-            ToastAndroid.show("Make sure location services are turned on on your phone", ToastAndroid.SHORT);
-          else {
-            ToastAndroid.show("Location pinned successfully", ToastAndroid.SHORT);
+          if (position["coords"] == undefined) {
+            // ToastAndroid.show("Make sure location services are turned on on your phone", ToastAndroid.SHORT);
+            this.props.showSnackBar(
+              "Make sure location services are turned on on your phone");
+          } else {
+            // ToastAndroid.show("Location pinned successfully", ToastAndroid.SHORT);
+            this.props.showSnackBar(
+              "Location Pinned successfully");
             let { coords } = position;
 
             let location = {
@@ -218,7 +222,7 @@ export default class IncedentDescription extends React.Component {
             this.setState({ location, locationSet: true });
           }
         },
-        err => ToastAndroid.show("Error adding location", ToastAndroid.SHORT),
+        err => this.props.showSnackBar("Error Adding Location"),
         {enableHighAccuracy: true, timeout: 30000}
         );
     } else {
@@ -227,10 +231,15 @@ export default class IncedentDescription extends React.Component {
       if (response) {
         Geolocation.getCurrentPosition(
           position => {
-            if (position["coords"] == undefined)
-              ToastAndroid.show("Make sure location services are turned on on your phone", ToastAndroid.SHORT);
+            if (position["coords"] == undefined) {
+              // ToastAndroid.show("Make sure location services are turned on on your phone", ToastAndroid.SHORT);
+              this.props.showSnackBar(
+                "Make sure location services are turned on on your phone");
+            }
             else {
-              ToastAndroid.show("Location pinned successfully", ToastAndroid.SHORT);
+              // ToastAndroid.show("Location pinned successfully", ToastAndroid.SHORT);
+              this.props.showSnackBar(
+                "Location Pinned successfully");
               let { coords } = position;
               let location = {
                 coordinates: {
@@ -242,11 +251,12 @@ export default class IncedentDescription extends React.Component {
               this.setState({location, locationSet: true});
             }
           },
-          err => ToastAndroid.show("Error adding location", ToastAndroid.SHORT),
+          err => this.props.showSnackBar("Error pinning location"),
           { enableHighAccuracy: true, timeout: 20000 }
         );
       } else {
-        ToastAndroid.show("Service denied location access", ToastAndroid.SHORT);
+        // ToastAndroid.show("Service denied location access", ToastAndroid.SHORT);
+        this.props.showSnackBar("Service denied, Location access if not allowed for this application");
       }
 
     }

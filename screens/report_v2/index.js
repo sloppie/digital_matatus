@@ -13,6 +13,7 @@ import * as Fragments from './fragments';
 
 import Flag from './fragments/utilities/flag-context';
 import discriminationFlags from './fragments/utilities/category-flags';
+import { Snackbar } from 'react-native-paper';
 
 let REPORT_NAVIGATION_REF = null;
 
@@ -62,6 +63,7 @@ export default class Report extends React.PureComponent {
       posting: false,
       verifying: false,
       snackBarVisible: false,
+      snackBarMessage: "",
     };
 
   }
@@ -403,26 +405,38 @@ export default class Report extends React.PureComponent {
     API.fileReport(this.state.response, onSuccess, onErr);
   }
 
+  showSnackBar = (snackBarMessage) => {
+    this.setState({snackBarMessage, snackBarVisible: true});
+  }
+
   render() {
 
     let lastFlags = this.state.flags[this.state.flags.length - 1];
 
     return (
       <Flag.Provider value={this.state.setFlags}>
-        <Fragments.TabLayout 
-          lastFlags={lastFlags}
-          _toggleFlag={this._toggleFlag}
-          setDiscriminationCategory={this._setDiscriminationCategory}
-          getDiscriminationCategory={this._getDiscrimiationCategory}
-          updateCurrentSetFlags={this._updateCurrentSetFlags}
-          secondaryNavigation={this.props.navigation}
-          discriminationDescriptionRef={this.discriminationDescriptionRef}
-          incidentDescriptionRef={this.incidentDescriptionRef}
-          culpritDescriptionRef={this.culpritDescriptionRef}
-          privateInformationRef={this.privateInformationRef}
-          _getInformation={this._getInformation}
-          _sendVerifiedData={this._sendVerifiedData}
-        />
+        <>
+          <Fragments.TabLayout 
+            lastFlags={lastFlags}
+            _toggleFlag={this._toggleFlag}
+            setDiscriminationCategory={this._setDiscriminationCategory}
+            getDiscriminationCategory={this._getDiscrimiationCategory}
+            updateCurrentSetFlags={this._updateCurrentSetFlags}
+            secondaryNavigation={this.props.navigation}
+            discriminationDescriptionRef={this.discriminationDescriptionRef}
+            incidentDescriptionRef={this.incidentDescriptionRef}
+            culpritDescriptionRef={this.culpritDescriptionRef}
+            privateInformationRef={this.privateInformationRef}
+            _getInformation={this._getInformation}
+            _sendVerifiedData={this._sendVerifiedData}
+            showSnackBar={this.showSnackBar}
+          />
+          <Snackbar
+            visible={this.state.snackBarVisible}
+            onDismiss={() => this.setState({snackBarVisible: false})} >
+            {this.state.snackBarMessage}
+          </Snackbar>
+        </>
       </Flag.Provider>
     );
   }

@@ -39,6 +39,7 @@ export default class TabLayout extends React.PureComponent {
         culpritDescriptionRef={this.props.culpritDescriptionRef}
         getDiscriminationCategory={this.props.getDiscriminationCategory}
         secondaryNavigation={this.props.secondaryNavigation}
+        showSnackBar={this.props.showSnackBar}
       />
   );
 

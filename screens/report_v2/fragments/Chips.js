@@ -209,11 +209,12 @@ export default class Chips extends React.PureComponent {
           </Caption>
           <Divider />
           <List.Section title="Discrimination Category" />
-          <View style={styles.menuContainer}
-          >
-            <Text style={styles.selectedCategoryText}>{this.state.selectedCategory}</Text>
-            {this._renderMenu()}
-          </View>
+          <TouchableHighlight underlayColor="#00000000" onPress={this.openMenu}>
+            <View style={styles.menuContainer}>
+              <Text style={styles.selectedCategoryText}>{this.state.selectedCategory}</Text>
+              {this._renderMenu()}
+            </View>
+          </TouchableHighlight>
           {/* {(this.state.selectedCategory === "--select type--") && <Paragraph style={{color: "#B00020"}}>
             Please select a category for the discrimination encountered
           </Paragraph>} */}

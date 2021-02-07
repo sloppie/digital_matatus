@@ -71,8 +71,9 @@ export default class DataVerification extends React.PureComponent {
         return (
           <List.Item 
             title={query.title}
+            titleNumberOfLines={2}
             description={query.description}
-            descriptionNumberOfLines={2}
+            descriptionNumberOfLines={3}
             onPress={this._scrollTo.bind(this, tabName, query.priority)}
             left={props => <List.Icon {...props} icon="information" color={query.priority ? Colors.red600: Colors.blue500} />}
             key={id.toString()}

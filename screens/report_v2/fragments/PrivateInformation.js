@@ -8,6 +8,7 @@ import BottomSheet from 'reanimated-bottom-sheet';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Theme from '../../../theme';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 let TextInput = null;
@@ -189,6 +190,7 @@ export default class PrivateInformation extends React.PureComponent {
 
   _renderAllQueries = () => (
     Object.keys(this.state.queries).map(query => {
+      console.log("Rendering queries for: " + query);
       
       if(this.state.queries[query].length) {
         return (
@@ -200,7 +202,9 @@ export default class PrivateInformation extends React.PureComponent {
               <List.Item 
                 left={props => <List.Icon {...props} icon="alert-outline" color={iq.priority? "red": "blue"} size={30} />}
                 title={iq.title}
+                titleNumberOfLines={2}
                 description={iq.description}
+                descriptionNumberOfLines={4}
                 onPress={this._navigateToQuery.bind(this, query)}
                 key={`query${index.toString()}`}
               />
@@ -243,9 +247,9 @@ export default class PrivateInformation extends React.PureComponent {
       }
       {
         this.state.activeSnap === 2 && (
-          <View style={styles.bottomSheetContentFull}>
+          <ScrollView style={styles.bottomSheetContentFull}>
             {this._renderAllQueries()}
-          </View>
+          </ScrollView>
         )
       }
     </View>
@@ -348,6 +352,7 @@ export default class PrivateInformation extends React.PureComponent {
           ref={this.bottomSheetRef}
           snapPoints={[0, "50%", "90%"]}
           initialSnap={0}
+          enabledInnerScrolling={true}
           onCloseEnd={() => this.setState(({bottomSheetVisible: false}))}
           renderHeader={this._renderHeader}
           renderContent={this._renderContent}
@@ -452,7 +457,7 @@ const styles = StyleSheet.create({
   bottomSheetContentFull: {
     backgroundColor: "white",
     alignSelf: "stretch",
-    height: Dimensions.get("window").height,
+    // height: Dimensions.get("window").height,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 5,

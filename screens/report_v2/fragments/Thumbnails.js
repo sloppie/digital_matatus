@@ -29,7 +29,7 @@ class Item extends React.PureComponent {
           right={props => (
               <Icon 
                 {...props}
-                name="cancel"
+                name="trash-can-outline"
                 onPress={this.removeMedia}
                 style={styles.trashCanIcon}
                 size={24}

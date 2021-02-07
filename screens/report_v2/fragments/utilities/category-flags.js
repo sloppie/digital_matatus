@@ -57,7 +57,7 @@ module.exports = {
     ],
     "Non-verbal": [
       "Denial of service in public transport because of someone's race and/or tribe",
-      "Offering of different services because of a person's ribe and/or race",
+      "Offering of different services because of a person's tribe and/or race",
       "Making facial expressions and actions to mimick someone's tribe and or race",
     ],
     "Physical": [

@@ -237,6 +237,8 @@ export default class Report extends React.PureComponent {
       this.setState({queries, verified: true, response, verifying: false});
     }
 
+    // console.log(JSON.stringify(queries, null, 2));
+
     // setTimeout(() => this._scrollTo("DataVerification"), 100);
 
     // bool used by the PrivateInformation BottomSheet to determine whether to activate the Submit button
@@ -275,15 +277,15 @@ export default class Report extends React.PureComponent {
 
     if(!location)
       queries.push({
-        title: "no location attached",
-        description: "we advise on pinning of current location if available",
+        title: "Have you pinned your location?",
+        description: "Location of the incident may come in very handy while trying to follow up. We advise on pinning of current location. This is a requirement to be able to submit the report",
         priority: true // HIGH
       });
 
     if(!locationType)
       queries.push({
-        title: "no location type selected",
-        description: "we advise on selecting location type to help find who is culpable a lot easier",
+        title: "Where did the incident happen?",
+        description: "We have noticed you have not attached the location type where the incident happened. We advise on selecting location type to help make finding who is culpable a lot easier",
         priority: true // LOW
       });
 
@@ -297,22 +299,22 @@ export default class Report extends React.PureComponent {
 
     if(!videos)
       queries.push({
-        title: "No video files attached",
-        description: "We advise attaching of any video evidence if available",
+        title: "Do you have any videos on to the incident?",
+        description: "We have noticed that you do not have any video files attached. We advise attaching of any video evidence if available. This is however not necessary.",
         priority: false // LOW
       });
 
     if(!photos)
       queries.push({
-        title: "No photos attached",
-        description: "We advise attaching of any photo evidence if available",
+        title: "Do you have any photos about the incident?",
+        description: "We have noticed that you havent attached any photographic evidence related to the incident. We advise attaching of any photo evidence (if available). This is however not necessary",
         priority: false // LOW
       });
 
     if(!audio)
       queries.push({
-        title: "no audio files attached",
-        description: "we advise attaching of any audio evidence if available",
+        title: "Do you have any audio files about the incident?",
+        description: "We have noticed you havent attached any recordings pertaining to the incident. We advise attaching of any audio evidence. This is however not necessary",
         priority: false // LOW
       });
 
@@ -327,22 +329,22 @@ export default class Report extends React.PureComponent {
 
     if(!nameIssue)
       queries.push({
-        title: "Sacco Name not defined",
-        description: "We advise to try and input the sacco name to help follow up on the situation if it happened insiide the bus",
+        title: "Have you input the Sacco?",
+        description: "We advise to try and input the sacco name to help follow up on the situation if it happened insiide the bus. If you are not sure about the name, you can input these details later on after you have submitted the report.",
         priority: false // LOW
       });
 
     if(!culpritTypeIssue)
       queries.push({
-        title: "Perpetrator type empty",
+        title: "Did you select a perpetrator type?",
         description: "We advice you to select a perpetrator type to help in trying to help find the better decision",
         priority: true // HIGH
       });
     
     if(!routeID)
       queries.push({
-        title: "Route not selected",
-        description: "Please select a route to help with the follow up actions",
+        title: "Did you select the route you were using?",
+        description: "Please select the route you were using to help with the follow up actions that will be centred around that route.",
         priority: true, // HIGH
       });
 
@@ -356,8 +358,8 @@ export default class Report extends React.PureComponent {
 
     if(privateIformation == "NOT_INPUT")
       queries.push({
-        title: "Private info not input",
-        description: "You opted to fill in the private information but didn't fill it in",
+        title: "Have you input all your private details?",
+        description: "You opted to fill in the private information but didn't fill it in all the details required",
         priority: true, // HIGH
       });
 

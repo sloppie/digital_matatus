@@ -35,7 +35,9 @@ const Slide = ({image, title, description}) => {
   return (
     <View style={styles.screen}>
       <View style={styles.screenshotContainer}>
-        {renderImage()}
+        <View style={styles.imageContainer}>
+          {renderImage()}
+        </View>
       </View>
       <Card style={styles.screenTextContainer}>
         <Text style={styles.screenTitle}>{title}</Text>
@@ -55,12 +57,16 @@ const styles = StyleSheet.create({
     backgroundColor: "purple"
   },
   screenshotContainer: {
+    paddingTop: 16,
     height: Math.floor(Dimensions.get("window").height * 0.75),
     justifyContent: "center",
   },
+  imageContainer: {
+    height: (Math.floor(Dimensions.get("window").height * 0.75) - 16),
+  },
   screenshot: {
-    height: Math.floor(Dimensions.get("window").height * 0.75),
-    width: Dimensions.get("window").width - 64,
+    height: (Math.floor(Dimensions.get("window").height * 0.75) - 32),
+    width: (Dimensions.get("window").width - 72),
     resizeMode: "contain",
     alignSelf: "center",
   },

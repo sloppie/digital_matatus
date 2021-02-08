@@ -8,7 +8,7 @@ import {
   StatusBar,
   DeviceEventEmitter
 } from 'react-native';
-import { Title, Colors } from 'react-native-paper';
+import { Title, Colors, Button, IconButton, Snackbar } from 'react-native-paper';
 import AppIntroSlider from 'react-native-app-intro-slider';
 
 import * as Fragments from './fragments';
@@ -17,37 +17,24 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Permissions from '../../utilities/permissions';
 import { CONFIG_COMPLETE } from '../../store';
 
+import Slide from './fragments/slide';
+
 
 export default class AppIntro extends React.PureComponent {
+
+  state = {
+    isVisible: false,
+  };
+
+  componentDidMount() {
+    this.setState({isVisible: true});
+  }
 
   _navigateToLogin = () => this.props.navigation.navigate("Login");
 
   _skipSignUp = async () => {
     // await Permissions.requestAllPermissions();
     this.props.navigation.navigate("SignUp", {skipSignUp: true});
-
-    // AsyncStorage.multiSet(
-    //   [
-    //     ["favouriteRoutes", JSON.stringify([])],
-    //     // [
-    //     //   "appPermissionsResult", 
-    //     //   JSON.stringify({ // values
-    //     //     "LOCATION": this.state.permissions[0],
-    //     //     "CAMERA": this.state.permissions[1],
-    //     //     "AUDIO": this.state.permissions[2]
-    //     //   }),
-    //     // ],
-    //     ["isConfig", JSON.stringify(true)],
-    //     ["userID", "anonymous@digitalmatatus.com"] // stores user's Hash
-    //   ], 
-    //   (err) => {
-      
-    //     if(err) {
-    //       ToastAndroid.show("Error storing data...", ToastAndroid.SHORT);
-    //     }
-    // });
-
-    // DeviceEventEmitter.emit(CONFIG_COMPLETE);
   }
 
   /**@type Array<{key: Number, title: String, description: String}> */
@@ -55,38 +42,53 @@ export default class AppIntro extends React.PureComponent {
     {
       key: 1,
       title: "Shake to report",
-      description: "Shake to report feature\n allows report on the fly",
+      description: "Shake to report feature allows report on the fly",
     },
     {
       key: 2,
       title: "Report Incidences fast",
-      description: "Report incidences,\nattach media files,\nlocation and\n culpable saccos",
+      description: "Report incidences, attach media files, location and culpable saccos",
     },
     {
       key: 3,
       title: "Help identify Potential culprits",
-      description: "Help\nbring culprits\n to Justice using\n the DigitalMatatus" +
-          "\ncrowdsource identifier\non App's\nReportView",
+      description: "Help bring culprits to Justice using the DigitalMatatus" +
+          " crowdsource identifier on App's ReportView",
     },
     {
       key: 4,
       title: "Report View for cases per route",
-      description: "View cases from\n your \u2764 routes\n on the fly",
+      description: "View cases from your \u2764 routes on the fly",
     },
     {key: 5}
   ];
 
   _renderItem = ({/**@type {{key: Number, title: String, description: String}}*/ item}) =>
       (item.key !== 5) ? 
-          <Fragments.IntroductionScreeen 
-              key_={item.key}
+          <Fragments.Slide
+              image={item.key}
               title={item.title} 
               description={item.description} /> 
           : <Fragments.FinishScreen navigation={this.props.navigation} />
+  
+  _renderDoneButton = () => (
+    <Button style={{backgroundColor: Colors.orange600}} color={Colors.orange600}>Skip Sign Up</Button>
+  );
+
+  _renderNextButton = () => (
+    <IconButton icon="chevron-right" color={Colors.orange600} />
+  );
+
+  _renderPrevButton = () => (
+    <IconButton icon="chevron-left" color={Colors.orange600} />
+  );
+
+  _dismissSnackBar = () => this.setState({isVisible: false});
 
   render() {
 
     return (
+      <>
         <AppIntroSlider 
             style={styles.screen}
             renderItem={this._renderItem}
@@ -97,6 +99,13 @@ export default class AppIntro extends React.PureComponent {
             activeDotStyle={styles.activeDotStyle}
             /* showSkipButton={true} */
         />
+        <Snackbar
+          visible={this.state.isVisible}
+          action={{label: "Dismiss", onPress: this._dismissSnackBar}}
+          onDismiss={this._dismissSnackBar}>
+            Swipe to move left or right
+        </Snackbar>
+      </>
     );
   }
 

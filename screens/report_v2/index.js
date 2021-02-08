@@ -435,6 +435,10 @@ export default class Report extends React.PureComponent {
           />
           <Snackbar
             visible={this.state.snackBarVisible}
+            action={{
+              label: "Dismiss",
+              onPress: () => this.setState({snackBarVisible: false}),
+            }}
             onDismiss={() => this.setState({snackBarVisible: false})} >
             {this.state.snackBarMessage}
           </Snackbar>

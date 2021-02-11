@@ -4,13 +4,11 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import HomeStack from './HomeStack';
 import { useEffect } from 'react';
-// import ReportStack from './ReportStack';
-// import ReportViewStack from './ReportViewStack';
 
 // inline requires
-// let HomeStack = null;
 let ReportStack = null;
 let ReportViewStack = null;
+let AppTutorial = null;
 
 // home icon
 function HomeIcon({ focused, color, size}) {
@@ -40,6 +38,17 @@ function ViewReportsIcon({ focused, color, size}) {
 
   return (
     <Icon 
+      name="information"
+      color={color}
+      size={size}
+    />
+  );
+}
+
+function AppTutorialIcon({color, size, focused}) {
+
+  return (
+    <Icon
       name="information"
       color={color}
       size={size}
@@ -79,6 +88,13 @@ function ViewReports(props) {
     ReportViewStack = require('./ReportViewStack').default;
 
   return <ReportViewStack />
+}
+
+function ViewTutorial(props) {
+  if (AppTutorial == null)
+    AppTutorial = require("../screens/app_tutorial").default;
+
+  return <AppTutorial {...props} />;
 }
 
 // REFS
@@ -125,6 +141,13 @@ export default () => {
         component={ViewReports}
         options={{
           drawerIcon: (props) => <ViewReportsIcon {...props} />
+        }}
+      />
+      <AppDrawer.Screen 
+        name="AppTutorial"
+        component={ViewTutorial}
+        options={{
+          drawerIcon: (props) => <AppTutorialIcon {...props} />
         }}
       />
     </AppDrawer.Navigator>

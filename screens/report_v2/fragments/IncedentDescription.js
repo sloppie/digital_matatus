@@ -88,11 +88,6 @@ export default class IncedentDescription extends React.Component {
 
     this.audio_count = 0;
     this.descriptions = [];
-
-    // These refs are used to set the verbal harassment flags set by the user
-    // this.VHFlag = React.createRef();
-    // this.NVHFlag = React.createRef();
-    // this.PHFlag = React.createRef();
   }
 
   componentDidMount() {
@@ -204,7 +199,7 @@ export default class IncedentDescription extends React.Component {
           if (position["coords"] == undefined) {
             // ToastAndroid.show("Make sure location services are turned on on your phone", ToastAndroid.SHORT);
             this.props.showSnackBar(
-              "Make sure location services are turned on on your phone");
+              "Error pinning location, check your internet connection and ensure location services are turned on");
           } else {
             // ToastAndroid.show("Location pinned successfully", ToastAndroid.SHORT);
             this.props.showSnackBar(
@@ -222,7 +217,7 @@ export default class IncedentDescription extends React.Component {
             this.setState({ location, locationSet: true });
           }
         },
-        err => this.props.showSnackBar("Error Adding Location"),
+        err => this.props.showSnackBar("Error pinning location, check your internet connection and ensure location services are turned on"),
         {enableHighAccuracy: true, timeout: 30000}
         );
     } else {
@@ -234,7 +229,7 @@ export default class IncedentDescription extends React.Component {
             if (position["coords"] == undefined) {
               // ToastAndroid.show("Make sure location services are turned on on your phone", ToastAndroid.SHORT);
               this.props.showSnackBar(
-                "Make sure location services are turned on on your phone");
+                "Error pinning location, please make sure location services is turned on and that you have access to a working internet connection");
             }
             else {
               // ToastAndroid.show("Location pinned successfully", ToastAndroid.SHORT);
@@ -251,12 +246,12 @@ export default class IncedentDescription extends React.Component {
               this.setState({location, locationSet: true});
             }
           },
-          err => this.props.showSnackBar("Error pinning location"),
+          err => this.props.showSnackBar("Error pinning location, please make sure location services is turned on and that you have access to a working internet connection"),
           { enableHighAccuracy: true, timeout: 20000 }
         );
       } else {
         // ToastAndroid.show("Service denied location access", ToastAndroid.SHORT);
-        this.props.showSnackBar("Service denied, Location access if not allowed for this application");
+        this.props.showSnackBar("Service denied, Location access is not allowed for this application");
       }
 
     }
@@ -716,7 +711,29 @@ export default class IncedentDescription extends React.Component {
 
   _toggleFABState = (attachOpen) => this.setState({attachOpen});
 
+  /**
+   * Loads up the camera after the action is started from the FAB.Group component. Loads up either
+   * to take a `video` or `camera` (picture)
+   *
+   * @param {"camera" | "video"} type this is the type of media that will be taken using the camera
+   */
+  _handleCamera = (type) => {
+    DeviceEventEmitter.emit("LAUNCH_CAMERA", type);
+  }
+
   actions = [
+    {
+      icon: "camera-outline", 
+      label: "Take Picture", 
+      color: Colors.red800, 
+      onPress: this._handleCamera.bind(this, "camera"),
+    },
+    {
+      icon: "video-outline", 
+      label: "Take Video", 
+      color: Colors.red800, 
+      onPress: this._handleCamera.bind(this, "video"),
+    },
     {
       icon: "crosshairs-gps", 
       label: "Attach location", 

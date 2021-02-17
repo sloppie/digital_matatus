@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, View, Dimensions, StyleSheet, Text } from 'react-native';
-import { Card, TextInput, RadioButton, List, Divider, Colors, Caption } from 'react-native-paper';
+import { Card, TextInput, RadioButton, List, Divider, Colors, Caption, FAB } from 'react-native-paper';
 import Theme from '../../../theme';
 
 let GTFSSearch = null;
@@ -126,70 +126,62 @@ export default class CulpritDescription extends React.Component {
   render() {
 
     return (
-      <ScrollView style={styles.descriprionContainer}>
-        {/**
-         * This part will be used to check for the location type
-         */}
-        {/* <Card.Title 
-          title="Perpetrator Description"
-          titleStyle={styles.title}
-          subtitle="(This section can be skipped over)Please enter a small description of the culprit"
-          subtitleNumberOfLines={3}
-        /> */}
-        <View style={styles.marginStart}>
-          <Text style={styles.screenTitle}>Perpetrator Description</Text>
-          <Caption style={{marginEnd: 16,}}>
-            (This section can be skipped over)Please enter a small description of the culprit
+      <>
+        <ScrollView style={styles.descriprionContainer}>
+          <View style={styles.marginStart}>
+            <Text style={styles.screenTitle}>Perpetrator Description</Text>
+            <Caption style={{ marginEnd: 16, }}>
+              (This section can be skipped over)Please enter a small description of the culprit
           </Caption>
-        </View>
-        <Divider />
-        <Card.Title 
-          title={this.state.location}
-          subtitle={`incident happened in ${this.state.location}`}
-        />
-        {
-          (this.state.location != LOCATIONS.INSIDE_BUS) && (
-            <List.Item 
-              title="All saccos culpable" 
-              description="Incident did not happen inside any one specific bus" 
-              left={props => <RadioButton value="All" status="checked" color="purple" />}
-            />
-          )
-        }
-        {
-          this.state.location === LOCATIONS.INSIDE_BUS && (
-            <TextInput
-              value={this.state.saccoName}
-              style={styles.textInput}
-              placeholder="Enter the sacco name"
-              onChangeText={this._handleSaccoName}
-              mode="outlined"
-              label="Sacco Name"
-            />
-          )
-        }
-        <Divider />
-        {
-          (this.state.routeDetails == null) && (
-            <TextInput
-              value={this.state.routeName}
-              style={styles.textInput}
-              placeholder="Enter the route no, or a destination you are familiar with on the route"
-              onChangeText={this._handleRouteName}
-              onFocus={this._toggleSuggestion.bind(this, true)}
-              mode="outlined"
-              label="Route Name"
-            theme={{colors: {primary:Theme.PrimaryColor, accent: Colors.red200, text: Colors.red200}}}
-            />
-          )
-        }
-        {
-          this.state.routeDetails && <List.Section
+          </View>
+          <Divider />
+          <Card.Title
+            title={this.state.location}
+            subtitle={`incident happened in ${this.state.location}`}
+          />
+          {
+            (this.state.location != LOCATIONS.INSIDE_BUS) && (
+              <List.Item
+                title="All saccos culpable"
+                description="Incident did not happen inside any one specific bus"
+                left={props => <RadioButton value="All" status="checked" color="purple" />}
+              />
+            )
+          }
+          {
+            this.state.location === LOCATIONS.INSIDE_BUS && (
+              <TextInput
+                value={this.state.saccoName}
+                style={styles.textInput}
+                placeholder="Enter the sacco name"
+                onChangeText={this._handleSaccoName}
+                mode="outlined"
+                label="Sacco Name"
+              />
+            )
+          }
+          <Divider />
+          {
+            (this.state.routeDetails == null) && (
+              <TextInput
+                value={this.state.routeName}
+                style={styles.textInput}
+                placeholder="Enter the route no, or a destination you are familiar with on the route"
+                onChangeText={this._handleRouteName}
+                onFocus={this._toggleSuggestion.bind(this, true)}
+                mode="outlined"
+                label="Route Name"
+                theme={{ colors: { primary: Theme.PrimaryColor, accent: Colors.red200, text: Colors.red200 } }}
+              />
+            )
+          }
+          {
+            this.state.routeDetails && <List.Section
               title="Route of incident"
             >
-              <List.Item 
+              <List.Item
                 left={props => (
-                  <List.Icon 
+                  <List.Icon
                     {...props}
                     icon="bus"
                     color="black"
@@ -201,58 +193,62 @@ export default class CulpritDescription extends React.Component {
                 style={styles.routeDetailsCard}
               />
             </List.Section>
-        }
-        {(this.state.routeSearchFocused) && this._renderRouteSuggestions()}
-        <Divider />
-        <RadioButton.Group
-          onValueChange={this._setCulpritType}
-          value={this.state.culpritType}
-        >
-          <List.Section
-            title="Perpetrator description"
+          }
+          {(this.state.routeSearchFocused) && this._renderRouteSuggestions()}
+          <Divider />
+          <RadioButton.Group
+            onValueChange={this._setCulpritType}
+            value={this.state.culpritType}
           >
-            <List.Item 
-              left={props => <RadioButton {...props} color="purple" value="Driver" onPress={this._setCulpritType}/>}
-              title="Driver"
-              description="Action was carried out by a matatu driver"
-              onPress={this._setCulpritType.bind(this, "Driver")}
-            />
-            <List.Item 
-              left={props => <RadioButton {...props} value="Conductor" color="purple" onPress={this._setCulpritType}/>}
-              title="Conductor"
-              description="Action was carried out by a matatu conductor"
-              onPress={this._setCulpritType.bind(this, "Conductor")}
-            />
-            <List.Item 
-              left={props => <RadioButton {...props} color="purple" value="Stage handler" onPress={this._setCulpritType}/>}
-              title="Stage Handler"
-              description="Action was carried out by the stage handler"
-              onPress={this._setCulpritType.bind(this, "Stage handler")}
-            />
-            <List.Item 
-              left={props => <RadioButton {...props} color="purple" value="Pedestrian" onPress={this._setCulpritType}/>}
-              title="Pedestrian"
-              description="Action was carried out by a pedestrian"
-              onPress={this._setCulpritType.bind(this, "Pedestrian")}
-            />
-            <List.Item 
-              left={props => <RadioButton {...props} color="purple" value="other" onPress={this._setCulpritType}/>}
-              title="other"
-              description="Action was carried out by another party not explicitly described above"
-              onPress={this._setCulpritType.bind(this, "other")}
-            />
-          </List.Section>
-        </RadioButton.Group>
-        {/* <TextInput
-          value={this.state.culpritDescription}
-          style={styles.textInput}
-          placeholder="Enter a short description, i.e NickName,"
-          onChangeText={this._handleCulpritDescription}
-          mode="outlined"
-          label="Description"
-          multiline={true}
-        /> */}
-      </ScrollView>
+            <List.Section
+              title="Perpetrator description"
+            >
+              <List.Item
+                left={props => <RadioButton {...props} color="purple" value="Driver" onPress={this._setCulpritType} />}
+                title="Driver"
+                description="Action was carried out by a matatu driver"
+                onPress={this._setCulpritType.bind(this, "Driver")}
+              />
+              <List.Item
+                left={props => <RadioButton {...props} value="Conductor" color="purple" onPress={this._setCulpritType} />}
+                title="Conductor"
+                description="Action was carried out by a matatu conductor"
+                onPress={this._setCulpritType.bind(this, "Conductor")}
+              />
+              <List.Item
+                left={props => <RadioButton {...props} color="purple" value="Stage handler" onPress={this._setCulpritType} />}
+                title="Stage Handler"
+                description="Action was carried out by the stage handler"
+                onPress={this._setCulpritType.bind(this, "Stage handler")}
+              />
+              <List.Item
+                left={props => <RadioButton {...props} color="purple" value="Pedestrian" onPress={this._setCulpritType} />}
+                title="Pedestrian"
+                description="Action was carried out by a pedestrian"
+                onPress={this._setCulpritType.bind(this, "Pedestrian")}
+              />
+              <List.Item
+                left={props => <RadioButton {...props} color="purple" value="other" onPress={this._setCulpritType} />}
+                title="other"
+                description="Action was carried out by another party not explicitly described above"
+                onPress={this._setCulpritType.bind(this, "other")}
+              />
+            </List.Section>
+          </RadioButton.Group>
+          <FAB
+            style={{
+              width: Dimensions.get("window").width - 72,
+              alignSelf: "center",
+              elevation: 0,
+              backgroundColor: "orange",
+              marginBottom: 16,
+            }}
+            mode="contained"
+            label="Next"
+            icon="chevron-right"
+            onPress={() => this.props.navigation.navigate("PrivateInformation")} />
+        </ScrollView>
+      </>
     );
   }
 

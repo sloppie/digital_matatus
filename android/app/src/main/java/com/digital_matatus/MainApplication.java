@@ -29,6 +29,7 @@ public class MainApplication extends Application implements ReactApplication {
           // packages.add(new MyReactNativePackage());
           packages.add(new FileManagerRegister());
           packages.add(new RenderSynchronizerRegister());
+          packages.add(new LocationHandlerRegister());
           return packages;
         }
 

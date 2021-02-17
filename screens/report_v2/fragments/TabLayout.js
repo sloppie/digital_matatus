@@ -1,12 +1,12 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { List } from 'react-native-paper';
 
-// self defined
+// screens
 import Chips from './Chips'; 
 import IncidentDescription from './IncedentDescription';
 import CulpritDescription from './CulpritDescription';
 import PrivateInformation from './PrivateInformation';
-import { ScrollView } from 'react-native';
 
 const TopTab = createMaterialTopTabNavigator();
 
@@ -14,8 +14,7 @@ const TopTab = createMaterialTopTabNavigator();
 // the route.params approach to navigate, which will create a slightly more complex logic
 export default class TabLayout extends React.PureComponent {
   
-  // do  not want to render a TabBar for this scenario
-  _renderTabBar = () => null;
+  _renderTabBar = () => null; // no tab bar
 
   _renderHarassmentDescriptionTab = (props) => (
     <>
@@ -40,6 +39,7 @@ export default class TabLayout extends React.PureComponent {
         getDiscriminationCategory={this.props.getDiscriminationCategory}
         secondaryNavigation={this.props.secondaryNavigation}
         showSnackBar={this.props.showSnackBar}
+        setSnackBarAction={this.props.setSnackBarAction}
       />
   );
 
@@ -61,13 +61,16 @@ export default class TabLayout extends React.PureComponent {
     />
   );
 
+  renderTabBarIcon = ({iconName}) => {
+    return <List.Icon icon={iconName} color="black" />;
+  }
+
   render() {
 
     return (
       <TopTab.Navigator
         tabBar={this._renderTabBar}
-        backBehavior="initialRoute"
-      >
+        backBehavior="initialRoute">
         <TopTab.Screen 
           name="IncidentDescription" 
           component={this._renderHarassmentDescriptionTab}
@@ -80,18 +83,10 @@ export default class TabLayout extends React.PureComponent {
           name="CulpritDescription" 
           component={this._renderCulpritDescriptionTab}
         />
-        {/**
-         * This private information screen will be a double screen that will house both private info addition,
-         * and the data verification segment
-         */}
         <TopTab.Screen 
           name="PrivateInformation" 
           component={this._renderPrivateInformationTab}
         />
-        {/* <TopTab.Screen 
-          name="DataVerification" 
-          secondaryNavigation={this.props.secondaryNavigation}
-        /> */}
       </TopTab.Navigator>
     );
   }

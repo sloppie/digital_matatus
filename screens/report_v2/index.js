@@ -3,7 +3,8 @@ import React from 'react';
 import { 
   ToastAndroid, 
   Dimensions, 
-  DeviceEventEmitter, 
+  DeviceEventEmitter,
+  NativeModules, 
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -237,10 +238,6 @@ export default class Report extends React.PureComponent {
       this.setState({queries, verified: true, response, verifying: false});
     }
 
-    // console.log(JSON.stringify(queries, null, 2));
-
-    // setTimeout(() => this._scrollTo("DataVerification"), 100);
-
     // bool used by the PrivateInformation BottomSheet to determine whether to activate the Submit button
     return {has_query, queries}; 
   }
@@ -411,6 +408,25 @@ export default class Report extends React.PureComponent {
     this.setState({snackBarMessage, snackBarVisible: true});
   }
 
+  onSnackBarDismiss = () => {
+    switch(this.state.action) {
+      case "TURN ON LOCATION":
+        this._turnOnLocation();
+        this.setState({snackBarVisible: false});
+        break;
+      default:
+        this.setState({snackBarVisible: false});
+    }
+  }
+
+  setSnackBarAction = (action) => {
+    this.setState({action});
+  }
+
+  _turnOnLocation = () => {
+    NativeModules.LocationHandler.turnOnLocationServices()
+  }
+
   render() {
 
     let lastFlags = this.state.flags[this.state.flags.length - 1];
@@ -432,12 +448,13 @@ export default class Report extends React.PureComponent {
             _getInformation={this._getInformation}
             _sendVerifiedData={this._sendVerifiedData}
             showSnackBar={this.showSnackBar}
+            setSnackBarAction={this.setSnackBarAction}
           />
           <Snackbar
             visible={this.state.snackBarVisible}
             action={{
-              label: "Dismiss",
-              onPress: () => this.setState({snackBarVisible: false}),
+              label: this.state.action,
+              onPress: this.onSnackBarDismiss,
             }}
             onDismiss={() => this.setState({snackBarVisible: false})} >
             {this.state.snackBarMessage}

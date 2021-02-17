@@ -40,7 +40,7 @@ module.exports = {
     "Non-verbal": [
       "Imitating a physically handicapped person's situation",
       "Denial of service in a public service vehicle because of a person's physical appearance",
-      "Making gestures or actions to mimmick how a physically handicapped person acts",
+      "Making gestures or actions to mimic how a physically handicapped person acts",
     ],
     "Physical": [
       "Touching a person's body parts that are affected by physical disability",
@@ -58,7 +58,7 @@ module.exports = {
     "Non-verbal": [
       "Denial of service in public transport because of someone's race and/or tribe",
       "Offering of different services because of a person's tribe and/or race",
-      "Making facial expressions and actions to mimick someone's tribe and or race",
+      "Making facial expressions and actions to mimic someone's tribe and or race",
     ],
     "Physical": [
       "Unwelcome touching of items or clothing affiliated to a person's heritage and tradition",

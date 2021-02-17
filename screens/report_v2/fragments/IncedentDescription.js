@@ -18,6 +18,7 @@ import {
   List,
   Caption,
   FAB,
+  Button,
 } from 'react-native-paper';
 
 import Geolocation from '@react-native-community/geolocation';
@@ -168,10 +169,7 @@ export default class IncedentDescription extends React.Component {
     let on = [];
 
     for(let i in flags) {
-      
-      if(flags[i])
-        on.push(i);
-
+      if(flags[i]) on.push(i);
     }
 
     this.setState({[flag]: value, on, discriminationCategory});
@@ -198,10 +196,12 @@ export default class IncedentDescription extends React.Component {
         position => {
           if (position["coords"] == undefined) {
             // ToastAndroid.show("Make sure location services are turned on on your phone", ToastAndroid.SHORT);
+            this.props.setSnackBarAction("TURN ON LOCATION");
             this.props.showSnackBar(
               "Error pinning location, check your internet connection and ensure location services are turned on");
           } else {
             // ToastAndroid.show("Location pinned successfully", ToastAndroid.SHORT);
+            this.props.setSnackBarAction("DISMISS");
             this.props.showSnackBar(
               "Location Pinned successfully");
             let { coords } = position;
@@ -217,7 +217,10 @@ export default class IncedentDescription extends React.Component {
             this.setState({ location, locationSet: true });
           }
         },
-        err => this.props.showSnackBar("Error pinning location, check your internet connection and ensure location services are turned on"),
+        err => {
+          this.props.setSnackBarAction("TURN ON LOCATION");
+          this.props.showSnackBar("Error pinning location, check your internet connection and ensure location services are turned on")
+        },
         {enableHighAccuracy: true, timeout: 30000}
         );
     } else {
@@ -228,11 +231,13 @@ export default class IncedentDescription extends React.Component {
           position => {
             if (position["coords"] == undefined) {
               // ToastAndroid.show("Make sure location services are turned on on your phone", ToastAndroid.SHORT);
+              this.props.setSnackBarAction("TURN ON LOCATION");
               this.props.showSnackBar(
                 "Error pinning location, please make sure location services is turned on and that you have access to a working internet connection");
             }
             else {
               // ToastAndroid.show("Location pinned successfully", ToastAndroid.SHORT);
+              this.props.setSnackBarAction("DISMISS");
               this.props.showSnackBar(
                 "Location Pinned successfully");
               let { coords } = position;
@@ -246,11 +251,15 @@ export default class IncedentDescription extends React.Component {
               this.setState({location, locationSet: true});
             }
           },
-          err => this.props.showSnackBar("Error pinning location, please make sure location services is turned on and that you have access to a working internet connection"),
+          err => {
+            this.props.setSnackBarAction("TURN ON LOCATION");
+            this.props.showSnackBar("Error pinning location, please make sure location services is turned on and that you have access to a working internet connection");
+          },
           { enableHighAccuracy: true, timeout: 20000 }
         );
       } else {
         // ToastAndroid.show("Service denied location access", ToastAndroid.SHORT);
+        this.props.setSnackBarAction("DISMISS");
         this.props.showSnackBar("Service denied, Location access is not allowed for this application");
       }
 
@@ -709,7 +718,11 @@ export default class IncedentDescription extends React.Component {
     </RadioButton.Group>
   );
 
-  _toggleFABState = (attachOpen) => this.setState({attachOpen});
+  _toggleFABState = (attachOpen) => {
+    if (attachOpen)
+      ToastAndroid.show("swipe to move next screen", ToastAndroid.SHORT);
+    this.setState({attachOpen})
+  };
 
   /**
    * Loads up the camera after the action is started from the FAB.Group component. Loads up either
@@ -788,6 +801,18 @@ export default class IncedentDescription extends React.Component {
           {this._renderThumbnails(media_types.video)}
           <Divider />
           {this._renderThumbnails(media_types.audio)}
+          <FAB
+            style={{
+              width: Dimensions.get("window").width - 72,
+              alignSelf: "center",
+              elevation: 0,
+              backgroundColor: "orange",
+              marginBottom: 16,
+            }}
+            mode="contained"
+            label="Next"
+            icon="chevron-right"
+            onPress={() => this.props.navigation.navigate("CulpritDescription")} />
         </ScrollView>
         {(this.state.recordingVisible) && this._renderRecordingTab()}
         <FAB.Group

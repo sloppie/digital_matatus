@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Dimensions, StyleSheet} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 import {
   Switch, Card, Colors, Caption, FAB, Title, Headline, Button, List, Divider,
   TouchableRipple,
@@ -8,7 +9,6 @@ import BottomSheet from 'reanimated-bottom-sheet';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Theme from '../../../theme';
-import { ScrollView } from 'react-native-gesture-handler';
 
 
 let TextInput = null;
@@ -338,8 +338,6 @@ export default class PrivateInformation extends React.PureComponent {
           style={styles.fab}
           mode="contained"
         />
-          {/* Verify Information
-        </Button> */}
         {this.state.bottomSheetVisible && (
               <TouchableRipple
                 style={styles.overlay}

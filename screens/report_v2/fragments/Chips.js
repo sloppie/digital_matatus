@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-  View, Text, StyleSheet, ActivityIndicator, Dimensions, ScrollView, Touchable,
+  View, Text, StyleSheet, ActivityIndicator, Dimensions, ScrollView, Touchable, ToastAndroid,
 } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import {
   Card, Chip, IconButton, Colors, Menu, Paragraph, Title, TextInput, List,
-  TouchableRipple, Divider, Caption,
+  TouchableRipple, Divider, Caption, FAB,
 } from 'react-native-paper';
 
 import Theme from '../../../theme';
@@ -198,108 +198,128 @@ export default class Chips extends React.PureComponent {
     return response;
   }
 
+  _navigateNext = () => {
+    if (this.state.selectedCategory == "--select type--") {
+      ToastAndroid.show("Please select a category from the dropdown", ToastAndroid.SHORT);
+    } else {
+      this.props.navigation.navigate("MediaAttachment");
+    }
+  }
+
   render() {
 
     return (
-      <ScrollView>
-        <Card style={styles.card}>
-          <Text style={styles.screenTitle}>Incident Brief</Text>
-          <Caption style={styles.screenCaption}>
-            In this tab, you will fill in the details about what happened in the incident
+      <>
+        <ScrollView style={{ minHeight: Dimensions.get("window").height }}>
+          <Card style={styles.card}>
+            <Text style={styles.screenTitle}>Incident Brief</Text>
+            <Caption style={styles.screenCaption}>
+              In this tab, you will fill in the details about what happened in the incident
           </Caption>
-          <Divider />
-          <List.Section title="Discrimination Category" />
-          <TouchableHighlight underlayColor="#00000000" onPress={this.openMenu}>
-            <View style={styles.menuContainer}>
-              <Text style={styles.selectedCategoryText}>{this.state.selectedCategory}</Text>
-              {this._renderMenu()}
-            </View>
-          </TouchableHighlight>
-          {/* {(this.state.selectedCategory === "--select type--") && <Paragraph style={{color: "#B00020"}}>
-            Please select a category for the discrimination encountered
-          </Paragraph>} */}
-          {
-            (this.state.selectedCategory !== "--select type--") && (
-            <View>
-              <List.Item
-                title={this.state.selectedCategory}
-                titleStyle={styles.moreInfoCardTitle}
-                onPress={this._allDefinitions}
-                style={styles.moreInfoCard}
-                description="This is a description that is based on the dynamic category selected by the user"
-                left={(props) =>
-                    <List.Icon
-                      {...props}
-                      icon="information-outline"
-                      color="purple"
-                      style={styles.menuInfoCardLeft}
-                    />}
-              />
+            <Divider />
+            <List.Section title="Discrimination Category" />
+            <TouchableHighlight underlayColor="#00000000" onPress={this.openMenu}>
+              <View style={styles.menuContainer}>
+                <Text style={styles.selectedCategoryText}>{this.state.selectedCategory}</Text>
+                {this._renderMenu()}
+              </View>
+            </TouchableHighlight>
+            {
+              (this.state.selectedCategory !== "--select type--") && (
+                <View>
+                  <List.Item
+                    title={this.state.selectedCategory}
+                    titleStyle={styles.moreInfoCardTitle}
+                    onPress={this._allDefinitions}
+                    style={styles.moreInfoCard}
+                    description="This is a description that is based on the dynamic category selected by the user"
+                    left={(props) =>
+                      <List.Icon
+                        {...props}
+                        icon="information-outline"
+                        color="purple"
+                        style={styles.menuInfoCardLeft}
+                      />}
+                  />
 
-              <Divider />
+                  <Divider />
 
-              <Card.Title
-                style={styles.discriminationCard}
-                title="Discrimination Categories"
-                subtitle="Press on a category to select(Long press on a category to learn more)"
-                subtitleNumberOfLines={2}
-              />
-              <Card.Content style={styles.cardContent}>
-                <View style={styles.chipContainer}>
-                  {
-                    this.state.loading && (
-                      <ActivityIndicator size="large" style={styles.activityIndicator}/>
-                    )
-                  }
-                  {
-                    !this.state.loading && this._renderChips()
-                  }
-                </View>
-                {/* <IconButton 
+                  <Card.Title
+                    style={styles.discriminationCard}
+                    title="Discrimination Categories"
+                    subtitle="Press on a category to select(Long press on a category to learn more)"
+                    subtitleNumberOfLines={2}
+                  />
+                  <Card.Content style={styles.cardContent}>
+                    <View style={styles.chipContainer}>
+                      {
+                        this.state.loading && (
+                          <ActivityIndicator size="large" style={styles.activityIndicator} />
+                        )
+                      }
+                      {
+                        !this.state.loading && this._renderChips()
+                      }
+                    </View>
+                    {/* <IconButton 
                   icon="information-outline" 
                   style={styles.moreInfoIcon} 
                   color={Colors.blue500}
                   onPress={this._allDefinitions}
                 /> */}
-              </Card.Content>
-            </View>
-            )
-          }
-          {
-            this.state.Verbal && (
-              <DiscriminationFlags 
-                ref={this.verbalFlagsRef} 
-                category="Verbal"
-                discriminationCategory={this.state.selectedCategory}
-                updateCurrentSetFlags={this.updateCurrentSetFlags}
-                flags={this.state.flags}
-              />
-            )
-          }
-          {
-            this.state["Non-verbal"] && (
-              <DiscriminationFlags 
-                ref={this.nonVerbalFlagsRef} 
-                category="Non-verbal"
-                discriminationCategory={this.state.selectedCategory}
-                updateCurrentSetFlags={this.updateCurrentSetFlags}
-                flags={this.state.flags}
-              />
-            )
-          }
-          {
-            this.state.Physical && (
-              <DiscriminationFlags 
-                ref={this.physicalFlagsRef}
-                category="Physical"
-                discriminationCategory={this.state.selectedCategory}
-                updateCurrentSetFlags={this.updateCurrentSetFlags}
-                flags={this.state.flags}
-              />
-            )
-          }
-        </Card>
-      </ScrollView>
+                  </Card.Content>
+                </View>
+              )
+            }
+            {
+              this.state.Verbal && (
+                <DiscriminationFlags
+                  ref={this.verbalFlagsRef}
+                  category="Verbal"
+                  discriminationCategory={this.state.selectedCategory}
+                  updateCurrentSetFlags={this.updateCurrentSetFlags}
+                  flags={this.state.flags}
+                />
+              )
+            }
+            {
+              this.state["Non-verbal"] && (
+                <DiscriminationFlags
+                  ref={this.nonVerbalFlagsRef}
+                  category="Non-verbal"
+                  discriminationCategory={this.state.selectedCategory}
+                  updateCurrentSetFlags={this.updateCurrentSetFlags}
+                  flags={this.state.flags}
+                />
+              )
+            }
+            {
+              this.state.Physical && (
+                <DiscriminationFlags
+                  ref={this.physicalFlagsRef}
+                  category="Physical"
+                  discriminationCategory={this.state.selectedCategory}
+                  updateCurrentSetFlags={this.updateCurrentSetFlags}
+                  flags={this.state.flags}
+                />
+              )
+            }
+          </Card>
+          <FAB
+            style={{
+              width: Dimensions.get("window").width - 72,
+              alignSelf: "center",
+              elevation: 0,
+              backgroundColor: "orange",
+              marginTop: 32,
+              marginBottom: 16,
+            }}
+            mode="contained"
+            label="Next"
+            icon="chevron-right"
+            onPress={this._navigateNext} />
+        </ScrollView>
+      </>
     );
   }
 

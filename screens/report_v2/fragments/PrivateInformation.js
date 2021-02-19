@@ -226,6 +226,8 @@ export default class PrivateInformation extends React.PureComponent {
   _navigateToQuery = (query) => {
     // close BottomSheet
     this.bottomSheetRef.current.snapTo(0);
+
+    this.setState({bottomSheetVisible: false});
     // this was set because the 
     this.setState({activeSnap: 0})
     // navigate back to the query

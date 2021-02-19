@@ -210,7 +210,7 @@ export default class Chips extends React.PureComponent {
 
     return (
       <>
-        <ScrollView style={{ minHeight: Dimensions.get("window").height }}>
+        <ScrollView style={{width: "100%", flex: 1}}>
           <Card style={styles.card}>
             <Text style={styles.screenTitle}>Incident Brief</Text>
             <Caption style={styles.screenCaption}>
@@ -261,12 +261,6 @@ export default class Chips extends React.PureComponent {
                         !this.state.loading && this._renderChips()
                       }
                     </View>
-                    {/* <IconButton 
-                  icon="information-outline" 
-                  style={styles.moreInfoIcon} 
-                  color={Colors.blue500}
-                  onPress={this._allDefinitions}
-                /> */}
                   </Card.Content>
                 </View>
               )

@@ -719,8 +719,8 @@ export default class IncedentDescription extends React.Component {
   );
 
   _toggleFABState = (attachOpen) => {
-    if (attachOpen)
-      ToastAndroid.show("swipe to move next screen", ToastAndroid.SHORT);
+    // if (attachOpen)
+    //   ToastAndroid.show("swipe to move next screen", ToastAndroid.SHORT);
     this.setState({attachOpen})
   };
 

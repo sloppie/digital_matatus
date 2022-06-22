@@ -19,7 +19,7 @@
     "@react-navigation/material-top-tabs": "^5.2.9",
     "@react-navigation/native": "^5.3.2",
     "@react-navigation/stack": "^5.3.6",
-    "hermes-engine": "^0.5.2-rc1",
+    "hermes-engine": "^0.10.0",
     "paper": "^0.12.4",
     "react": "16.13.1",
     "react-native": "^0.63.2",
